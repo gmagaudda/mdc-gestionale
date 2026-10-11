@@ -40,3 +40,13 @@ Le ultime due verifiche richiedono rispettivamente i browser Playwright e Supaba
 ## Accesso ai dati
 
 I client Supabase in `lib/supabase` usano la sessione utente e la chiave pubblica. La chiave service role è riservata a `lib/supabase/admin.ts` e ai processi server autorizzati. Le route interne e `/portal` sono protette da `proxy.ts`; le future azioni e letture devono verificare di nuovo ruolo e permessi lato server.
+
+## Cloudflare Workers
+
+```bash
+pnpm build:cf
+pnpm preview:cf
+pnpm exec wrangler deploy --dry-run
+```
+
+Il progetto usa OpenNext e Wrangler con Smart Placement. Imposta le variabili e i segreti come binding Workers prima del deploy. Il Proxy Node.js di Next 16 è ancora sperimentale nell'adapter: la build e i redirect sono verificati nell'anteprima Workers, mentre login e letture RLS richiedono il flusso di autenticazione della milestone M1.
