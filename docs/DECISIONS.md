@@ -6,7 +6,7 @@ Supabase locale nativo non serve template email personalizzati: recupero locale 
 
 Misurato il bordo originale dei campi: 1,74:1, inferiore al requisito 3:1. Axe ha rilevato 3,87:1 sulle etichette inattive del controllo tema in chiaro. Override semantici in entrambi i temi: `--text-muted` usa `--text-secondary`, `--border-strong` usa il testo secondario. Nessuna modifica ai sorgenti Arc. Area dei pulsanti di rivelazione estesa tramite wrapper.
 
-Build Workers verificata con login, logout, lettura profilo soggetta a RLS e blocco account inattivi. Bundle dopo autenticazione/i18n: gzip 3127,03 KiB (3,05 MiB); oltre il limite gratuito. Scelta del piano richiesta prima del rilascio.
+Build Workers verificata con login, logout, lettura profilo soggetta a RLS e blocco account inattivi. L’umano ha scelto Workers Free. Con `minify: true`, il bundle dopo autenticazione/i18n scende da 3127,03 a 2763,25 KiB gzip (2,70 MiB), sotto il limite di 3 MiB. La misura verrà ripetuta dopo ogni milestone.
 
 ## Design system (M0-T6)
 
