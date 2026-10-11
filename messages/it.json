@@ -1,0 +1,25 @@
+{
+  "common": {
+    "appName": "Gestionale showroom",
+    "theme": "Aspetto",
+    "system": "Sistema",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "toggleTheme": "Cambia tema",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "logout": "Esci",
+    "skip": "Vai al contenuto",
+    "dashboard": "Panoramica",
+    "retry": "Riprova"
+  },
+  "design": {
+    "title": "Verifica interfaccia",
+    "description": "Componenti Arc e impostazioni del tema.",
+    "button": "Prova pulsante",
+    "email": "Email",
+    "emailHelp": "Usa l’indirizzo associato al tuo account.",
+    "alertTitle": "Componenti pronti",
+    "alertDescription": "Verifica il tema, il focus da tastiera e il comportamento sul telefono."
+  }
+}

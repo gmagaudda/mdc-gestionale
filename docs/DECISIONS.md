@@ -1,5 +1,13 @@
 # Decisioni
 
+## Design system (M0-T6)
+
+Arc installato dal registry gratuito; `ArcProvider` arriva come dipendenza di `avatar` (non esiste un item autonomo `arc-provider`). Componenti originali conservati senza modifiche. Font caricati con next/font; tema con next-themes, senza script duplicati.
+
+Le skill di jakubkrehel sono copiate in `.agents/skills` e tracciate da `skills-lock.json`; letti tutti i nove SKILL.md. Il fallback ufficiale llms.txt/markdown è usato perché questa sessione non espone gli strumenti Arc, pur con autenticazione completata. L’accettazione della ricerca MCP resta da verificare.
+
+Il theme-switch gratuito ha icona da 38 px: un wrapper estende solo l’area cliccabile a 44 px, senza cambiare il componente. Il segmented-control espone Sistema/Chiaro/Scuro in italiano. Su puntatore touch `--text-sm` eredita `--text-base`, per evitare zoom iOS. Le nuove dipendenze sono bloccate a versione esatta. Gli script opzionali di watcher/SWC restano disabilitati perché non usati dal runtime.
+
 | Data       | Scelta                                                                         | Motivo                                                                                                                                                                                                                                        |
 | ---------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2026-10-12 | App Next.js 16 con App Router, TypeScript strict e Tailwind 4                  | Sono le versioni stabili disponibili all'avvio; il piano richiede versioni fissate nel lockfile.                                                                                                                                              |
