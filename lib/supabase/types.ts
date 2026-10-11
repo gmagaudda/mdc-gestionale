@@ -34,6 +34,204 @@ export type Database = {
   };
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          after: Json | null;
+          before: Json | null;
+          created_at: string;
+          id: string;
+          record_id: string | null;
+          table_name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          after?: Json | null;
+          before?: Json | null;
+          created_at?: string;
+          id?: string;
+          record_id?: string | null;
+          table_name: string;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          after?: Json | null;
+          before?: Json | null;
+          created_at?: string;
+          id?: string;
+          record_id?: string | null;
+          table_name?: string;
+        };
+        Relationships: [];
+      };
+      brand_contacts: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          deleted_at: string | null;
+          email: string;
+          id: string;
+          name: string;
+          phone: string;
+          role_title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          email?: string;
+          id?: string;
+          name: string;
+          phone?: string;
+          role_title?: string;
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          email?: string;
+          id?: string;
+          name?: string;
+          phone?: string;
+          role_title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "brand_contacts_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      brand_private: {
+        Row: {
+          address: string;
+          city: string;
+          commission_pct: number;
+          country: string;
+          created_at: string;
+          id: string;
+          notes: string;
+          tax_code: string;
+          updated_at: string;
+          vat_number: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          address?: string;
+          city?: string;
+          commission_pct?: number;
+          country?: string;
+          created_at?: string;
+          id: string;
+          notes?: string;
+          tax_code?: string;
+          updated_at?: string;
+          vat_number?: string;
+        };
+        Update: {
+          address?: string;
+          city?: string;
+          commission_pct?: number;
+          country?: string;
+          created_at?: string;
+          id?: string;
+          notes?: string;
+          tax_code?: string;
+          updated_at?: string;
+          vat_number?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "brand_private_id_fkey";
+            columns: ["id"];
+            isOneToOne: true;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      brand_users: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "brand_users_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "brand_users_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      brands: {
+        Row: {
+          can_see_customer_names: boolean;
+          created_at: string;
+          deleted_at: string | null;
+          external_code: string | null;
+          id: string;
+          legal_name: string;
+          name: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          can_see_customer_names?: boolean;
+          created_at?: string;
+          deleted_at?: string | null;
+          external_code?: string | null;
+          id?: string;
+          legal_name?: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          can_see_customer_names?: boolean;
+          created_at?: string;
+          deleted_at?: string | null;
+          external_code?: string | null;
+          id?: string;
+          legal_name?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -70,7 +268,28 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
+      save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
+      save_user: {
+        Args: {
+          p_brand_ids: string[];
+          p_full_name: string;
+          p_id: string;
+          p_is_active: boolean;
+          p_role: Database["public"]["Enums"]["app_role"];
+        };
+        Returns: undefined;
+      };
+      write_audit: {
+        Args: {
+          p_action: string;
+          p_after?: Json;
+          p_before?: Json;
+          p_record_id: string;
+          p_table_name: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       app_role: "admin" | "staff" | "accounting" | "brand";

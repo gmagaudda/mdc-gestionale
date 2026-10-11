@@ -10,5 +10,5 @@
 ## M1
 
 - T1: login/logout, recupero password via Mailpit, verifica link e attivazione invito implementati. Login valido/errato, reset, disattivazione e isolamento delle aree verificati nei cinque viewport.
-- T2: identità verificata con getUser, profilo attivo, guardia di ruolo e destinazioni implementate. requireBrandAccess da completare con brand_users in M2-T1.
-- T4: tabella audit immutabile, trigger transazionale sui profili, helper e protezione ultimo admin; 6 test pgTAP verdi. Vista di consultazione in lavorazione.
+- T2: identità verificata con getUser, profilo attivo, guardie di ruolo/brand e destinazioni implementate. Unit test per tutti i ruoli e rifiuto in caso di errore del database.
+- T4: tabella audit immutabile, trigger transazionali, helper, protezione ultimo admin e consultazione con dettaglio per admin. Inviti, ruoli, disattivazioni e associazioni ai brand verificati con audit.
