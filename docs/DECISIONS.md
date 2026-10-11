@@ -39,3 +39,13 @@ Import nominati di Zod riducono il bundle Workers delle anagrafiche/utenti da 30
 ## Inviti utenti (M1-T3)
 
 Solo il route handler `/api/users/invite` accede alla service role per generare il link Supabase; verifica prima identità admin, origine, schema e brand. Ruolo e associazioni sono salvati con la sessione admin in una transazione SQL con audit. Le email in modalità `log` sono stampate sul terminale di sviluppo, come richiesto dal piano; nessun messaggio reale inviato nei test. L’invio Resend in ambiente gestito richiede configurazione e verifica in M9. Errori durante l’invito eliminano l’account appena generato; un’email già presente viene rifiutata. I token di invito non vengono restituiti al browser né salvati nell’audit.
+
+## Priorità ai test locali (indicazione umana)
+
+L’umano ha chiesto di non considerare per il momento il limite del bundle: testerà l’app in locale. Le nuove funzioni proseguono su Next.js e Supabase locali; limiti e rilascio Workers verranno ripresi quando serve un ambiente ospitato.
+
+## Clienti (M2-T2)
+
+Gli indirizzi JSON usano `street`, `postal_code`, `city`, `province`, `country`. Città/paese in testata vengono derivati dall’indirizzo di fatturazione. I dati fiscali possono essere ancora vuoti: se compilati, P.IVA di 11 cifre, SDI di 7 caratteri alfanumerici maiuscoli e PEC valida. I controlli di completezza per emettere una fattura appartengono a M7; il controllo della cifra P.IVA per l’import appartiene a M10. Le regole RLS negano agli utenti brand anche l’accesso diretto ai referenti dei clienti.
+
+I test RLS conteggiano le proprie fixture, così restano eseguibili anche con dati demo e test browser concorrenti. La verifica dell’ultimo admin isola gli amministratori nella transazione del test, poi esegue rollback.

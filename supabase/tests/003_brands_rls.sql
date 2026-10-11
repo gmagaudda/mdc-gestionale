@@ -20,8 +20,8 @@ select is(public.has_brand_access('00000000-0000-4000-8000-000000000032'),false,
 select throws_ok($$insert into public.brands(name) values ('Forbidden')$$,'42501',null,'brand cannot create');
 with changed as (update public.brands set name='Forbidden' returning id) select is(count(*),0::bigint,'brand cannot update') from changed;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000023';
-select is((select count(*) from public.brands),2::bigint,'staff reads all brands');
-select is((select count(*) from public.brand_private),1::bigint,'staff reads private fields');
+select is((select count(*) from public.brands where id in ('00000000-0000-4000-8000-000000000031','00000000-0000-4000-8000-000000000032')),2::bigint,'staff reads all brands');
+select is((select count(*) from public.brand_private where id='00000000-0000-4000-8000-000000000031'),1::bigint,'staff reads private fields');
 with changed as (update public.brands set name='Forbidden' returning id) select is(count(*),0::bigint,'staff cannot update') from changed;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000021';
 select lives_ok($$update public.brands set name='Updated' where id='00000000-0000-4000-8000-000000000031'$$,'admin can update');

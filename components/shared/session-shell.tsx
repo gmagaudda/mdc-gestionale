@@ -28,6 +28,11 @@ export async function SessionShell({
               {t("brands")}
             </Link>
           )}
+          {user.role !== "brand" && (
+            <Link className="text-link" href="/customers">
+              {t("customers")}
+            </Link>
+          )}
           {user.role === "admin" && (
             <Link className="text-link" href="/settings/audit">
               {t("audit")}

@@ -16,7 +16,8 @@
     "audit": "Registro modifiche",
     "users": "Utenti",
     "notFound": "La pagina non esiste o non hai i permessi per visualizzarla.",
-    "returnHome": "Torna alla panoramica"
+    "returnHome": "Torna alla panoramica",
+    "customers": "Clienti"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -122,7 +123,9 @@
       "brands": "Brand",
       "brand_private": "Dati interni brand",
       "brand_users": "Utenti del brand",
-      "brand_contacts": "Referenti brand"
+      "brand_contacts": "Referenti brand",
+      "customers": "Clienti",
+      "customer_contacts": "Referenti clienti"
     }
   },
   "brands": {
@@ -196,5 +199,55 @@
     "saved": "Utente salvato.",
     "inviteSubject": "Invito al gestionale showroom",
     "inviteBody": "Sei stato invitato al gestionale showroom. Imposta la tua password aprendo questo link: {url}"
+  },
+  "customers": {
+    "title": "Clienti",
+    "create": "Nuovo cliente",
+    "name": "Nome brand",
+    "legal_name": "Ragione sociale",
+    "vat_number": "Partita IVA (11 cifre)",
+    "tax_code": "Codice fiscale",
+    "address": "Indirizzo",
+    "city": "Città",
+    "country": "Paese (codice ISO)",
+    "commission_pct": "Provvigione (%)",
+    "notes": "Note interne",
+    "visibility": "Nomi dei clienti nel portale",
+    "visibilityYes": "Mostra ragione sociale e città",
+    "visibilityNo": "Mostra Cliente riservato",
+    "save": "Salva cliente",
+    "cancel": "Annulla",
+    "validation": "Controlla il valore inserito.",
+    "saveError": "Salvataggio non riuscito. Riprova.",
+    "conflict": "Esiste già un brand con questo codice.",
+    "loadError": "Impossibile caricare i dati. Ricarica la pagina.",
+    "search": "Cerca per ragione sociale",
+    "back": "Tutti i clienti",
+    "edit": "Modifica cliente",
+    "saved": "Cliente salvato.",
+    "none": "Non indicato",
+    "contacts": "Referenti",
+    "noContacts": "Nessun referente aggiunto.",
+    "contact_name": "Nome referente",
+    "contact_role_title": "Ruolo",
+    "contact_email": "Email",
+    "contact_phone": "Telefono",
+    "contactSaved": "Referente salvato.",
+    "saveContact": "Salva referente",
+    "addContact": "Aggiungi referente",
+    "editContact": "Modifica referente",
+    "archive": "Archivia cliente",
+    "archiveQuestion": "Archiviare {name}? Il cliente non comparirà nelle liste attive.",
+    "archiveContact": "Archivia referente",
+    "archiveContactQuestion": "Archiviare il referente {name}?",
+    "trade_name": "Insegna",
+    "sdi_code": "Codice SDI (7 caratteri)",
+    "pec": "PEC",
+    "billing_address": "Indirizzo di fatturazione",
+    "shipping_address": "Indirizzo di spedizione",
+    "street": "Via e numero civico",
+    "postal_code": "CAP",
+    "province": "Provincia",
+    "payment_terms": "Condizioni di pagamento"
   }
 }

@@ -232,6 +232,112 @@ export type Database = {
         };
         Relationships: [];
       };
+      customer_contacts: {
+        Row: {
+          created_at: string;
+          customer_id: string;
+          deleted_at: string | null;
+          email: string;
+          id: string;
+          name: string;
+          phone: string;
+          role_title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          customer_id: string;
+          deleted_at?: string | null;
+          email?: string;
+          id?: string;
+          name: string;
+          phone?: string;
+          role_title?: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          customer_id?: string;
+          deleted_at?: string | null;
+          email?: string;
+          id?: string;
+          name?: string;
+          phone?: string;
+          role_title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customer_contacts_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      customers: {
+        Row: {
+          billing_address: NonNullable<Json>;
+          city: string;
+          country: string;
+          created_at: string;
+          deleted_at: string | null;
+          external_code: string | null;
+          id: string;
+          legal_name: string;
+          notes: string;
+          payment_terms: string;
+          pec: string;
+          sdi_code: string;
+          shipping_address: NonNullable<Json>;
+          tax_code: string;
+          trade_name: string;
+          updated_at: string;
+          vat_number: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          billing_address?: NonNullable<Json>;
+          city?: string;
+          country?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          external_code?: string | null;
+          id?: string;
+          legal_name: string;
+          notes?: string;
+          payment_terms?: string;
+          pec?: string;
+          sdi_code?: string;
+          shipping_address?: NonNullable<Json>;
+          tax_code?: string;
+          trade_name?: string;
+          updated_at?: string;
+          vat_number?: string;
+        };
+        Update: {
+          billing_address?: NonNullable<Json>;
+          city?: string;
+          country?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          external_code?: string | null;
+          id?: string;
+          legal_name?: string;
+          notes?: string;
+          payment_terms?: string;
+          pec?: string;
+          sdi_code?: string;
+          shipping_address?: NonNullable<Json>;
+          tax_code?: string;
+          trade_name?: string;
+          updated_at?: string;
+          vat_number?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
