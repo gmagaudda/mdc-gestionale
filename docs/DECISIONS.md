@@ -1,5 +1,13 @@
 # Decisioni
 
+## Accesso e accessibilità (M1-T1)
+
+Supabase locale nativo non serve template email personalizzati: recupero locale con PKCE (stesso browser), ambiente gestito con template token_hash in `supabase/templates/recovery.html` (configurare nella dashboard). Entrambi verificano il link sul server. Password da 10 a 128 caratteri, conferma esplicita, logout globale dopo il cambio. Il messaggio di recupero non rivela se un account esiste.
+
+Misurato il bordo originale dei campi: 1,74:1, inferiore al requisito 3:1. Axe ha rilevato 3,87:1 sulle etichette inattive del controllo tema in chiaro. Override semantici in entrambi i temi: `--text-muted` usa `--text-secondary`, `--border-strong` usa il testo secondario. Nessuna modifica ai sorgenti Arc. Area dei pulsanti di rivelazione estesa tramite wrapper.
+
+Build Workers verificata con login, logout, lettura profilo soggetta a RLS e blocco account inattivi. Bundle dopo autenticazione/i18n: gzip 3127,03 KiB (3,05 MiB); oltre il limite gratuito. Scelta del piano richiesta prima del rilascio.
+
 ## Design system (M0-T6)
 
 Arc installato dal registry gratuito; `ArcProvider` arriva come dipendenza di `avatar` (non esiste un item autonomo `arc-provider`). Componenti originali conservati senza modifiche. Font caricati con next/font; tema con next-themes, senza script duplicati.

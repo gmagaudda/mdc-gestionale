@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 export default function PortalPage() {
-  return <main />;
+  redirect("/portal/dashboard");
 }

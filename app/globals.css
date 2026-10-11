@@ -7,6 +7,11 @@
 *::after {
   box-sizing: border-box;
 }
+:root,
+:root[data-theme="dark"] {
+  --text-muted: var(--text-secondary);
+  --border-strong: var(--text-muted);
+}
 
 body {
   margin: 0;
@@ -71,9 +76,63 @@ a {
   position: absolute;
   inset: -3px;
 }
+.secret-field button {
+  position: relative;
+}
+.secret-field button::after {
+  content: "";
+  position: absolute;
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 @media (pointer: coarse) {
   :root {
     --text-sm: var(--text-base);
     --control-height-sm: var(--control-height-md);
   }
+}
+.auth-container {
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+  padding: var(--space-6);
+  padding-block-start: var(--space-16);
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height-md);
+  text-decoration: underline;
+  width: fit-content;
+}
+.session-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border);
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface);
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: translateY(0);
 }
