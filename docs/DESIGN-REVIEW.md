@@ -31,3 +31,9 @@ Ambito della revisione better-interface: lista brand → creazione → modifica 
 | UI            | Pending/disabilitazione, conferma inline, skeleton/error/empty e successo in pagina | Stato percepibile senza affidarsi alla motion                          |
 
 Verifiche passate: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/brands.spec.ts` (10 test), lint/typecheck/test/check:tokens. Non verificati qui: zoom 200%, screen reader manuale e contrasto di questa specifica schermata in scuro (previsti in M8). Nessun problema di interfaccia bloccante rilevato nel perimetro verificato. Verdict: Approve, limitato alle verifiche indicate.
+
+## M1-T3 e M1-T4: amministrare utenti e consultare modifiche
+
+Ambito: invito staff → cambio ruolo/disattivazione → registro; accesso negato a staff. Stesse convenzioni e skill della revisione M2-T1. Il radio si aziona dal testo della label o con tastiera; nessuna modifica ai sorgenti Arc. Nomi delle risorse e delle operazioni nel registro localizzati; autore mostrato per nome/email quando disponibile.
+
+Copertura: accessibilità con axe sul form e radio da tastiera; layout nei cinque viewport senza overflow, screenshot mobile del registro ispezionato; testi italiani tramite next-intl; tipografia/colori con token e UI Arc originali; pending/error/successo in pagina. Verifica: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/users.spec.ts`, 10 test passati. Non verificati: screen reader manuale, zoom 200% e tema scuro di questi form. Nessun problema bloccante rilevato nel flusso verificato. Verdict: Approve, entro questo perimetro.

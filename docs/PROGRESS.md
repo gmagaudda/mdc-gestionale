@@ -11,6 +11,7 @@
 
 - T1: login/logout, recupero password via Mailpit, verifica link e attivazione invito implementati. Login valido/errato, reset, disattivazione e isolamento delle aree verificati nei cinque viewport.
 - T2: identità verificata con getUser, profilo attivo, guardie di ruolo/brand e destinazioni implementate. Unit test per tutti i ruoli e rifiuto in caso di errore del database.
+- T3: gestione utenti admin, invito in modalità log, cambio ruolo, disattivazione e associazione brand implementati. 10 e2e nei cinque viewport verdi; staff respinto anche dall’endpoint inviti. Invio reale Resend da configurare con l’ambiente gestito.
 - T4: tabella audit immutabile, trigger transazionali, helper, protezione ultimo admin e consultazione con dettaglio per admin. Inviti, ruoli, disattivazioni e associazioni ai brand verificati con audit.
 
 ## M2

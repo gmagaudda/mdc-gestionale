@@ -35,3 +35,7 @@ Dati leggibili dai brand in `brands`; provvigioni, indirizzi fiscali e note in `
 La tabella Arc gratuita viene composta con ordinamento e paginazione GET esterni: i controlli incorporati non espongono tutte le stringhe in italiano né l’ordinamento server richiesto. I sorgenti Arc restano originali. Vista card sotto 768 px, tabella sopra. Le conferme di archiviazione sono al momento inline; la composizione dialog/bottom-sheet rimane in M2-T3.
 
 Import nominati di Zod riducono il bundle Workers delle anagrafiche/utenti da 3097,69 a 2827,14 KiB gzip (2,76 MiB). Evitare l’import del namespace completo nelle nuove funzioni. Piano Free conservato; nessun rilascio remoto effettuato.
+
+## Inviti utenti (M1-T3)
+
+Solo il route handler `/api/users/invite` accede alla service role per generare il link Supabase; verifica prima identità admin, origine, schema e brand. Ruolo e associazioni sono salvati con la sessione admin in una transazione SQL con audit. Le email in modalità `log` sono stampate sul terminale di sviluppo, come richiesto dal piano; nessun messaggio reale inviato nei test. L’invio Resend in ambiente gestito richiede configurazione e verifica in M9. Errori durante l’invito eliminano l’account appena generato; un’email già presente viene rifiutata. I token di invito non vengono restituiti al browser né salvati nell’audit.

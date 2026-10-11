@@ -60,3 +60,9 @@ Il progetto usa OpenNext e Wrangler con Smart Placement. Imposta le variabili e 
 ## CI
 
 La pipeline `.github/workflows/ci.yml` esegue i controlli TypeScript, lint, test unitari e RLS, build Next e build Workers su push e pull request. La verifica della pipeline remota richiede un repository GitHub collegato; al momento questo checkout non ha un remote.
+
+### Gestione utenti e dati
+
+Gli admin gestiscono utenti da `/settings/users`, brand da `/brands` e modifiche da `/settings/audit`. Staff e amministrazione leggono i brand; gli utenti brand ricevono solo dati dei brand associati. I dati privati dei brand hanno una tabella RLS separata. Per creare il primo admin locale, crea un utente in Supabase Auth/Studio e assegna `role = 'admin'` al suo profilo tramite Studio (la creazione iniziale è fuori dal flusso degli inviti).
+
+Con `EMAIL_MODE=log`, i link di invito compaiono nel terminale locale e non viene inviata alcuna email. Questa modalità è per sviluppo; configurare e verificare Resend prima dell’uso reale. Le fixture e2e usano soltanto Supabase locale e account sintetici, poi rimuovono gli account creati.
