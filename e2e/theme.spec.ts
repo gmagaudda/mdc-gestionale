@@ -30,8 +30,6 @@ test("theme persists before content is painted and does not overflow", async ({
   await page.getByRole("button", { name: "Chiaro", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
 });

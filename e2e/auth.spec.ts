@@ -65,10 +65,8 @@ test("staff signs in and out with no horizontal overflow", async ({ page }) => {
     page.getByRole("heading", { name: "Panoramica showroom" }),
   ).toBeVisible();
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page).toHaveURL(/\/login$/);
   await page.goto("/dashboard");

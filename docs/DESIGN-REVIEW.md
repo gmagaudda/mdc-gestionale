@@ -44,6 +44,21 @@ Ambito: inserimento con errore P.IVA → correzione → modifica → referente �
 
 # Revisione M2-T3: navigazione e conferma archiviazione
 
+## Revisione M3-T1: catalogo
+
+Ambito: creazione stagione, validazione intervalli, creazione/modifica prodotto, prezzi, varianti e archiviazione. Stessi documenti/convenzioni Arc; tutte le skill di dominio lette. Non include matrice ordine o portale futuro.
+
+| Dominio       | Evidenza                                                                                                                                  | Esito                                                |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Accessibilità | SelectField, ProductForm/SeasonForm, focus errore data; axe AA nei cinque viewport chiaro/scuro; copia SKU rende raggiungibile la tabella | Clear dopo correzione scorrimento tastiera su tablet |
+| Layout        | card mostrano tutti i campi, SKU a capo con pulsante copia separato; overflow confrontato con viewport configurato                        | Clear dopo correzione SKU lungo mobile               |
+| Scrittura     | catalog in it.json; conferme di archiviazione spiegano conservazione storica                                                              | Clear                                                |
+| Tipografia    | token e font Arc; screenshot form mobile/desktop; importi formato italiano                                                                | Clear                                                |
+| Colore        | nessun colore custom; axe e check:tokens                                                                                                  | Clear                                                |
+| UI            | stato varianti, feedback salvataggio, skeleton/errori condivisi, preferenze tema                                                          | Clear                                                |
+
+Nessun problema azionabile residuo nell'ambito. `pnpm e2e e2e/catalog.spec.ts` su localhost:3100: 5 passati; `pnpm build`, lint/typecheck, test e check:tokens verdi. Screenshot del form ispezionati. Screen reader reale/zoom 200% non verificati. Verdict: Approve nell'ambito indicato.
+
 Ambito: flusso login → lista brand → ricerca/paginazione → dettaglio → conferma/annullamento → preferenze tema. Next.js, Arc e token semantici; convenzioni lette in AGENTS.md, DESIGN-GUIDELINES.md e DECISIONS.md. Esclusi i moduli futuri.
 
 | Dominio       | Evidenza                                                                                                                     | Esito |

@@ -87,10 +87,8 @@ test("admin invites staff changes role and deactivates with an audit trail", asy
     )
     .toMatchObject({ role: "accounting", is_active: false });
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   expect(
     (
       await new AxeBuilder({ page })
@@ -103,10 +101,8 @@ test("admin invites staff changes role and deactivates with an audit trail", asy
     page.getByRole("heading", { name: "Registro modifiche", exact: true }),
   ).toBeVisible();
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.screenshot({
     path: testInfo.outputPath("audit.png"),
     fullPage: true,

@@ -34,6 +34,11 @@ export default async function AuditPage({
     "brand_private",
     "brand_users",
     "brand_contacts",
+    "customers",
+    "customer_contacts",
+    "seasons",
+    "products",
+    "product_variants",
   ];
   if (query.q) {
     const resource = resourceNames.find(

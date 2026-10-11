@@ -338,6 +338,119 @@ export type Database = {
         };
         Relationships: [];
       };
+      product_variants: {
+        Row: {
+          brand_id: string;
+          color: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          product_id: string;
+          size: string;
+          sku: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          color: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          product_id: string;
+          size: string;
+          sku: string;
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          color?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          product_id?: string;
+          size?: string;
+          sku?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "product_variants_product_id_brand_id_fkey";
+            columns: ["product_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      products: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          deleted_at: string | null;
+          description: string;
+          id: string;
+          name: string;
+          retail_price_cents: number;
+          season_id: string;
+          sku_base: string;
+          updated_at: string;
+          vat_rate: number;
+          wholesale_price_cents: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string;
+          id?: string;
+          name: string;
+          retail_price_cents?: number;
+          season_id: string;
+          sku_base: string;
+          updated_at?: string;
+          vat_rate?: number;
+          wholesale_price_cents: number;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string;
+          id?: string;
+          name?: string;
+          retail_price_cents?: number;
+          season_id?: string;
+          sku_base?: string;
+          updated_at?: string;
+          vat_rate?: number;
+          wholesale_price_cents?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "products_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "products_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -369,6 +482,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      seasons: {
+        Row: {
+          brand_id: string;
+          campaign_end: string | null;
+          campaign_start: string | null;
+          code: string;
+          created_at: string;
+          deleted_at: string | null;
+          delivery_end: string | null;
+          delivery_start: string | null;
+          id: string;
+          name: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          campaign_end?: string | null;
+          campaign_start?: string | null;
+          code: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          delivery_end?: string | null;
+          delivery_start?: string | null;
+          id?: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          campaign_end?: string | null;
+          campaign_start?: string | null;
+          code?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          delivery_end?: string | null;
+          delivery_start?: string | null;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "seasons_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -376,6 +540,7 @@ export type Database = {
     Functions: {
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
       save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
+      save_product: { Args: { p_data: Json; p_id: string }; Returns: string };
       save_user: {
         Args: {
           p_brand_ids: string[];

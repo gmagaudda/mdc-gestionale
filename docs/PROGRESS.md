@@ -19,3 +19,7 @@
 - T1: lista, dettaglio, creazione/modifica, archiviazione e referenti implementati. RLS: brand assegnati soltanto, campi privati separati; staff in sola lettura. 12 test database e 10 e2e nei cinque viewport verdi, axe sul form senza violazioni AA.
 - T2: clienti con dati fiscali, indirizzi, referenti e archiviazione; scrittura admin/staff, sola lettura amministrazione, accesso brand escluso. Validazioni P.IVA/SDI/PEC testate; 9 test RLS e 10 e2e nei cinque viewport verdi.
 - T3: shell con menu mobile e sidebar desktop, tabelle/card mobile, filtri/ordinamento/paginazione server, dialog responsive, conferme con focus iniziale su Annulla, preferenze tema, skip link, PageHeader/FormField/EmptyState condivisi. 5 e2e di navigazione e 30 di anagrafiche/utenti nei cinque viewport verdi; axe AA in chiaro/scuro. Dialog usa il primitive Radix sottostante con controlli/token Arc: il registry Arc corrente non compila con le sue dipendenze (dettagli in DECISIONS). Seed demo locale disponibile.
+
+## M3
+
+- T1: stagioni/prodotti con liste, creazione, modifica, archivio e varianti taglie × colori in transazione con audit. Prezzi interi in centesimi; FK composite e SKU unici. 14 test catalogo/RLS e 5 e2e verdi, inclusa generazione di 15 varianti e rollback di un salvataggio invalido. Axe AA in chiaro/scuro, viewport da 360 a 1440 px; lint/typecheck, 32 unit test, 52 test DB e build Next verdi.

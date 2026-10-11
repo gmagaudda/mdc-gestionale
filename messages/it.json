@@ -20,7 +20,12 @@
     "customers": "Clienti",
     "menu": "Menu",
     "close": "Chiudi",
-    "preferences": "Preferenze utente"
+    "preferences": "Preferenze utente",
+    "seasons": "Stagioni",
+    "products": "Prodotti",
+    "copyValue": "Copia {value}",
+    "copied": "Valore copiato",
+    "copyError": "Copia non riuscita. Seleziona il testo e copialo manualmente."
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -128,7 +133,10 @@
       "brand_users": "Utenti del brand",
       "brand_contacts": "Referenti brand",
       "customers": "Clienti",
-      "customer_contacts": "Referenti clienti"
+      "customer_contacts": "Referenti clienti",
+      "seasons": "Stagioni",
+      "products": "Prodotti",
+      "product_variants": "Varianti prodotto"
     }
   },
   "brands": {
@@ -252,5 +260,52 @@
     "postal_code": "CAP",
     "province": "Provincia",
     "payment_terms": "Condizioni di pagamento"
+  },
+  "catalog": {
+    "seasons": "Stagioni",
+    "products": "Prodotti",
+    "createSeason": "Nuova stagione",
+    "createProduct": "Nuovo prodotto",
+    "editSeason": "Modifica stagione",
+    "editProduct": "Modifica prodotto",
+    "allSeasons": "Tutte le stagioni",
+    "allProducts": "Tutti i prodotti",
+    "archiveSeason": "Archivia stagione",
+    "archiveProduct": "Archivia prodotto",
+    "archiveSeasonQuestion": "La stagione non sarà più disponibile per nuovi prodotti e ordini. I dati storici restano conservati. Vuoi archiviarla?",
+    "archiveProductQuestion": "Il prodotto non sarà più disponibile per nuovi ordini. Gli ordini esistenti restano conservati. Vuoi archiviarlo?",
+    "brand": "Brand",
+    "season": "Stagione",
+    "chooseBrand": "Scegli un brand",
+    "chooseSeason": "Scegli una stagione",
+    "code": "Codice stagione",
+    "name": "Nome",
+    "campaign_start": "Inizio campagna",
+    "campaign_end": "Fine campagna",
+    "delivery_start": "Inizio consegne",
+    "delivery_end": "Fine consegne",
+    "sku_base": "SKU base",
+    "sku": "SKU variante",
+    "description": "Descrizione",
+    "wholesale_price_cents": "Prezzo wholesale",
+    "retail_price_cents": "Prezzo retail",
+    "vat_rate": "IVA (%)",
+    "sizes": "Taglie",
+    "colors": "Colori",
+    "size": "Taglia",
+    "color": "Colore",
+    "variants": "Varianti",
+    "commaSeparated": "Separa i valori con una virgola, senza ripetizioni.",
+    "variantCount": "{count, plural, =0 {Nessuna variante} one {# variante} other {# varianti}}",
+    "noVariants": "Nessuna variante disponibile",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "saved": "Dati salvati",
+    "none": "Non indicato",
+    "search": "Cerca per nome",
+    "validation": "Controlla questo campo. Usa valori validi e senza ripetizioni.",
+    "conflict": "Questo codice o SKU esiste già. Scegli un codice diverso.",
+    "saveError": "Salvataggio non riuscito. Controlla i dati e riprova.",
+    "loadError": "Impossibile caricare il catalogo. Ricarica la pagina per riprovare."
   }
 }

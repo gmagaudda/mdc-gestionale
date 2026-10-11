@@ -103,10 +103,8 @@ test("staff validates creates edits and archives a customer", async ({
     page.getByRole("heading", { name: "Buyer di prova" }),
   ).toBeVisible();
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page
     .getByRole("button", { name: "Archivia cliente", exact: true })
     .click();

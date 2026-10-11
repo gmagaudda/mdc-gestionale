@@ -89,10 +89,8 @@ test("admin creates edits adds contacts and archives a brand", async ({
     page.getByRole("heading", { name: "Referente di prova" }),
   ).toBeVisible();
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page
     .getByRole("button", { name: "Archivia brand", exact: true })
     .click();

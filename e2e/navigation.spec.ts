@@ -114,10 +114,8 @@ test("navigation search pagination keyboard modal and themes remain accessible",
     ).violations,
   ).toEqual([]);
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.screenshot({
     path: testInfo.outputPath("navigation-dark.png"),
     fullPage: true,
