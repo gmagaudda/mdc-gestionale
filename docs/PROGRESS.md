@@ -12,3 +12,8 @@
 - T1: login/logout, recupero password via Mailpit, verifica link e attivazione invito implementati. Login valido/errato, reset, disattivazione e isolamento delle aree verificati nei cinque viewport.
 - T2: identità verificata con getUser, profilo attivo, guardie di ruolo/brand e destinazioni implementate. Unit test per tutti i ruoli e rifiuto in caso di errore del database.
 - T4: tabella audit immutabile, trigger transazionali, helper, protezione ultimo admin e consultazione con dettaglio per admin. Inviti, ruoli, disattivazioni e associazioni ai brand verificati con audit.
+
+## M2
+
+- T1: lista, dettaglio, creazione/modifica, archiviazione e referenti implementati. RLS: brand assegnati soltanto, campi privati separati; staff in sola lettura. 12 test database e 10 e2e nei cinque viewport verdi, axe sul form senza violazioni AA.
+- T3: tabelle/card mobile, filtri, ordinamento e paginazione server, caricamento, stato vuoto/errore, conferma inline e controllo tema condivisi. Shell definitiva e dialog responsive da completare dopo i clienti.

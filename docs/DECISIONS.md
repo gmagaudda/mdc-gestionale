@@ -27,3 +27,11 @@ Il theme-switch gratuito ha icona da 38 px: un wrapper estende solo l’area cli
 | 2026-10-12 | Cache Components e Partial Prefetching disattivati                             | La configurazione generata dal template causava richieste bloccate nel runtime Workers; non servono alle funzioni previste.                                                                                                                   |
 | 2026-10-12 | `compatibility_date` Cloudflare 2026-10-11                                     | È la data più recente supportata dal runtime locale al 12 ottobre nel fuso Europe/Rome.                                                                                                                                                       |
 | 2026-10-12 | Bundle OpenNext 2.282 MiB gzip allo spike iniziale                             | Misurato con `wrangler deploy --dry-run`; rientra nel limite Free attuale di 3 MiB, ma la misura va ripetuta dopo le funzioni applicative.                                                                                                    |
+
+## Anagrafiche e audit (M2-T1, M1-T4)
+
+Dati leggibili dai brand in `brands`; provvigioni, indirizzi fiscali e note in `brand_private`, referenti in `brand_contacts`. La separazione impedisce fughe di colonne con SELECT dirette: RLS protegge righe, non singoli campi. Il salvataggio pubblico/privato è una funzione SQL con la sessione dell’utente, in un’unica transazione con audit. Nessuna service role nelle azioni di business.
+
+La tabella Arc gratuita viene composta con ordinamento e paginazione GET esterni: i controlli incorporati non espongono tutte le stringhe in italiano né l’ordinamento server richiesto. I sorgenti Arc restano originali. Vista card sotto 768 px, tabella sopra. Le conferme di archiviazione sono al momento inline; la composizione dialog/bottom-sheet rimane in M2-T3.
+
+Import nominati di Zod riducono il bundle Workers delle anagrafiche/utenti da 3097,69 a 2827,14 KiB gzip (2,76 MiB). Evitare l’import del namespace completo nelle nuove funzioni. Piano Free conservato; nessun rilascio remoto effettuato.

@@ -23,6 +23,21 @@ export async function SessionShell({
           <Link className="text-link" href={homeForRole(user.role)}>
             {t("dashboard")}
           </Link>
+          {user.role !== "brand" && (
+            <Link className="text-link" href="/brands">
+              {t("brands")}
+            </Link>
+          )}
+          {user.role === "admin" && (
+            <Link className="text-link" href="/settings/audit">
+              {t("audit")}
+            </Link>
+          )}
+          {user.role === "admin" && (
+            <Link className="text-link" href="/settings/users">
+              {t("users")}
+            </Link>
+          )}
         </nav>
         <div className="identity">
           <Avatar name={user.full_name || user.email} />

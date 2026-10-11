@@ -16,3 +16,18 @@ Ambito: login, recupero password, impostazione password, navigazione autenticata
 Checklist Arc applicata al codice di composizione. Tema persistente verificato prima dell’arrivo del contenuto, anche dopo reload. Accenti alternativi, zoom 200% e lettura con screen reader da completare nella revisione trasversale M8.
 
 I dashboard attuali sono punti d’ingresso, non espongono ancora riepiloghi di business. Test con soli account sintetici locali. Nessuna verifica implicita delle schermate ancora da implementare.
+
+## M2-T1: creare e archiviare un brand
+
+Ambito della revisione better-interface: lista brand → creazione → modifica → referente → archiviazione; lettura staff. Stack e convenzioni: AGENTS.md, DESIGN-GUIDELINES.md, token Arc, next-intl, cinque viewport. Escluse le schermate di catalogo/ordini e la shell definitiva di M2-T3.
+
+| Dominio       | Evidenza                                                                            | Esito                                                                  |
+| ------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Accessibilità | e2e/brands.spec.ts, axe sul form, label native/errori inline, conferma esplicita    | Nessuna violazione AA automatica; screen reader manuale non verificato |
+| Layout        | Flusso completo su cinque viewport, controllo scrollWidth, form-grid e card mobile  | Nessun overflow rilevato                                               |
+| Testi         | messages/it.json, errori con percorso di recupero, conferme con nome del record     | Italiano, conseguenze dell’archiviazione esplicite                     |
+| Tipografia    | Input/textarea Arc, form e dettagli con token                                       | Nessuna dimensione o peso fuori scala                                  |
+| Colori        | Controllo token, tema chiaro e componenti Arc immutati                              | Nessun colore fisso; contrasto del form verificato con axe             |
+| UI            | Pending/disabilitazione, conferma inline, skeleton/error/empty e successo in pagina | Stato percepibile senza affidarsi alla motion                          |
+
+Verifiche passate: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/brands.spec.ts` (10 test), lint/typecheck/test/check:tokens. Non verificati qui: zoom 200%, screen reader manuale e contrasto di questa specifica schermata in scuro (previsti in M8). Nessun problema di interfaccia bloccante rilevato nel perimetro verificato. Verdict: Approve, limitato alle verifiche indicate.
