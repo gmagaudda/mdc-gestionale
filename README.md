@@ -5,7 +5,7 @@ Applicazione per anagrafiche, catalogo, ordini, calendario, budget e portale bra
 ## Requisiti
 
 - Node.js 24 LTS e pnpm 11
-- Un runtime compatibile Docker per Supabase locale
+- Un runtime compatibile Docker per Supabase locale, oppure macOS Apple Silicon per il runtime nativo sperimentale
 
 ## Avvio locale
 
@@ -15,7 +15,15 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Apri <http://localhost:3000>. Le variabili Supabase sono necessarie quando si attivano le funzioni di autenticazione e database.
+Avvia Supabase e genera i tipi prima di lavorare sul database:
+
+```bash
+pnpm exec supabase start
+pnpm exec supabase db reset
+pnpm types
+```
+
+Su Apple Silicon, `supabase/config.toml` abilita il runtime nativo in assenza di Docker. Apri <http://localhost:3000>. Le variabili Supabase sono necessarie quando si attivano le funzioni di autenticazione e database.
 
 ## Verifiche
 
