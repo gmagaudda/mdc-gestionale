@@ -49,3 +49,9 @@ L’umano ha chiesto di non considerare per il momento il limite del bundle: tes
 Gli indirizzi JSON usano `street`, `postal_code`, `city`, `province`, `country`. Città/paese in testata vengono derivati dall’indirizzo di fatturazione. I dati fiscali possono essere ancora vuoti: se compilati, P.IVA di 11 cifre, SDI di 7 caratteri alfanumerici maiuscoli e PEC valida. I controlli di completezza per emettere una fattura appartengono a M7; il controllo della cifra P.IVA per l’import appartiene a M10. Le regole RLS negano agli utenti brand anche l’accesso diretto ai referenti dei clienti.
 
 I test RLS conteggiano le proprie fixture, così restano eseguibili anche con dati demo e test browser concorrenti. La verifica dell’ultimo admin isola gli amministratori nella transazione del test, poi esegue rollback.
+
+## Componenti condivisi (M2-T3)
+
+Il registry gratuito Arc `dialog` usa il prop `render` su Radix Overlay/Content, assente nella dipendenza Radix 1.2.0, e non espone la traduzione dell'etichetta di chiusura. Dopo la prova di installazione e il fallimento TypeScript, il componente vendor inutilizzabile è stato rimosso. `ResponsiveDialog` compone il primitive Radix della stessa dipendenza con pulsanti e token Arc, senza modificare sorgenti vendor: bottom sheet su mobile, dialog centrato da 768 px. Nessuna animazione; focus trap, Escape e ritorno del focus gestiti da Radix; azione iniziale Annulla per archiviazione. Dipendenza aggiuntiva esplicita `@radix-ui/react-dialog` 1.2.0. Rivalutare il componente Arc quando il registry sarà corretto.
+
+Preferenze tema nel menu utente nativo `details`, con le tre modalità tradotte; menu mobile in dialog e sidebar desktop con pagina corrente accessibile. I componenti base condividono i controlli Arc già installati. Seed dimostrativo Node esclusivamente per CLI locale, mai importato nel runtime applicativo.

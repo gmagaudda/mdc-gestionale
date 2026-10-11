@@ -60,7 +60,11 @@ export default async function BrandPage({
             <div key={key}>
               <dt>{t(key)}</dt>
               <dd>
-                {String(privateData[key] || t("none"))}
+                {key === "commission_pct"
+                  ? new Intl.NumberFormat("it-IT", {
+                      maximumFractionDigits: 2,
+                    }).format(privateData[key])
+                  : String(privateData[key] || t("none"))}
                 {key === "commission_pct" ? "%" : ""}
               </dd>
             </div>

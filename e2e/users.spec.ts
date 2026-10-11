@@ -1,3 +1,4 @@
+import { navigateMenu } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -43,7 +44,7 @@ test("admin invites staff changes role and deactivates with an audit trail", asy
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await page.getByRole("link", { name: "Utenti", exact: true }).click();
+  await navigateMenu(page, "Utenti");
   await page.getByRole("link", { name: "Invita utente" }).click();
   const email = `invited-${crypto.randomUUID()}@example.test`;
   await page.getByLabel("Nome e cognome").fill("Staff invitato");
@@ -97,9 +98,7 @@ test("admin invites staff changes role and deactivates with an audit trail", asy
         .analyze()
     ).violations,
   ).toEqual([]);
-  await page
-    .getByRole("link", { name: "Registro modifiche", exact: true })
-    .click();
+  await navigateMenu(page, "Registro modifiche");
   await expect(
     page.getByRole("heading", { name: "Registro modifiche", exact: true }),
   ).toBeVisible();

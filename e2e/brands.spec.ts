@@ -1,3 +1,4 @@
+import { navigateMenu } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -54,7 +55,7 @@ test("admin creates edits adds contacts and archives a brand", async ({
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await page.getByRole("link", { name: "Brand", exact: true }).click();
+  await navigateMenu(page, "Brand");
   await page.getByRole("link", { name: "Nuovo brand" }).click();
   await page.getByLabel("Nome brand", { exact: true }).fill("Brand di prova");
   await page.getByLabel("Provvigione (%)").fill("12.25");

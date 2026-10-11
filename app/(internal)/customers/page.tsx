@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageHeader } from "@/components/shared/page-header";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
@@ -26,14 +27,19 @@ export default async function CustomersPage({
   ];
   return (
     <>
-      <header className="stack">
-        <h1>{t("title")}</h1>
-        {user.role !== "accounting" && (
-          <Link className="text-link" href="/customers/new">
-            {t("create")}
-          </Link>
-        )}
-      </header>
+      <PageHeader
+        title={t("title")}
+        action={
+          <>
+            {" "}
+            {user.role !== "accounting" && (
+              <Link className="text-link" href="/customers/new">
+                {t("create")}
+              </Link>
+            )}
+          </>
+        }
+      />
       {result.error ? (
         <Alert tone="danger" title={t("loadError")} />
       ) : (

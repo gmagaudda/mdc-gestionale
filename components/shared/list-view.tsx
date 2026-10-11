@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Input } from "@/components/arc/input/input";
 import { Button } from "@/components/arc/button/button";
-import { EmptyState } from "@/components/arc/empty-state/empty-state";
+import { EmptyState } from "./empty-state";
 import { DataTable, type ListRow, type ListColumn } from "./data-table";
 import { listHref, type ListQuery } from "@/lib/queries/list";
 

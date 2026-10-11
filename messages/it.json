@@ -17,7 +17,10 @@
     "users": "Utenti",
     "notFound": "La pagina non esiste o non hai i permessi per visualizzarla.",
     "returnHome": "Torna alla panoramica",
-    "customers": "Clienti"
+    "customers": "Clienti",
+    "menu": "Menu",
+    "close": "Chiudi",
+    "preferences": "Preferenze utente"
   },
   "design": {
     "title": "Verifica interfaccia",

@@ -198,6 +198,108 @@ a {
   border-top: 1px solid var(--border);
   padding-block: var(--space-4);
 }
+.app-layout {
+  min-height: 100dvh;
+}
+.app-body {
+  min-width: 0;
+}
+.app-sidebar {
+  display: none;
+}
+.app-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.navigation-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height-md);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.navigation-link[aria-current="page"] {
+  background: var(--surface-muted);
+  color: var(--accent);
+}
+.user-preferences {
+  position: relative;
+}
+.user-preferences .theme-controls {
+  padding-block: var(--space-3);
+}
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: color-mix(in oklab, var(--foreground) 20%, transparent);
+}
+.responsive-dialog {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 101;
+  width: 100%;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: var(--surface-raised);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-surface) var(--radius-surface) 0 0;
+  padding: var(--space-6);
+  padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-floating);
+}
+.dialog-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.dialog-title {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .mobile-navigation {
+    display: none;
+  }
+  .app-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 16rem;
+    padding: var(--space-6);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .app-body {
+    margin-inline-start: 16rem;
+  }
+  .responsive-dialog {
+    inset: 0;
+    margin: auto;
+    height: fit-content;
+    max-height: calc(100dvh - var(--space-8));
+    width: min(calc(100% - var(--space-8)), 36rem);
+    border-radius: var(--radius-surface);
+  }
+}
 summary {
   cursor: pointer;
 }

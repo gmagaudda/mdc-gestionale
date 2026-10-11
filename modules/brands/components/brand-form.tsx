@@ -3,7 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm, Controller } from "react-hook-form";
-import { Input } from "@/components/arc/input/input";
+import { FormField as Input } from "@/components/shared/form-field";
 import { Textarea } from "@/components/arc/textarea/textarea";
 import { RadioGroup } from "@/components/arc/radio-group/radio-group";
 import { Button } from "@/components/arc/button/button";

@@ -41,3 +41,18 @@ Copertura: accessibilità con axe sul form e radio da tastiera; layout nei cinqu
 ## M2-T2: gestire un cliente
 
 Ambito: inserimento con errore P.IVA → correzione → modifica → referente → archiviazione; lettura amministrazione. Form e liste composti con gli stessi componenti e token Arc verificati sopra. Dieci e2e nei cinque viewport: nessun overflow, etichette distinte tramite fieldset degli indirizzi, focus sul campo invalido, axe AA sul form senza violazioni. Testi/errori in italiano, pending e successo in pagina, archiviazione con conferma. Lint, typecheck, test unit e 9 test RLS passati. Non verificati: zoom 200%, screen reader manuale e tema scuro della pagina. Verdict better-interface: Approve nel perimetro verificato.
+
+# Revisione M2-T3: navigazione e conferma archiviazione
+
+Ambito: flusso login → lista brand → ricerca/paginazione → dettaglio → conferma/annullamento → preferenze tema. Next.js, Arc e token semantici; convenzioni lette in AGENTS.md, DESIGN-GUIDELINES.md e DECISIONS.md. Esclusi i moduli futuri.
+
+| Dominio       | Evidenza                                                                                                                     | Esito |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----- |
+| Accessibilità | ResponsiveDialog, ConfirmAction, AppNavigation; focus Annulla, Escape/ritorno focus, axe AA chiaro/scuro nei cinque viewport | Clear |
+| Layout        | SessionShell, globals.css; screenshot 360 e 1440 px, test overflow nei cinque viewport                                       | Clear |
+| Scrittura     | messages/it.json, titoli/descrizioni/azioni in italiano                                                                      | Clear |
+| Tipografia    | foundation e token; nomi lunghi visibili su mobile, screenshot                                                               | Clear |
+| Colore        | token semantici, tema scuro, axe contrasto; check:tokens                                                                     | Clear |
+| UI            | caricamento/errore/vuoto condivisi, stato attivo della navigazione, conferma esplicita; nessuna animazione custom            | Clear |
+
+Nessun problema di interfaccia azionabile nell'ambito verificato. Verifica: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/navigation.spec.ts`: 5 test passati; suite anagrafiche/utenti: 30 passati. Screenshot dark mobile/desktop ispezionati. Non verificati con screen reader reale o zoom browser 200%. Verdict: Approve nell'ambito indicato.

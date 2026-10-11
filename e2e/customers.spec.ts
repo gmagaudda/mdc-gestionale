@@ -1,3 +1,4 @@
+import { navigateMenu } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -48,7 +49,7 @@ test("staff validates creates edits and archives a customer", async ({
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await page.getByRole("link", { name: "Clienti", exact: true }).click();
+  await navigateMenu(page, "Clienti");
   await page.getByRole("link", { name: "Nuovo cliente" }).click();
   await page
     .getByLabel("Ragione sociale", { exact: true })
