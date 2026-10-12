@@ -338,6 +338,83 @@ export type Database = {
         };
         Relationships: [];
       };
+      events: {
+        Row: {
+          all_day: boolean;
+          assigned_to: string | null;
+          brand_id: string | null;
+          created_at: string;
+          customer_id: string | null;
+          deleted_at: string | null;
+          description: string;
+          ends_at: string;
+          id: string;
+          location: string;
+          starts_at: string;
+          title: string;
+          type: Database["public"]["Enums"]["event_type"];
+          updated_at: string;
+          visible_to_brand: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          all_day?: boolean;
+          assigned_to?: string | null;
+          brand_id?: string | null;
+          created_at?: string;
+          customer_id?: string | null;
+          deleted_at?: string | null;
+          description?: string;
+          ends_at: string;
+          id?: string;
+          location?: string;
+          starts_at: string;
+          title: string;
+          type?: Database["public"]["Enums"]["event_type"];
+          updated_at?: string;
+          visible_to_brand?: boolean;
+        };
+        Update: {
+          all_day?: boolean;
+          assigned_to?: string | null;
+          brand_id?: string | null;
+          created_at?: string;
+          customer_id?: string | null;
+          deleted_at?: string | null;
+          description?: string;
+          ends_at?: string;
+          id?: string;
+          location?: string;
+          starts_at?: string;
+          title?: string;
+          type?: Database["public"]["Enums"]["event_type"];
+          updated_at?: string;
+          visible_to_brand?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "events_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "events_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "events_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       order_counters: {
         Row: {
           created_at: string;
@@ -901,6 +978,14 @@ export type Database = {
       };
     };
     Functions: {
+      calendar_assignees: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          email: string;
+          full_name: string;
+          id: string;
+        }[];
+      };
       change_order_status: {
         Args: {
           p_id: string;

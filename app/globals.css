@@ -436,3 +436,42 @@ summary {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* FullCalendar 7 classic theme palette maps entirely to Arc. */
+.calendar-surface {
+  --fc-classic-button: var(--surface);
+  --fc-classic-button-border: var(--border);
+  --fc-classic-button-strong: var(--surface-muted);
+  --fc-classic-button-strong-border: var(--border);
+  --fc-classic-button-outline: var(--accent);
+  --fc-classic-button-foreground: var(--foreground);
+  --fc-classic-primary: var(--accent);
+  --fc-classic-primary-foreground: var(--background);
+  --fc-classic-event: var(--accent);
+  --fc-classic-event-contrast: var(--background);
+  --fc-classic-background-event: var(--surface-muted);
+  --fc-classic-background-event-opacity: 100%;
+  --fc-classic-background-event-foreground-opacity: 100%;
+  --fc-classic-highlight: var(--surface-muted);
+  --fc-classic-today: var(--surface-muted);
+  --fc-classic-now: var(--accent);
+  --fc-classic-background: var(--background);
+  --fc-classic-faint: var(--surface);
+  --fc-classic-muted: var(--surface-muted);
+  --fc-classic-strong: var(--surface-muted);
+  --fc-classic-foreground: var(--foreground);
+  --fc-classic-faint-foreground: var(--text-secondary);
+  --fc-classic-muted-foreground: var(--text-secondary);
+  --fc-classic-border: var(--border);
+  --fc-classic-strong-border: var(--border);
+  min-inline-size: 0;
+  overflow-x: auto;
+}
+.calendar-surface [data-event-id] {
+  min-block-size: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.calendar-surface .fc {
+  font: inherit;
+}

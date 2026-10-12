@@ -21,7 +21,7 @@ export function ResponsiveDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  trigger: ReactElement;
+  trigger?: ReactElement;
   title: string;
   description?: string;
   children: ReactNode;
@@ -38,7 +38,7 @@ export function ResponsiveDialog({
         if (!busy) onOpenChange(value);
       }}
     >
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <Primitive.Portal>
         <Primitive.Overlay className="dialog-overlay" />
         <Primitive.Content

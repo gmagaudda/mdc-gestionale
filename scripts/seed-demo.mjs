@@ -121,14 +121,12 @@ if (signIn.error) {
     )
   )
     check(
-      await staffSession
-        .from("seasons")
-        .insert({
-          id: seasonId,
-          brand_id: brandId,
-          code: "DEMO-FW26",
-          name: "Autunno inverno dimostrativo",
-        }),
+      await staffSession.from("seasons").insert({
+        id: seasonId,
+        brand_id: brandId,
+        code: "DEMO-FW26",
+        name: "Autunno inverno dimostrativo",
+      }),
     );
   const products = [];
   for (const [sku, name, price] of [
@@ -211,6 +209,40 @@ if (signIn.error) {
           discount_pct: 0,
         })),
       }),
+    );
+  }
+  const demoEventId = "d0000000-0000-4000-8000-000000000004";
+  if (
+    !check(
+      await db.from("events").select("id").eq("id", demoEventId).maybeSingle(),
+    )
+  ) {
+    const today = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Rome",
+    }).format(new Date());
+    // A stable offset is computed from the date, including winter/summer time.
+    const { Temporal } = await import("temporal-polyfill");
+    const instant = (local) =>
+      Temporal.PlainDateTime.from(local)
+        .toZonedDateTime("Europe/Rome")
+        .toInstant()
+        .toString();
+    check(
+      await staffSession
+        .from("events")
+        .insert({
+          id: demoEventId,
+          title: "Presentazione campionario demo",
+          type: "appointment",
+          brand_id: brandId,
+          customer_id: customerId,
+          assigned_to: signIn.data.user.id,
+          starts_at: instant(`${today}T09:00`),
+          ends_at: instant(`${today}T10:00`),
+          location: "Showroom dimostrativo",
+          description: "Appuntamento sintetico per le prove locali.",
+          visible_to_brand: true,
+        }),
     );
   }
   await staffSession.auth.signOut();

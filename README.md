@@ -81,3 +81,7 @@ Dal dettaglio ordine si scarica la conferma PDF, dal dettaglio stagione il catal
 Number Flow anima i totali live dell’editor, rispetta il movimento ridotto e mantiene i calcoli in centesimi/BigInt.
 
 Verifica PDF nel runtime Workers: avvia `pnpm preview:cf`, poi `E2E_BASE_URL=http://localhost:8787 pnpm e2e e2e/pdf.spec.ts` (adatta la porta alla preview). I test creano e rimuovono solo fixture nel database locale. I documenti di prova sono salvati in `output/pdf/`, esclusi dal versionamento.
+
+### Calendario
+
+Apri `/calendar`: admin/staff creano e modificano eventi da finestra; amministrazione legge. Lista predefinita su mobile/touch, mese su desktop. Il trascinamento è disponibile solo su desktop; le date si modificano anche da tastiera nel form. Gli orari sono sempre Europe/Rome e vengono salvati in UTC. I brand leggono solo i propri eventi esplicitamente condivisi; titolo, descrizione e luogo sono inclusi nella condivisione. Il seed locale aggiunge un appuntamento dimostrativo. `pnpm e2e e2e/calendar.spec.ts` verifica i cinque viewport.

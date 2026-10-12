@@ -32,7 +32,8 @@
     "loadingChoices": "Caricamento delle opzioni",
     "refineSearch": "Scrivi un nome più preciso per ridurre i risultati.",
     "choiceError": "Ricerca non riuscita. Modifica il testo per riprovare.",
-    "orders": "Ordini"
+    "orders": "Ordini",
+    "calendar": "Calendario"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -147,7 +148,8 @@
       "orders": "Ordini",
       "order_private": "Dati privati ordini",
       "order_lines": "Righe ordine",
-      "order_status_history": "Storico stati ordini"
+      "order_status_history": "Storico stati ordini",
+      "events": "Eventi"
     }
   },
   "brands": {
@@ -430,5 +432,63 @@
     "downloadOrder": "Scarica PDF ordine",
     "downloadLineSheet": "Scarica catalogo PDF",
     "unsupportedCharacters": "Il font PDF non supporta alcuni caratteri del documento. Sostituisci emoji o simboli nei nomi e nelle descrizioni, poi riprova."
+  },
+  "calendar": {
+    "calendar": "Calendario",
+    "newEvent": "Nuovo evento",
+    "title": "Titolo",
+    "type": "Tipo",
+    "description": "Descrizione",
+    "starts_at": "Inizio",
+    "ends_at": "Fine",
+    "lastDay": "Ultimo giorno",
+    "all_day": "Tutto il giorno",
+    "allDayHint": "Il giorno finale selezionato è incluso.",
+    "brand": "Brand",
+    "customer_id": "Cliente",
+    "assigned_to": "Assegnato a",
+    "visible_to_brand": "Visibile al brand",
+    "sharingHint": "Il brand selezionato potrà leggere titolo, descrizione, luogo e orari. Non inserire informazioni riservate.",
+    "location": "Luogo",
+    "none": "Nessuno",
+    "save": "Salva evento",
+    "saved": "Evento aggiornato.",
+    "archive": "Archivia evento",
+    "archiveQuestion": "L’evento verrà rimosso dal calendario e dal feed. La modifica resta nel registro.",
+    "validation": "Controlla i campi indicati e riprova.",
+    "saveError": "Impossibile salvare l’evento. Riprova.",
+    "loadError": "Impossibile caricare gli eventi. Riprova.",
+    "conflict": "L’evento è stato modificato da un’altra persona. Chiudi la finestra e ricarica gli eventi prima di riprovare.",
+    "timeInvalid": "Orario non valido o ambiguo per il cambio d’ora. Scegli un altro orario.",
+    "dateRange": "La fine deve seguire l’inizio; la durata massima è un anno.",
+    "allDayInvalid": "Gli eventi di tutto il giorno devono iniziare e finire a mezzanotte.",
+    "sharedNeedsBrand": "Seleziona il brand prima di condividere l’evento.",
+    "tooMany": "Ci sono più di 500 eventi nel periodo. Usa una vista più breve o i filtri.",
+    "filters": "Filtri eventi",
+    "allBrands": "Tutti i brand",
+    "allCustomers": "Tutti i clienti",
+    "allAssignees": "Tutte le persone",
+    "allTypes": "Tutti i tipi",
+    "previous": "Precedente",
+    "today": "Oggi",
+    "next": "Successivo",
+    "view": "Vista calendario",
+    "month": "Mese",
+    "week": "Settimana",
+    "day": "Giorno",
+    "list": "Lista",
+    "timeZone": "Orari dello showroom (Europe/Rome).",
+    "dragHint": "Puoi spostare o ridimensionare un evento, oppure aprirlo e modificare le date.",
+    "retry": "Ricarica eventi",
+    "loading": "Caricamento eventi",
+    "empty": "Nessun evento nel periodo. Cambia data o filtri per cercare altri appuntamenti.",
+    "types": {
+      "appointment": "Appuntamento",
+      "campaign": "Campagna vendite",
+      "delivery": "Consegna",
+      "payment_due": "Scadenza pagamento",
+      "other": "Altro"
+    },
+    "events": "Eventi"
   }
 }

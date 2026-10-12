@@ -116,3 +116,18 @@ Ambito: dettaglio ordine/stagione → link PDF → documento stampabile, più to
 | UI            | Nessun prefetch dei download; animazione Number Flow con timing Arc, cifre tabulari, importi BigInt esatti | Clear                                                    |
 
 Nessuna finding azionabile residua nell’ambito. Verifiche: cinque e2e PDF su Workers, cinque editor dopo Number Flow, 42 unit test, lint/typecheck e build:cf. PDF interno/brand confrontati via pypdf: nome cliente solo interno, note interne assenti, totale esatto. Pagine iniziali/intermedie/finali ispezionate tramite Poppler. Screen reader reale, zoom browser 200% e struttura PDF/UA non verificati. Verdict: Approve entro il perimetro indicato.
+
+## M4-T1: creare, spostare e archiviare un evento
+
+Ambito: calendario interno → finestra evento → errore condivisione → creazione → apertura da tastiera → modifica date → drag desktop → filtri → tutto il giorno → archivio. Stack Next/FullCalendar 7 con controlli/token Arc, convenzioni AGENTS/DECISIONS/DESIGN-GUIDELINES e sei skill di dominio. Esclusi feed, reminder e portale futuri.
+
+| Dominio       | Evidenza                                                                                                      | Esito                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Accessibilità | e2e/calendar.spec.ts: nomi/focus campi invalidi, Enter evento, dialog e conferma Annulla, axe AA chiaro/scuro | Clear dopo correzione ARIA FullCalendar               |
+| Layout        | Cinque viewport 360–1440; screenshot lista mobile e mese desktop; overflow controllato                        | Clear; titolo completo raggiungibile aprendo l’evento |
+| Scrittura     | calendar in it.json, date/ora showroom esplicite, conferma archivio e condivisione descritta                  | Clear                                                 |
+| Tipografia    | Input e testi Arc, data/ora controllati, titoli lunghi leggibili in finestra                                  | Clear nell’ambito                                     |
+| Colore        | Palette FullCalendar mappata a token Arc, axe in entrambi i temi                                              | Clear                                                 |
+| UI            | Lista mobile, toolbar Arc, pending/error/empty/success, rollback drag se salvataggio fallisce; reduced motion | Clear                                                 |
+
+Finding risolte: HIGH accessibilità, FullCalendar esponeva button come figli diretti di list; adattatore cambia i contenitori interessati a group mantenendo focus/azioni. Avvisi React di aggiornamento durante render/prima del montaggio risolti accodando le notifiche iniziali fino al commit. Test all-day copre cancellazione/ripristino del campo data senza crash. Nessuna finding azionabile residua nell’ambito verificato. Cinque e2e finali con console pulita, 103 test DB, 44 unit test, lint/typecheck/check:tokens, DB lint e build OpenNext; flusso desktop completo anche su Workers con console pulita. Screen reader reale e zoom browser 200% non verificati, nella revisione M8. Verdict: Approve entro il perimetro indicato.

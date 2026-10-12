@@ -2,17 +2,18 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "mdc-gestionale",
   "minify": true,
+  "keep_names": false,
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-11",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
   "placement": {
-    "mode": "smart"
+    "mode": "smart",
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }
