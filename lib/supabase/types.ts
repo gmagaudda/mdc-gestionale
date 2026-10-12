@@ -338,6 +338,100 @@ export type Database = {
         };
         Relationships: [];
       };
+      documents: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          customer_id: string | null;
+          deleted_at: string | null;
+          id: string;
+          kind: Database["public"]["Enums"]["document_kind"];
+          mime_type: string;
+          name: string;
+          order_id: string | null;
+          original_filename: string;
+          ready: boolean;
+          shared_with_brand: boolean;
+          size_bytes: number;
+          storage_path: string;
+          updated_at: string;
+          uploaded_by: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          customer_id?: string | null;
+          deleted_at?: string | null;
+          id?: string;
+          kind?: Database["public"]["Enums"]["document_kind"];
+          mime_type: string;
+          name: string;
+          order_id?: string | null;
+          original_filename: string;
+          ready?: boolean;
+          shared_with_brand?: boolean;
+          size_bytes: number;
+          storage_path: string;
+          updated_at?: string;
+          uploaded_by?: string;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          customer_id?: string | null;
+          deleted_at?: string | null;
+          id?: string;
+          kind?: Database["public"]["Enums"]["document_kind"];
+          mime_type?: string;
+          name?: string;
+          order_id?: string | null;
+          original_filename?: string;
+          ready?: boolean;
+          shared_with_brand?: boolean;
+          size_bytes?: number;
+          storage_path?: string;
+          updated_at?: string;
+          uploaded_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "documents_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "documents_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "documents_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "documents_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "documents_uploaded_by_fkey";
+            columns: ["uploaded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       event_reminders: {
         Row: {
           attempted_at: string;

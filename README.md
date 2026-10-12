@@ -97,3 +97,9 @@ Per il test locale imposta lo stesso `CRON_SECRET` in `.env.local` e `.dev.vars`
 Le elaborazioni completate non vengono ripetute. Gli errori sono ritentabili; una lavorazione interrotta può essere ripresa dopo 10 minuti. Resend riceve una chiave idempotente stabile. Un cambiamento di data/persona assegnata genera un nuovo promemoria; i messaggi già consegnati non possono essere ritirati. Un’esecuzione elabora fino a 5.000 promemoria e risponde 503 se restano errori o si raggiunge il limite: ripetere il POST protetto, che salta quelli completati. Non assumere consegna dopo un errore.
 
 Verifica locale: `pnpm e2e e2e/calendar-feed.spec.ts`. Per la prova Workers: `pnpm build:cf`, `pnpm exec wrangler dev --port 8790 --test-scheduled`, poi `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/calendar-feed.spec.ts --project=desktop`. Il trigger si prova con `curl 'http://localhost:8790/__scheduled?cron=0+6+*+*+*'`; non pubblica né distribuisce il Worker.
+
+### Documenti privati
+
+Apri `/documents`: admin/staff caricano PDF, PNG o JPEG fino a 10 MiB, modificano i metadati, condividono con il brand o archiviano. Amministrazione legge. Cliente e ordine sono facoltativi; un ordine deve appartenere al brand selezionato e, se specificato, al cliente. Il file originale non si sostituisce. La condivisione rende visibile anche il contenuto: controllalo prima di abilitarla.
+
+Il bucket `documents` è privato. Il download verifica la sessione e genera un URL valido 120 secondi; un URL già firmato resta valido fino alla scadenza anche dopo revoca/archivio. L’upload controlla estensione, MIME, firma iniziale e dimensione; non esegue una scansione antivirus. I record non finalizzati sono nascosti dalle liste. Test: `pnpm e2e e2e/documents.spec.ts`; su Wrangler locale, `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/documents.spec.ts --project=desktop`.

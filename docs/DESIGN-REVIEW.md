@@ -148,3 +148,18 @@ Scope: generare, copiare, rigenerare e revocare il link personale in /calendar. 
 Nessun finding aperto nel flusso verificato. Corrette prima della chiusura la label di conferma ereditata “Conferma archiviazione”, il focus dopo la rimozione del trigger revoca e la lettura a due colonne sul desktop. Test browser del flusso completo e screenshots ispezionati; le prove con screen reader reale e zoom 200% rimangono nella verifica M8.
 
 Verdetto: Approve entro il perimetro verificato.
+
+## M4-T3: caricare, condividere, scaricare e archiviare un documento
+
+Ambito: lista → form con errore → upload → dettaglio → condivisione → download → conferma archivio. Next/React, componenti gratuiti Arc Input/Select/Checkbox/Button/Alert e compositi condivisi. Convenzioni AGENTS, DESIGN-GUIDELINES e DECISIONS; better-interface e sei skill di dominio già lette. Escluso portale M6.
+
+| Dominio       | Evidenza                                                                                                              | Esito                                                     |
+| ------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Accessibilità | e2e/documents.spec.ts, label native/file, errore aria-invalid e focus dopo pending, conferma iniziale Annulla, axe AA | Clear dopo correzione focus durante fieldset disabilitato |
+| Layout        | Cinque viewport 360–1440, overflow, dettaglio mobile/desktop ispezionato                                              | Clear                                                     |
+| Scrittura     | documents in it.json, formati/limite, conseguenze condivisione, durata URL e archivio                                 | Clear                                                     |
+| Tipografia    | Componenti/token Arc, nomi lunghi a capo e KiB italiani                                                               | Clear                                                     |
+| Colore        | Axe sui messaggi a fine animazione e dettaglio chiaro/scuro, check:tokens                                             | Clear nei controlli eseguiti                              |
+| UI            | Loading shell condivisa, pending/upload, empty/error/success in pagina, file nativo; movimento ridotto Arc            | Clear                                                     |
+
+Nessuna finding azionabile residua nell’ambito. Verifiche: `pnpm exec playwright test e2e/documents.spec.ts` (5 passati), desktop Workers anche al limite 10 MiB (1 passato), 134 test DB, 57 unit test, lint/typecheck/tokens/build OpenNext e DB lint. Il controllo statico del contrasto aspetta opacità finale 1 dei messaggi. Screen reader reale, zoom browser 200% e accento alternativo non verificati, nella revisione M8. Verdict: Approve entro il perimetro indicato.

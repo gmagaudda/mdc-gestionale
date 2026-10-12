@@ -1,0 +1,28 @@
+begin;
+select plan(12);
+insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000401','doc-staff@example.test'),('00000000-0000-4000-8000-000000000402','doc-brand@example.test'),('00000000-0000-4000-8000-000000000403','doc-accounting@example.test');
+update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000401';
+update public.profiles set role='accounting' where id='00000000-0000-4000-8000-000000000403';
+insert into public.brands(id,name) values('00000000-0000-4000-8000-000000000404','Doc A'),('00000000-0000-4000-8000-000000000405','Doc B');
+insert into public.brand_users(brand_id,user_id) values('00000000-0000-4000-8000-000000000404','00000000-0000-4000-8000-000000000402');
+insert into public.documents(id,name,brand_id,storage_path,original_filename,mime_type,size_bytes,uploaded_by,shared_with_brand) values('00000000-0000-4000-8000-000000000406','Shared','00000000-0000-4000-8000-000000000404','00000000-0000-4000-8000-000000000404/00000000-0000-4000-8000-000000000406.pdf','shared.pdf','application/pdf',10,'00000000-0000-4000-8000-000000000401',true),('00000000-0000-4000-8000-000000000407','Hidden','00000000-0000-4000-8000-000000000404','00000000-0000-4000-8000-000000000404/00000000-0000-4000-8000-000000000407.pdf','hidden.pdf','application/pdf',10,'00000000-0000-4000-8000-000000000401',false),('00000000-0000-4000-8000-000000000408','Other brand','00000000-0000-4000-8000-000000000405','00000000-0000-4000-8000-000000000405/00000000-0000-4000-8000-000000000408.pdf','other.pdf','application/pdf',10,'00000000-0000-4000-8000-000000000401',true);
+select throws_ok($$update public.documents set ready=true where id='00000000-0000-4000-8000-000000000406'$$,'23514',null,'cannot publish a missing file');
+-- Transaction-only storage metadata fixtures. No binary is created or removed through SQL.
+insert into storage.objects(bucket_id,name,metadata) select 'documents',storage_path,'{"size":10,"mimetype":"application/pdf"}'::jsonb from public.documents where uploaded_by='00000000-0000-4000-8000-000000000401';
+update public.documents set ready=true where uploaded_by='00000000-0000-4000-8000-000000000401';
+set local role authenticated;set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000402';
+select is((select count(*) from public.documents where brand_id in('00000000-0000-4000-8000-000000000404','00000000-0000-4000-8000-000000000405')),1::bigint,'brand reads only shared own metadata');
+select is((select count(*) from storage.objects where bucket_id='documents' and name like '00000000-0000-4000-8000-00000000040%'),1::bigint,'storage follows metadata RLS');
+with x as(update public.documents set shared_with_brand=true where id='00000000-0000-4000-8000-000000000407' returning id) select is((select count(*) from x),0::bigint,'brand cannot publish document');
+select throws_ok($$insert into storage.objects(bucket_id,name) values('documents','forged.pdf')$$,'42501',null,'brand cannot upload');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000403';
+select is((select count(*) from public.documents where brand_id in('00000000-0000-4000-8000-000000000404','00000000-0000-4000-8000-000000000405')),3::bigint,'accounting reads documents');
+with x as(update public.documents set name='Forged' where id='00000000-0000-4000-8000-000000000406' returning id) select is((select count(*) from x),0::bigint,'accounting cannot edit');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000401';
+select throws_ok($$update public.documents set storage_path='forged.pdf' where id='00000000-0000-4000-8000-000000000406'$$,'23514',null,'file identity immutable');
+select throws_ok($$insert into storage.objects(bucket_id,name) values('documents','unlinked.pdf')$$,'42501',null,'staff cannot upload unlinked binary');
+select lives_ok($$update public.documents set deleted_at=now() where id='00000000-0000-4000-8000-000000000406'$$,'staff archives');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000402';
+select is((select count(*) from public.documents where brand_id='00000000-0000-4000-8000-000000000404'),0::bigint,'archived shared metadata hidden');
+select is((select count(*) from storage.objects where bucket_id='documents' and name like '00000000-0000-4000-8000-000000000404/%'),0::bigint,'archived binary inaccessible via session');
+select * from finish();rollback;

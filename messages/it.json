@@ -33,7 +33,8 @@
     "refineSearch": "Scrivi un nome più preciso per ridurre i risultati.",
     "choiceError": "Ricerca non riuscita. Modifica il testo per riprovare.",
     "orders": "Ordini",
-    "calendar": "Calendario"
+    "calendar": "Calendario",
+    "documents": "Documenti"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -151,7 +152,8 @@
       "order_status_history": "Storico stati ordini",
       "events": "Eventi",
       "ical_tokens": "Abbonamenti iCal",
-      "event_reminders": "Promemoria appuntamenti"
+      "event_reminders": "Promemoria appuntamenti",
+      "documents": "Documenti"
     }
   },
   "brands": {
@@ -520,5 +522,54 @@
     "copyError": "Non è stato possibile copiare il link. Selezionalo nel campo e copialo manualmente.",
     "error": "Operazione non riuscita. Riprova.",
     "loadError": "Non è stato possibile caricare l’abbonamento. Ricarica la pagina per riprovare."
+  },
+  "documents": {
+    "title": "Documenti",
+    "upload": "Carica documento",
+    "edit": "Modifica documento",
+    "name": "Nome",
+    "kind": "Tipo di documento",
+    "brand": "Brand",
+    "customer": "Cliente (facoltativo)",
+    "order": "Ordine (facoltativo)",
+    "none": "Nessuno",
+    "orderHint": "Cerca il numero dell’ordine del brand selezionato. Cliente e ordine, se entrambi presenti, devono corrispondere.",
+    "file": "File",
+    "fileHint": "PDF, PNG o JPEG. Dimensione massima 10 MiB.",
+    "shared": "Condividi con il brand",
+    "shareHint": "Il brand potrà leggere il nome e scaricare il file. Verifica che il documento contenga solo informazioni da condividere.",
+    "fileSize": "Dimensione",
+    "sizeValue": "{value} KiB",
+    "visibility": "Visibilità",
+    "sharedState": "Condiviso con il brand",
+    "internalState": "Solo personale interno",
+    "search": "Cerca documento",
+    "save": "Salva modifiche",
+    "cancel": "Annulla",
+    "all": "Tutti i documenti",
+    "download": "Scarica documento",
+    "downloadHint": "Il link di download scade dopo 2 minuti. Un link già generato resta valido fino alla scadenza anche se la condivisione viene revocata.",
+    "saved": "Documento salvato.",
+    "archive": "Archivia documento",
+    "archiveQuestion": "Il documento sparirà dagli elenchi e non sarà più scaricabile da nuovi link. I link già generati scadono entro 2 minuti. Il file e lo storico resteranno conservati.",
+    "required": "Compila questo campo con un valore valido.",
+    "validation": "Controlla i campi indicati e riprova.",
+    "fileRequired": "Seleziona un file da caricare.",
+    "size": "Seleziona un file non vuoto di dimensione massima 10 MiB.",
+    "type": "Seleziona un PDF, PNG o JPEG valido. Estensione e contenuto devono corrispondere.",
+    "filename": "Il nome del file non è valido. Rinominalo e riprova.",
+    "uploadError": "Caricamento non riuscito. Controlla la connessione e riprova.",
+    "saveError": "Documento non salvato. Verifica che cliente e ordine siano validi per il brand e riprova.",
+    "conflict": "Il documento è stato modificato da un’altra persona. Ricarica la pagina prima di riprovare.",
+    "FORBIDDEN": "Non hai i permessi per questa operazione.",
+    "loadError": "Impossibile caricare i documenti. Ricarica la pagina per riprovare.",
+    "kinds": {
+      "catalog": "Catalogo",
+      "lookbook": "Lookbook",
+      "price_list": "Listino prezzi",
+      "order_confirmation": "Conferma ordine",
+      "contract": "Contratto",
+      "other": "Altro"
+    }
   }
 }

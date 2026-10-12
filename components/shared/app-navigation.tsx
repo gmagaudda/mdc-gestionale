@@ -20,6 +20,7 @@ export function AppNavigation({ role }: { role: Role }) {
           { href: "/products", label: t("products") },
           { href: "/orders", label: t("orders") },
           { href: "/calendar", label: t("calendar") },
+          { href: "/documents", label: t("documents") },
         ]
       : []),
     ...(role === "admin"
