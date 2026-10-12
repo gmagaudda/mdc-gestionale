@@ -81,11 +81,11 @@ export function PerformanceImport() {
       const parsed = await parseImportFile(selected, controller.signal);
       if (controller.signal.aborted) return;
       const result = readPerformanceWorkbook(parsed),
-        selected = selectPivotRows(result);
+        pivotRows = selectPivotRows(result);
       setDataset({
         ...result,
-        totals: sumPerformance(selected),
-        groups: aggregatePerformance(selected),
+        totals: sumPerformance(pivotRows),
+        groups: aggregatePerformance(pivotRows),
       });
     } catch (cause) {
       if (!controller.signal.aborted)
