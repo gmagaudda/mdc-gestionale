@@ -13,17 +13,19 @@ export function ConfirmAction({
   action,
   destination,
   confirmLabel,
+  errorMessages,
 }: {
   label: string;
   question: string;
   action: () => Promise<ActionResult>;
   destination?: string;
   confirmLabel?: string;
+  errorMessages?: Record<string, string>;
 }) {
   const t = useTranslations("lists");
   const router = useRouter();
   const [confirm, setConfirm] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const cancelRef = useRef<HTMLButtonElement>(null);
   return (
@@ -31,7 +33,7 @@ export function ConfirmAction({
       open={confirm}
       onOpenChange={(value) => {
         setConfirm(value);
-        if (!value) setError(false);
+        if (!value) setError("");
       }}
       title={label}
       description={question}
@@ -46,7 +48,11 @@ export function ConfirmAction({
         cancelRef.current?.focus();
       }}
     >
-      <Alert open={error} tone="danger" title={t("saveError")} />
+      <Alert
+        open={!!error}
+        tone="danger"
+        title={errorMessages?.[error] ?? t("saveError")}
+      />
       <div className="list-sort">
         <Button
           ref={cancelRef}
@@ -55,7 +61,7 @@ export function ConfirmAction({
           disabled={pending}
           onClick={() => {
             setConfirm(false);
-            setError(false);
+            setError("");
           }}
         >
           {t("cancel")}
@@ -69,14 +75,14 @@ export function ConfirmAction({
             start(async () => {
               try {
                 const result = await action();
-                if (!result.ok) setError(true);
+                if (!result.ok) setError(result.error);
                 else {
                   setConfirm(false);
                   if (destination) router.push(destination);
                   router.refresh();
                 }
               } catch {
-                setError(true);
+                setError("saveError");
               }
             })
           }

@@ -249,6 +249,10 @@ a {
 }
 .report-actions {
   position: static;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
 }
 html {
   scroll-padding-block-end: calc(var(--control-height-lg) + var(--space-8));

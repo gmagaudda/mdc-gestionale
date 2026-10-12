@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LoadError } from "@/components/shared/load-error";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
@@ -19,7 +20,7 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requireRole(internalRoles);
+  const user = await requireRole(internalRoles);
   const t = await getTranslations("dashboard"),
     parsed = dashboardFiltersSchema.safeParse(await searchParams),
     filters = parsed.success ? parsed.data : dashboardFiltersSchema.parse({});
@@ -47,10 +48,41 @@ export default async function DashboardPage({
           .maybeSingle()
       ).data
     : null;
+  const ti = await getTranslations("imports");
+  const latest = ["admin", "accounting"].includes(user.role)
+    ? await db
+        .from("import_batches")
+        .select("id,file_name")
+        .neq("kind", "performance")
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : null;
   const report = parsed.success ? await getDashboardReport(filters) : null;
   return (
     <>
       <h1>{t("title")}</h1>
+      {latest && (
+        <section className="stack" aria-label={ti("latestOperationalImport")}>
+          <h2>{ti("latestOperationalImport")}</h2>
+          {latest.error ? (
+            <LoadError title={ti("loadError")} />
+          ) : latest.data ? (
+            <>
+              <p>{ti("latestOperationalImportHint")}</p>
+              <Link
+                className="text-link wrap-value"
+                href={`/imports/${latest.data.id}`}
+              >
+                {ti("openBatch", { name: latest.data.file_name })}
+              </Link>
+            </>
+          ) : (
+            <p>{ti("noOperationalImports")}</p>
+          )}
+        </section>
+      )}
       <DashboardFiltersForm
         initial={filters}
         brands={brands.data}

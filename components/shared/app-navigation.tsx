@@ -39,6 +39,9 @@ export function AppNavigation({ role }: { role: Role }) {
           { href: "/settings/audit", label: t("audit") },
         ]
       : []),
+    ...(role === "accounting"
+      ? [{ href: "/imports", label: t("imports") }]
+      : []),
   ];
   const navigation = (mobile = false) => (
     <nav

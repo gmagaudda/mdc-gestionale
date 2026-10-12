@@ -18,10 +18,15 @@ export async function GET(
   const db = await createClient(),
     batch = await db
       .from("import_batches")
-      .select("file_name,storage_path,file_removed_at")
+      .select("file_name,storage_path,file_removed_at,file_expires_at")
       .eq("id", id)
       .maybeSingle();
-  if (batch.error || !batch.data || batch.data.file_removed_at)
+  if (
+    batch.error ||
+    !batch.data ||
+    batch.data.file_removed_at ||
+    new Date(batch.data.file_expires_at).getTime() <= new Date().getTime()
+  )
     return new Response(null, { status: 404, headers });
   const signed = await db.storage
     .from("imports")

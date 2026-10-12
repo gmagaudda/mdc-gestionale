@@ -76,6 +76,12 @@ export async function POST(request: Request) {
       p_filename: file.name,
       p_sha256: hash,
       p_size: file.size,
+      p_retention_days: z.coerce
+        .number()
+        .int()
+        .min(1)
+        .max(3650)
+        .parse(process.env.IMPORT_RETENTION_DAYS ?? "90"),
     });
     if (prepared.error) {
       if (prepared.error.code === "23505") {

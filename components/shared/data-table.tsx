@@ -13,7 +13,9 @@ export type ListColumn = {
   label: string;
   linkBase?: string;
   download?: boolean;
+  linkEnabledKey?: string;
   numeric?: boolean;
+  width?: string | number;
   copyValue?: boolean;
 };
 export function DataTable({
@@ -56,11 +58,13 @@ export function DataTable({
     return () => observer.disconnect();
   }, [rows, columns, caption, t]);
   const render = (column: ListColumn, row: ListRow) =>
-    column.linkBase && column.download ? (
+    column.linkBase &&
+    column.download &&
+    (!column.linkEnabledKey || row[column.linkEnabledKey] === 1) ? (
       <a className="text-link wrap-value" href={`${column.linkBase}/${row.id}`}>
         {String(row[column.key] ?? "")}
       </a>
-    ) : column.linkBase ? (
+    ) : column.linkBase && !column.download ? (
       <Link
         className="text-link wrap-value"
         href={`${column.linkBase}/${row.id}`}

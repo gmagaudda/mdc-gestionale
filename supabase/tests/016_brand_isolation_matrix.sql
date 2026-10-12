@@ -21,7 +21,7 @@ insert into public.product_variants(id,brand_id,product_id,size,color,sku) value
 v_order:=public.save_order(null,jsonb_build_object('brand_id',s.brand_id,'customer_id',pg_temp.fixture_id(706),'season_id',s.season_id,'order_date','2033-01-01','discount_pct',0,'internal_notes','Isolation secret'),jsonb_build_array(jsonb_build_object('variant_id',s.variant_id,'quantity',1,'unit_price_cents',1000,'discount_pct',0)));
 perform public.change_order_status(v_order,'confirmed','');
 update isolation_scopes set order_id=v_order where scope=s.scope;
-insert into public.budgets(id,brand_id,amount_cents,period_start,period_end) values(s.budget_id,s.brand_id,5000,'2033-01-01','2033-12-31');
+insert into public.budgets(id,brand_id,season_id,amount_cents,period_start,period_end) values(s.budget_id,s.brand_id,s.season_id,5000,'2033-01-01','2033-12-31');
 insert into public.budget_private(id,brand_id,notes) values(s.budget_id,s.brand_id,'Private budget');
 insert into public.invoices(number,brand_id,customer_id,order_id,status,issue_date,due_date,net_cents,vat_cents,gross_cents) values('ISOLATION-'||s.scope,s.brand_id,pg_temp.fixture_id(706),v_order,'issued','2033-01-01','2033-02-01',1000,220,1220);
 insert into public.invoice_counters(brand_id,year,last_number) values(s.brand_id,2033,1);
@@ -40,6 +40,7 @@ insert into public.import_profiles(id,name,entity,sheet_name,header_row,mapping,
 insert into public.import_batches(id,kind,file_name,file_sha256,storage_path,size_bytes,created_by) values(case when s.scope='A' then pg_temp.fixture_id(770) else pg_temp.fixture_id(771) end,'performance','private.xlsx',repeat(case when s.scope='A' then 'a' else 'b' end,64),(case when s.scope='A' then pg_temp.fixture_id(770) else pg_temp.fixture_id(771) end)::text||'.xlsx',100,pg_temp.fixture_id(703));
 insert into public.import_rows(batch_id,entity,sheet,row_number,raw,mapped,status) values(case when s.scope='A' then pg_temp.fixture_id(770) else pg_temp.fixture_id(771) end,'performance','Synthetic',1,'{"private":"data"}','{"private":"data"}','valid');
 end loop;end;$$;
+update public.import_batches b set kind='orders',status='completed',stats=jsonb_build_object('totals',jsonb_build_array(jsonb_build_object('brand','Isolation','season','ISOLATION','orders',1,'customers',1,'pieces',1,'net_cents','1000','gross_cents','1220'))) where b.id in(pg_temp.fixture_id(770),pg_temp.fixture_id(771));
 insert into storage.buckets(id,name,public) values('isolation-other','isolation-other',false);
 -- Manifest requires a fixture and probes for every exposed public table/view.
 create temporary table isolation_matrix(relation text primary key,own_where text,foreign_where text,own_count bigint,foreign_count bigint default 0,read_column text default '*',write_column text,allow_foreign_check boolean default false);
@@ -76,6 +77,8 @@ insert into isolation_matrix(relation,own_where,foreign_where,own_count,write_co
 ('public.push_deliveries','event_id=''00000000-0000-4000-8000-000000000750''','event_id=''00000000-0000-4000-8000-000000000751''',-1,'status'),
 ('public.import_profiles','id=''00000000-0000-4000-8000-000000000780''','id=''00000000-0000-4000-8000-000000000781''',0,'name'),
 ('public.import_batches','id=''00000000-0000-4000-8000-000000000770''','id=''00000000-0000-4000-8000-000000000771''',0,'file_name'),
+('public.v_import_batch_totals','batch_id=''00000000-0000-4000-8000-000000000770''','batch_id=''00000000-0000-4000-8000-000000000771''',0,'brand'),
+('public.v_budget_vs_previous_season','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'budget_cents'),
 ('public.import_rows','batch_id=''00000000-0000-4000-8000-000000000770''','batch_id=''00000000-0000-4000-8000-000000000771''',0,'status'),
 ('public.portal_orders','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'currency'),
 ('public.v_sales_by_brand_season','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'brand_id'),
@@ -96,6 +99,7 @@ select ok(not exists(select 1 from pg_class c join pg_namespace n on n.oid=c.rel
 select ok(not exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='v' and not coalesce(c.reloptions @> array['security_invoker=true'],false)),'every public view uses invoker permissions');
 -- Capture the real complete fixture rows as postgres. Brand probes do not depend
 -- on SELECT visibility to attempt inserts. Generated columns are excluded.
+update public.profiles set role='admin' where id=pg_temp.fixture_id(703);
 create temporary table isolation_inserts(relation text,scope text,statement text);
 do $$declare m record;s text;predicate text;cols text;row_data jsonb;begin
 for m in select * from isolation_matrix loop
@@ -106,6 +110,7 @@ execute format('select to_jsonb(t) from %s t where %s limit 1',m.relation,predic
 if row_data is null then raise exception 'missing fixture: %, %',m.relation,s;end if;
 insert into isolation_inserts values(m.relation,s,format('insert into %s (%s) select %s from jsonb_populate_record(null::%s,%L::jsonb)',m.relation,cols,cols,m.relation,row_data));
 end loop;end loop;end;$$;
+update public.profiles set role='staff' where id=pg_temp.fixture_id(703);
 grant select on isolation_matrix,isolation_inserts,isolation_scopes to authenticated;
 create function pg_temp.visible_count(p_relation text,p_where text,p_column text) returns bigint language plpgsql security invoker as $$
 declare n bigint;begin execute format('select count(%s) from %s where %s',p_column,p_relation,p_where) into n;return n;exception when insufficient_privilege then return -1;end;$$;

@@ -241,6 +241,13 @@ export type Database = {
             referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "brands_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
+          },
         ];
       };
       budget_private: {
@@ -280,6 +287,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "v_budget_vs_actual";
             referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "budget_private_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_budget_vs_previous_season";
+            referencedColumns: ["budget_id", "brand_id"];
           },
         ];
       };
@@ -347,6 +361,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "budgets_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
+          },
+          {
             foreignKeyName: "budgets_season_id_brand_id_fkey";
             columns: ["season_id", "brand_id"];
             isOneToOne: false;
@@ -402,7 +423,9 @@ export type Database = {
       };
       customers: {
         Row: {
+          area: string;
           billing_address: NonNullable<Json>;
+          category: string;
           city: string;
           country: string;
           created_at: string;
@@ -414,6 +437,7 @@ export type Database = {
           notes: string;
           payment_terms: string;
           pec: string;
+          representative: string;
           sdi_code: string;
           shipping_address: NonNullable<Json>;
           tax_code: string;
@@ -423,7 +447,9 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          area?: string;
           billing_address?: NonNullable<Json>;
+          category?: string;
           city?: string;
           country?: string;
           created_at?: string;
@@ -435,6 +461,7 @@ export type Database = {
           notes?: string;
           payment_terms?: string;
           pec?: string;
+          representative?: string;
           sdi_code?: string;
           shipping_address?: NonNullable<Json>;
           tax_code?: string;
@@ -443,7 +470,9 @@ export type Database = {
           vat_number?: string;
         };
         Update: {
+          area?: string;
           billing_address?: NonNullable<Json>;
+          category?: string;
           city?: string;
           country?: string;
           created_at?: string;
@@ -455,6 +484,7 @@ export type Database = {
           notes?: string;
           payment_terms?: string;
           pec?: string;
+          representative?: string;
           sdi_code?: string;
           shipping_address?: NonNullable<Json>;
           tax_code?: string;
@@ -469,6 +499,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "import_batches";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "customers_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
           },
         ];
       };
@@ -819,6 +856,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "import_batches_budget_season_id_fkey";
+            columns: ["budget_season_id"];
+            isOneToOne: false;
+            referencedRelation: "v_budget_vs_previous_season";
+            referencedColumns: ["previous_season_id"];
+          },
+          {
             foreignKeyName: "import_batches_created_by_fkey";
             columns: ["created_by"];
             isOneToOne: false;
@@ -838,6 +882,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "seasons";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "import_batches_season_id_fkey";
+            columns: ["season_id"];
+            isOneToOne: false;
+            referencedRelation: "v_budget_vs_previous_season";
+            referencedColumns: ["previous_season_id"];
           },
         ];
       };
@@ -943,6 +994,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "import_batches";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "import_rows_batch_id_fkey";
+            columns: ["batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
           },
         ];
       };
@@ -1330,6 +1388,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "order_lines_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
+          },
+          {
             foreignKeyName: "order_lines_order_id_brand_id_fkey";
             columns: ["order_id", "brand_id"];
             isOneToOne: false;
@@ -1579,6 +1644,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "orders_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
+          },
+          {
             foreignKeyName: "orders_season_id_brand_id_fkey";
             columns: ["season_id", "brand_id"];
             isOneToOne: false;
@@ -1703,6 +1775,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "product_variants_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
+          },
+          {
             foreignKeyName: "product_variants_product_id_brand_id_fkey";
             columns: ["product_id", "brand_id"];
             isOneToOne: false;
@@ -1772,6 +1851,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "import_batches";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "products_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
           },
           {
             foreignKeyName: "products_season_id_brand_id_fkey";
@@ -1973,6 +2059,13 @@ export type Database = {
             referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "seasons_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "v_import_batch_totals";
+            referencedColumns: ["batch_id"];
+          },
         ];
       };
     };
@@ -2146,6 +2239,45 @@ export type Database = {
           },
         ];
       };
+      v_budget_vs_previous_season: {
+        Row: {
+          brand_id: string | null;
+          budget_cents: string | null;
+          budget_id: string | null;
+          budget_season: string | null;
+          budget_season_id: string | null;
+          customer_id: string | null;
+          difference_cents: string | null;
+          difference_pct: string | null;
+          previous_season: string | null;
+          previous_season_id: string | null;
+          sold_cents: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "budgets_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_season_id_brand_id_fkey";
+            columns: ["budget_season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       v_commissions: {
         Row: {
           brand_id: string | null;
@@ -2176,6 +2308,20 @@ export type Database = {
             referencedColumns: ["id", "brand_id"];
           },
         ];
+      };
+      v_import_batch_totals: {
+        Row: {
+          batch_id: string | null;
+          brand: string | null;
+          customers: number | null;
+          gross_cents: string | null;
+          net_cents: string | null;
+          orders: number | null;
+          pieces: number | null;
+          season: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [];
       };
       v_invoice_balances: {
         Row: {
@@ -2388,10 +2534,20 @@ export type Database = {
         Args: { p_confirm_differences?: boolean; p_id: string };
         Returns: Json;
       };
-      configure_import_batch: {
-        Args: { p_expected: Json; p_id: string; p_options: Json };
-        Returns: undefined;
-      };
+      configure_import_batch:
+        | {
+            Args: { p_expected: Json; p_id: string; p_options: Json };
+            Returns: undefined;
+          }
+        | {
+            Args: {
+              p_expected: Json;
+              p_id: string;
+              p_options: Json;
+              p_previous_revision: string;
+            };
+            Returns: undefined;
+          };
       dashboard_report: {
         Args: {
           p_brand_id?: string;
@@ -2409,6 +2565,10 @@ export type Database = {
           p_document_ids: number[];
           p_event_id: string;
         };
+        Returns: number;
+      };
+      exclude_import_errors: {
+        Args: { p_id: string; p_revision: string; p_rows: string[] };
         Returns: number;
       };
       fail_fic_webhook: {
@@ -2442,6 +2602,14 @@ export type Database = {
         };
         Returns: boolean;
       };
+      finish_import_file_retention: {
+        Args: { p_id: string };
+        Returns: boolean;
+      };
+      finish_import_staging: {
+        Args: { p_counts: Json; p_id: string; p_revision: string };
+        Returns: undefined;
+      };
       finish_invoice_cancellation: {
         Args: { p_id: string; p_lease: string };
         Returns: boolean;
@@ -2466,6 +2634,28 @@ export type Database = {
       };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
       has_push_subscription: { Args: { p_endpoint: string }; Returns: boolean };
+      import_batch_report: {
+        Args: { p_export?: boolean; p_id: string; p_page?: number };
+        Returns: Json;
+      };
+      import_commit: {
+        Args: {
+          p_confirm_differences?: boolean;
+          p_confirm_updates?: boolean;
+          p_id: string;
+        };
+        Returns: Json;
+      };
+      import_matching: {
+        Args: { p_id: string; p_page?: number; p_threshold?: number };
+        Returns: Json;
+      };
+      import_preview: {
+        Args: { p_id: string; p_page?: number };
+        Returns: Json;
+      };
+      import_rollback: { Args: { p_id: string }; Returns: undefined };
+      import_totals: { Args: { p_id: string }; Returns: Json };
       mock_invoice_put: {
         Args: {
           p_fingerprint: string;
@@ -2555,6 +2745,16 @@ export type Database = {
         };
         Returns: string;
       };
+      resolve_import_match: {
+        Args: {
+          p_choice: Json;
+          p_id: string;
+          p_kind: string;
+          p_revision: string;
+          p_subject: Json;
+        };
+        Returns: number;
+      };
       revoke_ical_token: {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
@@ -2592,20 +2792,38 @@ export type Database = {
         };
         Returns: undefined;
       };
-      stage_import_rows: {
-        Args: { p_id: string; p_rows: Json };
-        Returns: number;
+      set_import_expected: {
+        Args: { p_expected: Json; p_id: string; p_revision: string };
+        Returns: undefined;
       };
-      start_import_batch: {
-        Args: {
-          p_filename: string;
-          p_id: string;
-          p_kind: string;
-          p_sha256: string;
-          p_size: number;
-        };
-        Returns: string;
-      };
+      stage_import_rows:
+        | { Args: { p_id: string; p_rows: Json }; Returns: number }
+        | {
+            Args: { p_id: string; p_revision: string; p_rows: Json };
+            Returns: number;
+          };
+      start_import_batch:
+        | {
+            Args: {
+              p_filename: string;
+              p_id: string;
+              p_kind: string;
+              p_sha256: string;
+              p_size: number;
+            };
+            Returns: string;
+          }
+        | {
+            Args: {
+              p_filename: string;
+              p_id: string;
+              p_kind: string;
+              p_retention_days: number;
+              p_sha256: string;
+              p_size: number;
+            };
+            Returns: string;
+          };
       subscribe_push: {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
         Returns: undefined;

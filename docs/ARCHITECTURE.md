@@ -72,3 +72,9 @@ Il cron promemoria giornaliero invia email e, se VAPID completo, push. Finestra 
 - [ ] Lettura VoiceOver/NVDA dei form, degli annunci e dei numeri animati.
 
 Le simulazioni Chromium e i test workerd non attestano queste verifiche. Per iPhone serve un’origine HTTPS attendibile raggiungibile dal telefono; localhost del computer non è l’origine del telefono.
+
+## Importazione operativa
+
+Migrazioni 026–035: configurazioni revisionate, matching con pg_trgm, staging con conteggi completi, commit/rollback e report. RPC commerciali con sessione utente, ruolo e proprietà del lotto verificati nel database. `app.import_changes` contiene prima/dopo ed è priva di grant client; la RLS di `import_*` limita accounting ai budget. Audit e dati business sono nella medesima transazione. I report finali conservano i totali in `stats`, con viste invoker e RPC di lettura protette. SQL numeric e testi interi preservano aggregati oltre i limiti di number.
+
+Il parser browser usa solo risultati di formule salvati. I blocchi di righe grezze sono rivalidati dal server e limitati in byte. Una revisione impedisce mescolamenti fra finestre e mappature. Il job retention è l’unica nuova operazione con service role: rimuove Storage, poi registra la rimozione tramite una RPC con grant service_role. Nessuna scrittura commerciale passa dal client privilegiato.

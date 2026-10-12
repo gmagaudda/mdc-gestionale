@@ -16,7 +16,9 @@ export default async function Imports() {
     await createClient()
   )
     .from("import_batches")
-    .select("id,file_name,kind,status,created_at,created_by")
+    .select(
+      "id,file_name,kind,status,created_at,created_by,file_removed_at,file_expires_at",
+    )
     .order("created_at", { ascending: false })
     .limit(100);
   const authorIds = [...new Set((batches.data ?? []).map((b) => b.created_by))];
@@ -36,11 +38,16 @@ export default async function Imports() {
         title={t("history")}
         description={t("historyHint")}
         action={
-          user.role === "admin" ? (
-            <Link className="text-link" href="/imports/new">
-              {t("new")}
+          <div className="report-actions">
+            <Link className="text-link" href="/imports/operational">
+              {t("operational")}
             </Link>
-          ) : undefined
+            {user.role === "admin" && (
+              <Link className="text-link" href="/imports/new">
+                {t("new")}
+              </Link>
+            )}
+          </div>
         }
       />
       {batches.error ? (
@@ -57,7 +64,16 @@ export default async function Imports() {
               author:
                 authors.find((a) => a.id === b.created_by)?.full_name ||
                 t("unknownAuthor"),
-              original: t("downloadOriginal"),
+              original:
+                b.file_removed_at ||
+                new Date(b.file_expires_at).getTime() <= new Date().getTime()
+                  ? t("originalExpired")
+                  : t("downloadOriginal"),
+              download_available:
+                b.file_removed_at ||
+                new Date(b.file_expires_at).getTime() <= new Date().getTime()
+                  ? 0
+                  : 1,
               date: new Intl.DateTimeFormat("it-IT", {
                 timeZone: "Europe/Rome",
                 dateStyle: "short",
@@ -75,11 +91,23 @@ export default async function Imports() {
                 label: t("original"),
                 linkBase: "/api/imports",
                 download: true,
+                linkEnabledKey: "download_available",
               },
             ]}
             emptyMessage={t("noImports")}
           />
           {batches.data.length === 100 && <p>{t("historyLimit")}</p>}
+          {batches.data
+            .filter((b) => b.kind !== "performance")
+            .map((b) => (
+              <Link
+                key={b.id}
+                className="text-link wrap-value"
+                href={`/imports/${b.id}`}
+              >
+                {t("openBatch", { name: b.file_name })}
+              </Link>
+            ))}
           {batches.data
             .filter((b) => b.kind === "performance" && b.status === "completed")
             .map((b) => (

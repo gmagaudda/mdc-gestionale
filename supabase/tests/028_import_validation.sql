@@ -1,0 +1,15 @@
+begin;select no_plan();
+insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000991','finish-owner@example.test');update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000000991';
+set local role authenticated;set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000991';
+select public.start_import_batch('00000000-0000-4000-8000-000000000990','mixed','finish.csv',repeat('9',64),100);insert into storage.objects(bucket_id,name,metadata) values('imports','00000000-0000-4000-8000-000000000990.csv','{"size":100}');
+select public.configure_import_batch('00000000-0000-4000-8000-000000000990','{"revision":"00000000-0000-4000-8000-000000000992","profiles":[{"entity":"customers","sheet_name":"A","header_row":1,"mapping":{},"options":{}},{"entity":"customers","sheet_name":"B","header_row":1,"mapping":{},"options":{}}]}','{}',null);
+select public.stage_import_rows('00000000-0000-4000-8000-000000000990','[{"entity":"customers","sheet":"A","row_number":2,"raw":{},"mapped":{"legal_name":"Uno","external_code":"SAME"},"status":"valid"}]','00000000-0000-4000-8000-000000000992');
+select throws_ok($$select public.finish_import_staging('00000000-0000-4000-8000-000000000990','00000000-0000-4000-8000-000000000992','{"A":1,"B":1}')$$,'23514','INCOMPLETE_STAGING','partial upload cannot be completed');
+select throws_ok($$select public.finish_import_staging('00000000-0000-4000-8000-000000000990',null,'{"A":1,"B":0}')$$,'40001','CONFIG_CONFLICT','finish rejects stale configuration');
+select public.stage_import_rows('00000000-0000-4000-8000-000000000990','[{"entity":"customers","sheet":"B","row_number":2,"raw":{},"mapped":{"legal_name":"Due","external_code":"SAME"},"status":"valid"}]','00000000-0000-4000-8000-000000000992');
+select lives_ok($$select public.finish_import_staging('00000000-0000-4000-8000-000000000990','00000000-0000-4000-8000-000000000992','{"A":1,"B":1}')$$,'finish whole upload');
+select is((select count(*) from public.import_rows where batch_id='00000000-0000-4000-8000-000000000990' and status='error'),2::bigint,'duplicate identities across sheets flagged');
+select is((select options->>'staging_complete' from public.import_batches where id='00000000-0000-4000-8000-000000000990'),'true','complete marker set');
+select public.stage_import_rows('00000000-0000-4000-8000-000000000990','[{"entity":"customers","sheet":"A","row_number":2,"raw":{},"mapped":{"legal_name":"Uno","external_code":"NEW"},"status":"valid"}]','00000000-0000-4000-8000-000000000992');
+select ok((select not(options?'staging_complete') from public.import_batches where id='00000000-0000-4000-8000-000000000990'),'another chunk invalidates completion marker');
+select * from finish();rollback;

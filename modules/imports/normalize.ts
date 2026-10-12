@@ -102,6 +102,63 @@ export function validVatNumber(value: string): boolean {
   }
   return (10 - (sum % 10)) % 10 === Number(value[10]);
 }
+// Formal transcription checks from DM 23/12/1976, articles 7 and 9.
+// They do not establish assignment or correspondence to an actual person.
+export function validTaxCode(value: string): boolean {
+  const code = value.toUpperCase();
+  if (/^\d{11}$/.test(code)) return validVatNumber(code);
+  if (
+    !/^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/.test(
+      code,
+    )
+  )
+    return false;
+  const odd = [
+    1, 0, 5, 7, 9, 13, 15, 17, 19, 21, 2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16,
+    10, 22, 25, 24, 23,
+  ];
+  let sum = 0;
+  for (let i = 0; i < 15; i++) {
+    const c = code.charCodeAt(i),
+      n = c >= 65 ? c - 65 : c - 48;
+    sum += i % 2 === 0 ? odd[n] : n;
+  }
+  const digits = (text: string) =>
+    text.replace(/[LMNPQRSTUV]/g, (c) => String("LMNPQRSTUV".indexOf(c)));
+  const day = Number(digits(code.slice(9, 11)));
+  if (!((day >= 1 && day <= 31) || (day >= 41 && day <= 71))) return false;
+  const month = "ABCDEHLMPRST".indexOf(code[8]),
+    year = 2000 + Number(digits(code.slice(6, 8)));
+  if (
+    (day > 40 ? day - 40 : day) >
+    new Date(Date.UTC(year, month + 1, 0)).getUTCDate()
+  )
+    return false;
+  return code[15] === String.fromCharCode(65 + (sum % 26));
+}
+export function normalizePercentage(
+  value: ImportCell | undefined,
+  format: "it" | "en" = "it",
+  scale: "percent" | "ratio" = "percent",
+): number | null {
+  const text = normalizeText(value),
+    explicit = text.endsWith("%");
+  let raw: ImportCell | undefined = explicit ? text.slice(0, -1).trim() : value;
+  if (scale === "ratio" && !explicit) {
+    if (typeof raw !== "number") {
+      const pattern =
+        format === "it"
+          ? /^\+?(?:0|1)(?:,\d{1,4})?$/
+          : /^\+?(?:0|1)(?:\.\d{1,4})?$/;
+      if (!pattern.test(normalizeText(raw))) return null;
+      raw = Number(normalizeText(raw).replace(",", "."));
+    }
+    if (raw < 0 || raw > 1) return null;
+    raw *= 100;
+  }
+  const cents = normalizeCents(raw, format);
+  return cents !== null && cents <= 10000 ? cents / 100 : null;
+}
 export function normalizeQuantity(
   value: ImportCell | undefined,
 ): number | null {
