@@ -23,3 +23,4 @@
 ## M3
 
 - T1: stagioni/prodotti con liste, creazione, modifica, archivio e varianti taglie × colori in transazione con audit. Prezzi interi in centesimi; FK composite e SKU unici. 14 test catalogo/RLS e 5 e2e verdi, inclusa generazione di 15 varianti e rollback di un salvataggio invalido. Axe AA in chiaro/scuro, viewport da 360 a 1440 px; lint/typecheck, 32 unit test, 52 test DB e build Next verdi.
+- T2: schema ordini, righe con snapshot, note/provvigioni private, storico immutabile, contatore annuale con lock, salvataggio atomico, trigger totali/transizioni e vista portal_orders implementati. 28 test DB ordini/RLS (80 complessivi) verdi; 20 creazioni realmente concorrenti hanno numeri unici e consecutivi. Helper monetari BigInt e guardie di transizione testati. Suite browser complessiva delle funzioni già disponibili: 80 passati. Editor e lista ordini nei task successivi.

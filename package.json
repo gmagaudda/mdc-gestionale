@@ -17,7 +17,8 @@
     "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "check:tokens": "node scripts/check-tokens.mjs",
-    "seed:demo": "node scripts/seed-demo.mjs"
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "test:orders:concurrency": "node scripts/test-order-concurrency.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "5.9.1",

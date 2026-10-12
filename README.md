@@ -41,9 +41,12 @@ pnpm typecheck
 pnpm test
 pnpm e2e
 pnpm supabase:test
+pnpm test:orders:concurrency
 ```
 
 Le ultime due verifiche richiedono rispettivamente i browser Playwright e Supabase locale. Non inserire segreti nei file tracciati.
+
+`test:orders:concurrency` usa soltanto Supabase locale: crea 20 ordini simultanei con sessione staff, verifica numeri consecutivi senza duplicati e rimuove le proprie fixture. Richiede `.env.local` con le chiavi locali. Il contatore dell'anno sintetico 2099 conserva i progressivi usati dal test.
 
 ## Accesso ai dati
 

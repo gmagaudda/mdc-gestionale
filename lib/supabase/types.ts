@@ -338,6 +338,306 @@ export type Database = {
         };
         Relationships: [];
       };
+      order_counters: {
+        Row: {
+          created_at: string;
+          last_number: number;
+          updated_at: string;
+          year: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          last_number: number;
+          updated_at?: string;
+          year: number;
+        };
+        Update: {
+          created_at?: string;
+          last_number?: number;
+          updated_at?: string;
+          year?: number;
+        };
+        Relationships: [];
+      };
+      order_lines: {
+        Row: {
+          brand_id: string;
+          color: string;
+          created_at: string;
+          discount_pct: number;
+          id: string;
+          line_net_cents: number;
+          line_vat_cents: number;
+          order_id: string;
+          product_name: string;
+          quantity: number;
+          size: string;
+          sku: string;
+          unit_price_cents: number;
+          updated_at: string;
+          variant_id: string;
+          vat_rate: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          color: string;
+          created_at?: string;
+          discount_pct?: number;
+          id?: string;
+          line_net_cents: number;
+          line_vat_cents: number;
+          order_id: string;
+          product_name: string;
+          quantity: number;
+          size: string;
+          sku: string;
+          unit_price_cents: number;
+          updated_at?: string;
+          variant_id: string;
+          vat_rate: number;
+        };
+        Update: {
+          brand_id?: string;
+          color?: string;
+          created_at?: string;
+          discount_pct?: number;
+          id?: string;
+          line_net_cents?: number;
+          line_vat_cents?: number;
+          order_id?: string;
+          product_name?: string;
+          quantity?: number;
+          size?: string;
+          sku?: string;
+          unit_price_cents?: number;
+          updated_at?: string;
+          variant_id?: string;
+          vat_rate?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_lines_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "order_lines_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "order_lines_variant_id_brand_id_fkey";
+            columns: ["variant_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "product_variants";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      order_private: {
+        Row: {
+          brand_id: string;
+          commission_pct_override: number | null;
+          created_at: string;
+          id: string;
+          internal_notes: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          commission_pct_override?: number | null;
+          created_at?: string;
+          id: string;
+          internal_notes?: string;
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          commission_pct_override?: number | null;
+          created_at?: string;
+          id?: string;
+          internal_notes?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_private_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "order_private_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      order_status_history: {
+        Row: {
+          brand_id: string;
+          changed_at: string;
+          changed_by: string | null;
+          created_at: string;
+          from_status: Database["public"]["Enums"]["order_status"] | null;
+          id: string;
+          note: string;
+          order_id: string;
+          to_status: Database["public"]["Enums"]["order_status"];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          changed_at?: string;
+          changed_by?: string | null;
+          created_at?: string;
+          from_status?: Database["public"]["Enums"]["order_status"] | null;
+          id?: string;
+          note?: string;
+          order_id: string;
+          to_status: Database["public"]["Enums"]["order_status"];
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          changed_at?: string;
+          changed_by?: string | null;
+          created_at?: string;
+          from_status?: Database["public"]["Enums"]["order_status"] | null;
+          id?: string;
+          note?: string;
+          order_id?: string;
+          to_status?: Database["public"]["Enums"]["order_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_changed_by_fkey";
+            columns: ["changed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      orders: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          created_by: string | null;
+          currency: string;
+          customer_id: string;
+          deleted_at: string | null;
+          delivery_date: string | null;
+          discount_pct: number;
+          gross_total_cents: number;
+          id: string;
+          net_total_cents: number;
+          number: string;
+          order_date: string;
+          payment_terms: string;
+          season_id: string;
+          status: Database["public"]["Enums"]["order_status"];
+          updated_at: string;
+          vat_total_cents: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          currency?: string;
+          customer_id: string;
+          deleted_at?: string | null;
+          delivery_date?: string | null;
+          discount_pct?: number;
+          gross_total_cents?: number;
+          id?: string;
+          net_total_cents?: number;
+          number: string;
+          order_date?: string;
+          payment_terms?: string;
+          season_id: string;
+          status?: Database["public"]["Enums"]["order_status"];
+          updated_at?: string;
+          vat_total_cents?: number;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          currency?: string;
+          customer_id?: string;
+          deleted_at?: string | null;
+          delivery_date?: string | null;
+          discount_pct?: number;
+          gross_total_cents?: number;
+          id?: string;
+          net_total_cents?: number;
+          number?: string;
+          order_date?: string;
+          payment_terms?: string;
+          season_id?: string;
+          status?: Database["public"]["Enums"]["order_status"];
+          updated_at?: string;
+          vat_total_cents?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "orders_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       product_variants: {
         Row: {
           brand_id: string;
@@ -535,11 +835,90 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      portal_orders: {
+        Row: {
+          brand_id: string | null;
+          currency: string | null;
+          customer_city: string | null;
+          customer_display_name: string | null;
+          delivery_date: string | null;
+          gross_total_cents: number | null;
+          id: string | null;
+          net_total_cents: number | null;
+          number: string | null;
+          order_date: string | null;
+          season_id: string | null;
+          status: Database["public"]["Enums"]["order_status"] | null;
+          vat_total_cents: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id?: string | null;
+          currency?: string | null;
+          customer_city?: never;
+          customer_display_name?: never;
+          delivery_date?: string | null;
+          gross_total_cents?: number | null;
+          id?: string | null;
+          net_total_cents?: number | null;
+          number?: string | null;
+          order_date?: string | null;
+          season_id?: string | null;
+          status?: Database["public"]["Enums"]["order_status"] | null;
+          vat_total_cents?: number | null;
+        };
+        Update: {
+          brand_id?: string | null;
+          currency?: string | null;
+          customer_city?: never;
+          customer_display_name?: never;
+          delivery_date?: string | null;
+          gross_total_cents?: number | null;
+          id?: string | null;
+          net_total_cents?: number | null;
+          number?: string | null;
+          order_date?: string | null;
+          season_id?: string | null;
+          status?: Database["public"]["Enums"]["order_status"] | null;
+          vat_total_cents?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "orders_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
     };
     Functions: {
+      change_order_status: {
+        Args: {
+          p_id: string;
+          p_note?: string;
+          p_status: Database["public"]["Enums"]["order_status"];
+        };
+        Returns: undefined;
+      };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
+      recalculate_order_totals: {
+        Args: { p_order_id: string };
+        Returns: undefined;
+      };
       save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
+      save_order: {
+        Args: { p_data: Json; p_id: string; p_lines: Json };
+        Returns: string;
+      };
       save_product: { Args: { p_data: Json; p_id: string }; Returns: string };
       save_user: {
         Args: {
