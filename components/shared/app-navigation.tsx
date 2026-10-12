@@ -26,6 +26,9 @@ export function AppNavigation({ role }: { role: Role }) {
           { href: "/settings/audit", label: t("audit") },
         ]
       : []),
+    ...(["admin", "staff"].includes(role)
+      ? [{ href: "/orders/new", label: t("newOrder") }]
+      : []),
   ];
   const navigation = (mobile = false) => (
     <nav className="app-navigation" aria-label={t("appName")}>

@@ -1,5 +1,7 @@
 "use server";
-import { uuid } from "zod";
+import { uuid, string } from "zod";
+import { escapeLike } from "@/lib/queries/list";
+import type { Choice } from "@/components/shared/search-select";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
@@ -7,6 +9,31 @@ import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/lib/errors";
 import { orderSchema, statusSchema } from "./schema";
 import { canTransition } from "./domain";
+export async function searchOrderCustomers(
+  input: unknown,
+): Promise<ActionResult<Choice[]>> {
+  await requireRole(internalRoles);
+  const parsed = string().trim().max(100).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
+  const db = await createClient();
+  let query = db
+    .from("customers")
+    .select("id,legal_name,city")
+    .is("deleted_at", null)
+    .order("legal_name")
+    .limit(50);
+  if (parsed.data)
+    query = query.ilike("legal_name", `%${escapeLike(parsed.data)}%`);
+  const { data, error } = await query;
+  if (error) return { ok: false, error: "loadError" };
+  return {
+    ok: true,
+    data: data.map((row) => ({
+      value: row.id,
+      label: `${row.legal_name}${row.city ? ` · ${row.city}` : ""}`,
+    })),
+  };
+}
 export async function saveOrder(
   id: string | null,
   input: unknown,

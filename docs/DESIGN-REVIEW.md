@@ -71,3 +71,18 @@ Ambito: flusso login → lista brand → ricerca/paginazione → dettaglio → c
 | UI            | caricamento/errore/vuoto condivisi, stato attivo della navigazione, conferma esplicita; nessuna animazione custom            | Clear |
 
 Nessun problema di interfaccia azionabile nell'ambito verificato. Verifica: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/navigation.spec.ts`: 5 test passati; suite anagrafiche/utenti: 30 passati. Screenshot dark mobile/desktop ispezionati. Non verificati con screen reader reale o zoom browser 200%. Verdict: Approve nell'ambito indicato.
+
+## M3-T3: editor ordine
+
+Ambito: creare/modificare una bozza con tre prodotti, ricerca cliente, quantità, prezzo/sconto e salvataggio. Convenzioni AGENTS.md, DESIGN-GUIDELINES e DECISIONS; skill better-interface e sei domini lette. Esclusi lista/dettaglio e portale dei task successivi.
+
+| Dominio       | Evidenza                                                                                                                        | Esito                          |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Accessibilità | Input/SelectField/MoneyInput, focus al campo invalido, tabella con intestazioni; e2e/orders-editor.spec.ts, axe AA chiaro/scuro | Clear nei controlli automatici |
+| Layout        | Cinque viewport 360–1440, scroll interno; nove scenari break, nomi lunghi osservati e corretti                                  | Clear dopo correzione          |
+| Scrittura     | orders/common in messages/it.json, errore con correzione e distinzione anteprima/totali salvati                                 | Clear                          |
+| Tipografia    | Font/token Arc, tabular-nums, bdi per nomi misti, testi lunghi a capo                                                           | Clear nel perimetro            |
+| Colore        | Token semantici; check:tokens e axe nei due temi                                                                                | Clear                          |
+| UI            | Controlli Arc originali; salvataggio pending, errore, conferma in pagina                                                        | Clear                          |
+
+Finding risolto: HIGH, app/globals.css (size-color-matrix), colonna colore senza limite occupava tutto il contenitore di 320 px; table-layout fixed e colonne da 6/10 rem con overflow-wrap anywhere rendono raggiungibili le quantità. Proprietari better-layout/better-typography, screenshot browser della correzione ispezionato. Nessuna finding residua nel perimetro. Verifiche: cinque e2e con quattro righe persistite/totali e reload, 37 unit test, lint/typecheck/check:tokens e build Next. Zoom browser 200% e screen reader reale non verificati, restano nella revisione M8. Verdict: Approve per le verifiche indicate.
