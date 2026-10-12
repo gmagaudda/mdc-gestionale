@@ -1586,6 +1586,15 @@ export type Database = {
         Returns: boolean;
       };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
+      portal_dashboard_report: {
+        Args: {
+          p_brand_id?: string;
+          p_end?: string;
+          p_season_id?: string;
+          p_start?: string;
+        };
+        Returns: Json;
+      };
       read_ical_feed: { Args: { p_hash: string }; Returns: Json };
       recalculate_order_totals: {
         Args: { p_order_id: string };

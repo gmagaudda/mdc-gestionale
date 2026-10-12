@@ -21,3 +21,7 @@ Il fatturato legge invoices emesse/inviate/pagate. La tabella è predisposta con
 ## Provvigioni ed export
 
 v_commissions security_invoker combina orders e le percentuali private, imponendo app.is_internal. commissions_report filtra e aggrega in una snapshot SQL, serializza centesimi come stringhe e pagina gli ordini. La route export usa sessione/ruolo interno/Zod e lo stesso payload con whitelist, rifiuta oltre 10.000 ordini o 500 brand e genera XLSX in memoria con ExcelJS writeBuffer. Risposte private/no-store/nosniff, nessun URL pubblico, filesystem o service role.
+
+## Portale
+
+Il layout richiede ruolo brand attivo. Il contesto usa solo sessione/RLS, valida i filtri con Zod e verifica accesso brand prima di inviare la shell con la Suspense dati. portal_dashboard_report impone ruolo brand e accesso allo scope, produce una whitelist di venduto/conteggi/budget, senza fatturato, provvigioni, note o contatti. Customer name è derivato con D1 da un ordine autorizzato, non da una lettura diretta di customers. Revoca associazione e profilo inattivo sono rivalutati a ogni lettura.

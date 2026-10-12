@@ -47,8 +47,17 @@ function GroupedBars({
     </div>
   );
 }
-export function BudgetVsActualChart({ report }: { report: DashboardReport }) {
-  const t = useTranslations("dashboard"),
+export function BudgetVsActualChart({
+  report,
+  namespace = "dashboard",
+}: {
+  report: {
+    budget_count: number;
+    budgets: Omit<DashboardReport["budgets"][number], "revenue_cents">[];
+  };
+  namespace?: "dashboard" | "portal";
+}) {
+  const t = useTranslations(namespace),
     items = report.budgets.slice(0, 10);
   const rows = items.map((item, index) => ({
     id: item.id,

@@ -153,3 +153,13 @@ La vista richiede esplicitamente ruolo interno oltre alle RLS delle tabelle priv
 [ExcelJS](https://github.com/exceljs/exceljs#writing-xlsx) 4.4.0, Workbook document con writeBuffer (nessun fs/stream di file), generazione reale e rilettura su workerd locale riuscite. Fogli Filtri, Riepilogo per brand, Ordini e Totale del periodo. Euro e centesimi come stringhe esatte: Excel non conserva tutti gli interi oltre 15 cifre. Nessuna formula di calcolo o campo privato. Testi pericolosi con apostrofo; stringhe sempre celle testo, mai oggetti formula. Limiti espliciti e feedback di download in pagina.
 
 Filtri Arc riusati tramite composizione del form esistente, tabelle Arc attraverso DataTable/ListView; filter-toolbar consultato ma non adatto a date native e ricerca remota di molte opzioni. Niente modifica agli interni Arc.
+
+## 2026-10-12: dashboard portale (M6-T1)
+
+RPC portal_dashboard_report dedicata al ruolo brand, security invoker, con select/JSON espliciti. Nessun riuso della risposta interna contenente fatturato o nomi non autorizzati. D1 per il cliente di un budget deriva solo da un ordine accessibile dello stesso brand/cliente; in assenza di un ordine autorizzato si mostra Cliente riservato. Confronto budget e totali economici rimangono SQL, in centesimi testuali.
+
+Guardie di brand/stagione prima della Suspense dei dati: il brand estraneo risponde HTTP 404 anche su Workers, senza scaricare il report. Skeleton soltanto dentro la regione già autorizzata. Scelte massimo 500 senza troncamento; Select Arc per elenchi corti, SearchSelect per quelli lunghi. Shell riusata con navigazione nominata Portale brand; nessuna azione di modifica.
+
+Next dev/next-themes emette un warning React sul rimontaggio dello script quando si naviga a un documento 404 completo; il tema continua a funzionare. La console dei flussi normali è controllata senza eccezioni; l'errore HTTP 404 richiesto è distinto dagli errori inattesi. Sul runtime Workers di produzione anche la console attraverso il 404 è pulita. Nessuna modifica al provider per aggirare il warning dev.
+
+Le azioni dei report sono statiche: la regola sticky dei form di scrittura copriva campi filtro su mobile. report-actions nei filtri interni/portale ed export provvigioni, con geometria DOM verificata.

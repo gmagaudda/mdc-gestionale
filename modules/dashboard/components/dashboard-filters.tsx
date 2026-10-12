@@ -99,7 +99,7 @@ export function DashboardFiltersForm({
         />
       </fieldset>
       <Alert open={error} tone="danger" title={t("invalidFilters")} />
-      <div className="form-actions">
+      <div className="form-actions report-actions">
         <Button type="submit" variant="secondary" size="lg" loading={pending}>
           {t("apply")}
         </Button>

@@ -33,7 +33,10 @@ export function AppNavigation({ role }: { role: Role }) {
       : []),
   ];
   const navigation = (mobile = false) => (
-    <nav className="app-navigation" aria-label={t("appName")}>
+    <nav
+      className="app-navigation"
+      aria-label={t(role === "brand" ? "portalName" : "appName")}
+    >
       {links.map((link) => (
         <Link
           className="navigation-link"
@@ -56,7 +59,7 @@ export function AppNavigation({ role }: { role: Role }) {
   return (
     <>
       <aside className="app-sidebar">
-        <p>{t("appName")}</p>
+        <p>{t(role === "brand" ? "portalName" : "appName")}</p>
         {navigation()}
       </aside>
       <div className="mobile-navigation">

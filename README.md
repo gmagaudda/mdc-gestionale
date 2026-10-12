@@ -121,3 +121,9 @@ Ogni grafico ha una tabella con valori esatti. Per dataset ampi la pagina indica
 Apri `/commissions`: tutti i ruoli interni leggono il report per brand, stagione e periodo. Si applica la percentuale specifica dell'ordine, se presente, altrimenti quella attuale del brand; ogni ordine viene arrotondato al centesimo prima della somma. Una modifica della percentuale del brand aggiorna anche i risultati degli ordini senza percentuale specifica.
 
 “Esporta Excel” scarica filtri, riepilogo per brand, singoli ordini e totale del periodo (massimo 10.000 ordini/500 brand). Euro e centesimi sono celle di testo esatte, senza formule. Per calcoli successivi in Excel usa le colonne in centesimi controllando la precisione dei valori. Nessuna nota interna nel file. Test: `pnpm e2e e2e/commissions.spec.ts`; export verificato anche nella preview Workers locale.
+
+### Portale brand
+
+Un utente brand accede a `/portal/dashboard`: consulta soltanto venduto e budget dei brand associati, con filtri per brand, stagione e date. Nessuna modifica o provvigione/fatturato. Se la visibilità clienti è disattivata, il perimetro del budget mostra “Cliente riservato”. Un brand non associato restituisce 404. Senza associazioni, chiedi all'amministratore di configurare l'account.
+
+Test: `pnpm e2e e2e/portal-dashboard.spec.ts`; isolamento e revoca sono verificati anche nei test SQL.

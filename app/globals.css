@@ -247,6 +247,9 @@ a {
   padding-block: var(--space-4);
   padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
 }
+.report-actions {
+  position: static;
+}
 html {
   scroll-padding-block-end: calc(var(--control-height-lg) + var(--space-8));
 }

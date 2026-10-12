@@ -208,3 +208,18 @@ Ambito: report → brand/periodo/stagione → origine percentuale → export →
 | UI            | Un primario export, skeleton/empty/error/success in pagina, download senza abbandonare il report, reduced motion Number Flow | Clear                            |
 
 Nessuna finding azionabile aperta nel flusso. Cinque e2e report e cinque dashboard, file riaperto con valori esatti e stringa pericolosa protetta, desktop Workers; 201 test DB, 77 unit test, lint/typecheck/tokens/build e DB lint. Screenshot raster mostra a volte skip-link/sidebar in posizione diversa dal DOM, già verificato in M5-T1; overflow reale controllato. Screen reader reale, zoom 200% e accento alternativo restano in M8. Verdict: Approve entro il perimetro indicato.
+
+## M6-T1: dashboard del brand
+
+Ambito: login brand → filtri autorizzati → riepilogo/confronto → tema → restringere periodo → brand estraneo 404 → vuoto. Componenti/token Arc e shell esistenti, Select/SearchSelect, Number Flow, grafico condiviso con testi portale. AGENTS/DECISIONS/DESIGN-GUIDELINES, better-interface e sei domini già letti.
+
+| Dominio       | Evidenza                                                                                                   | Esito                          |
+| ------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Accessibilità | Axe due temi/cinque viewport, readonly esplicito, campi nativi, regione tabella nominata, 404 dedicato     | Clear                          |
+| Layout        | Overflow 360–1440 e screenshot mobile/desktop, verifica DOM pulsanti sotto fieldset                        | Clear per geometria verificata |
+| Scrittura     | Solo propri brand, Cliente riservato, nessuna associazione con recupero, limiti budget e filtri            | Clear                          |
+| Tipografia    | Importi/date italiani, dati tabulari, nomi completi nelle tabelle/card, token                              | Clear                          |
+| Colore        | Axe chiaro/scuro, tabella equivalente alla legenda; token semantici                                        | Clear                          |
+| UI            | Navigazione dedicata, skeleton dopo autorizzazione, vuoto/errore/risultati in pagina, zero azioni business | Clear                          |
+
+215 test DB, 78 unit test, cinque e2e portale e desktop Workers (incluso HTTP 404 e console pulita), lint/typecheck/tokens/build/DB lint. Rilevato warning di next-themes solo nel dev attraversando 404; funzionamento tema dopo il 404 verificato, nessun warning Workers. Corretto un difetto reale mobile: i filtri ereditavano position:sticky dalle azioni dei form e coprivano i campi. Classe report-actions statica nei filtri dashboard/portale e nel download provvigioni; test misura il pulsante dopo tutto il fieldset. Screen reader reale, zoom 200% e accento alternativo restano in M8. Verdict: Approve entro il perimetro verificato.

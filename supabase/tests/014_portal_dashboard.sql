@@ -1,0 +1,45 @@
+begin;
+select plan(14);
+insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000601','reports-staff@example.test'),('00000000-0000-4000-8000-000000000609','reports-brand@example.test');
+update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000601';
+insert into public.brands(id,name,can_see_customer_names) values('00000000-0000-4000-8000-000000000602','Report A',false),('00000000-0000-4000-8000-000000000603','Report B',true);
+insert into public.brand_users(brand_id,user_id) values('00000000-0000-4000-8000-000000000602','00000000-0000-4000-8000-000000000609');
+insert into public.customers(id,legal_name,city) values('00000000-0000-4000-8000-000000000604','Private Report Customer','Roma');
+insert into public.seasons(id,brand_id,code,name) values('00000000-0000-4000-8000-000000000605','00000000-0000-4000-8000-000000000602','REPORT','Report A'),('00000000-0000-4000-8000-000000000606','00000000-0000-4000-8000-000000000603','REPORT','Report B');
+insert into public.products(id,brand_id,season_id,sku_base,name,wholesale_price_cents) values('00000000-0000-4000-8000-000000000607','00000000-0000-4000-8000-000000000602','00000000-0000-4000-8000-000000000605','REPORT-TEST','Report product',1000);
+insert into public.product_variants(id,product_id,brand_id,size,color,sku) values('00000000-0000-4000-8000-000000000608','00000000-0000-4000-8000-000000000607','00000000-0000-4000-8000-000000000602','M','Nero','REPORT-TEST-M');
+create temporary table report_orders(id uuid,seq int);grant all on report_orders to authenticated;
+set local role authenticated;set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000601';
+do $$declare v_id uuid;v_i int;begin
+for v_i in 1..4 loop
+v_id:=public.save_order(null,jsonb_build_object('brand_id','00000000-0000-4000-8000-000000000602','customer_id','00000000-0000-4000-8000-000000000604','season_id','00000000-0000-4000-8000-000000000605','order_date',case when v_i=2 then '2032-02-01' else '2032-01-01' end,'delivery_date','','discount_pct',0,'internal_notes','Report secret notes'),jsonb_build_array(jsonb_build_object('variant_id','00000000-0000-4000-8000-000000000608','quantity',v_i,'unit_price_cents',1000,'discount_pct',0)));
+insert into report_orders values(v_id,v_i);
+if v_i in (1,2) then perform public.change_order_status(v_id,'confirmed','');end if;
+if v_i=4 then perform public.change_order_status(v_id,'cancelled','');end if;
+end loop;end;$$;
+reset role;
+insert into public.invoices(number,brand_id,customer_id,order_id,status,issue_date,due_date,net_cents,vat_cents,gross_cents)
+select 'REPORT-'||seq,'00000000-0000-4000-8000-000000000602','00000000-0000-4000-8000-000000000604',id,case when seq=1 then 'issued'::public.invoice_status else 'paid'::public.invoice_status end,case when seq=1 then '2032-01-05'::date else '2032-02-05'::date end,'2032-03-01',case when seq=1 then 700 else 300 end,0,case when seq=1 then 700 else 300 end from report_orders where seq in (1,2);
+insert into public.invoices(number,brand_id,customer_id,status,issue_date,due_date,net_cents,vat_cents,gross_cents) values('REPORT-CANCEL','00000000-0000-4000-8000-000000000602','00000000-0000-4000-8000-000000000604','cancelled','2032-01-05','2032-03-01',99999,0,99999),('REPORT-DRAFT','00000000-0000-4000-8000-000000000602','00000000-0000-4000-8000-000000000604','draft','2032-01-05','2032-03-01',99999,0,99999);
+insert into public.budgets(id,brand_id,amount_cents,period_start,period_end) values('00000000-0000-4000-8000-000000000610','00000000-0000-4000-8000-000000000602',5000,'2032-01-01','2032-02-28'),('00000000-0000-4000-8000-000000000611','00000000-0000-4000-8000-000000000602',0,'2032-03-01','2032-03-31'),('00000000-0000-4000-8000-000000000612','00000000-0000-4000-8000-000000000603',100,'2032-01-01','2032-02-28');
+insert into public.budgets(id,brand_id,customer_id,amount_cents,period_start,period_end) values('00000000-0000-4000-8000-000000000614','00000000-0000-4000-8000-000000000602','00000000-0000-4000-8000-000000000604',2000,'2032-01-01','2032-02-28');
+set local role authenticated;
+select throws_ok($$select public.portal_dashboard_report()$$,'42501',null,'portal report restricted to brand role');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000609';
+select is(public.portal_dashboard_report()->>'sold_cents','3000','brand sees only own sales');
+select is(public.portal_dashboard_report()->>'order_count','2','brand counts confirmed own orders');
+select is(public.portal_dashboard_report()->>'budget_count','3','brand sees only own budgets');
+select is(public.portal_dashboard_report(null,null,'2032-01-01','2032-01-31')->>'sold_cents','1000','portal date filter exact');
+select throws_ok($$select public.portal_dashboard_report('00000000-0000-4000-8000-000000000603')$$,'P0002',null,'foreign brand refused');
+select ok(not public.portal_dashboard_report() ? 'revenue_cents','invoice totals omitted');
+select ok(public.portal_dashboard_report()::text not like '%Report secret notes%' and public.portal_dashboard_report()::text not like '%Private Report Customer%','D1 and private notes absent');
+select is((select j->>'customer_name' from jsonb_array_elements(public.portal_dashboard_report()->'budgets') j where j->>'id'='00000000-0000-4000-8000-000000000614'),'Cliente riservato','customer scope anonymized');
+select ok(not exists(select 1 from jsonb_array_elements(public.portal_dashboard_report()->'budgets') j where j ? 'revenue_cents' or j ? 'internal_notes' or j ? 'commission_pct'),'budget payload whitelist');
+reset role;update public.brands set can_see_customer_names=true where id='00000000-0000-4000-8000-000000000602';set local role authenticated;
+select is((select j->>'customer_name' from jsonb_array_elements(public.portal_dashboard_report()->'budgets') j where j->>'id'='00000000-0000-4000-8000-000000000614'),'Private Report Customer','D1 enabled name only authorized via own order');
+reset role;delete from public.brand_users where user_id='00000000-0000-4000-8000-000000000609';set local role authenticated;
+select is(public.portal_dashboard_report()->>'sold_cents','0','revocation removes all totals');
+select throws_ok($$select public.portal_dashboard_report('00000000-0000-4000-8000-000000000602')$$,'P0002',null,'revoked brand refused');
+reset role;update public.profiles set is_active=false where id='00000000-0000-4000-8000-000000000609';set local role authenticated;
+select throws_ok($$select public.portal_dashboard_report()$$,'42501',null,'inactive brand report refused');
+select * from finish();rollback;

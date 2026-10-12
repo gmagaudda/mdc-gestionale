@@ -11,7 +11,7 @@ export function CommissionExportButton({ params }: { params: string }) {
   return (
     <div className="stack">
       <p>{t("exportHint")}</p>
-      <div className="form-actions">
+      <div className="form-actions report-actions">
         <Button
           size="lg"
           loading={pending}
