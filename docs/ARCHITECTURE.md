@@ -17,3 +17,7 @@ Download autorizzato a ogni emissione, redirect no-store a URL firmato valido 12
 Tutte le viste economiche sono security_invoker e leggono tabelle protette da RLS. dashboard_report usa sessione, richiede ruolo interno e restituisce un payload validato con Zod: somme SQL in centesimi testuali, conteggi e serie limitate con dimensione totale dichiarata. Le tabelle visibili mantengono valori BigInt esatti; conversione numerica dei soli punti sicuri per la visualizzazione. Nessuna aggregazione economica nel frontend.
 
 Il fatturato legge invoices emesse/inviate/pagate. La tabella è predisposta con vincoli importi e policy di sola lettura interna; scritture, snapshot e provider verranno aggiunti in M7. Il portale non può usare la RPC interna; avrà un payload dedicato con whitelist. Il confronto budget legge l'intero periodo inclusivo e lo scope della singola combinazione, indipendentemente dal periodo più stretto dei KPI.
+
+## Provvigioni ed export
+
+v_commissions security_invoker combina orders e le percentuali private, imponendo app.is_internal. commissions_report filtra e aggrega in una snapshot SQL, serializza centesimi come stringhe e pagina gli ordini. La route export usa sessione/ruolo interno/Zod e lo stesso payload con whitelist, rifiuta oltre 10.000 ordini o 500 brand e genera XLSX in memoria con ExcelJS writeBuffer. Risposte private/no-store/nosniff, nessun URL pubblico, filesystem o service role.

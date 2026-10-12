@@ -115,3 +115,9 @@ Test: `pnpm e2e e2e/budgets.spec.ts`; i test DB verificano isolamento, vincolo d
 Apri `/dashboard`: filtra per brand, stagione e periodo. Venduto netto include ordini confermati e successivi, escludendo bozze/annullati; fatturato netto include fatture emesse/inviate/pagate. Il modulo di emissione sarà disponibile in M7. Il confronto budget considera l'intero periodo di ogni budget che interseca i filtri; scostamento = venduto meno budget, percentuale non disponibile per budget zero.
 
 Ogni grafico ha una tabella con valori esatti. Per dataset ampi la pagina indica quanti confronti/mesi mostra: restringi i filtri o apri la lista budget. Test: `pnpm e2e e2e/dashboard.spec.ts`; test DB con risultati economici calcolati a mano e isolamento RLS. Prova Workers locale: `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/dashboard.spec.ts --project=desktop`.
+
+### Provvigioni
+
+Apri `/commissions`: tutti i ruoli interni leggono il report per brand, stagione e periodo. Si applica la percentuale specifica dell'ordine, se presente, altrimenti quella attuale del brand; ogni ordine viene arrotondato al centesimo prima della somma. Una modifica della percentuale del brand aggiorna anche i risultati degli ordini senza percentuale specifica.
+
+“Esporta Excel” scarica filtri, riepilogo per brand, singoli ordini e totale del periodo (massimo 10.000 ordini/500 brand). Euro e centesimi sono celle di testo esatte, senza formule. Per calcoli successivi in Excel usa le colonne in centesimi controllando la precisione dei valori. Nessuna nota interna nel file. Test: `pnpm e2e e2e/commissions.spec.ts`; export verificato anche nella preview Workers locale.

@@ -15,10 +15,12 @@ export function DashboardFiltersForm({
   initial,
   brands,
   season,
+  base = "/dashboard",
 }: {
   initial: DashboardFilters;
   brands: Choice[];
   season?: Choice;
+  base?: "/dashboard" | "/commissions";
 }) {
   const t = useTranslations("dashboard"),
     router = useRouter(),
@@ -47,7 +49,7 @@ export function DashboardFiltersForm({
         const params = new URLSearchParams(
           Object.entries(value).filter(([, value]) => !!value),
         );
-        start(() => router.push(`/dashboard?${params}`));
+        start(() => router.push(`${base}?${params}`));
       }}
     >
       <fieldset className="form-grid" disabled={pending}>
@@ -107,7 +109,7 @@ export function DashboardFiltersForm({
           size="lg"
           onClick={() => {
             setValue({ brand_id: "", season_id: "", from: "", to: "" });
-            start(() => router.push("/dashboard"));
+            start(() => router.push(base));
           }}
         >
           {t("reset")}

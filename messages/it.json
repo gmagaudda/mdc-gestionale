@@ -36,7 +36,8 @@
     "calendar": "Calendario",
     "documents": "Documenti",
     "budgets": "Budget",
-    "tableRegion": "Tabella: {caption}"
+    "tableRegion": "Tabella: {caption}",
+    "commissions": "Provvigioni"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -653,5 +654,40 @@
     "archive": "Archivia budget",
     "archiveQuestion": "Archiviare questo budget? Non comparirà più nelle liste e nei confronti. I dati e lo storico saranno conservati.",
     "amountHint": "Importo in euro, per esempio 1250,50. Usa al massimo due decimali, senza separatori delle migliaia."
+  },
+  "commissions": {
+    "title": "Provvigioni",
+    "hint": "Ordini confermati e successivi, esclusi bozze, annullati e archiviati. Ogni provvigione è arrotondata al centesimo sul netto dell’ordine. La percentuale attuale del brand si applica quando l’ordine non ha una percentuale specifica.",
+    "byBrand": "Riepilogo per brand",
+    "summary": "Totale del periodo",
+    "brand": "Brand",
+    "net": "Venduto netto",
+    "total": "Provvigione",
+    "netCents": "Venduto in centesimi",
+    "commissionCents": "Provvigione in centesimi",
+    "orders": "Ordini",
+    "number": "Numero ordine",
+    "date": "Data ordine",
+    "rate": "Percentuale",
+    "source": "Origine percentuale",
+    "override": "Percentuale ordine",
+    "brandRate": "Percentuale brand",
+    "export": "Esporta Excel",
+    "exporting": "Preparazione del file",
+    "exported": "File pronto. Il download è stato avviato.",
+    "exportHint": "Il file include i filtri applicati. Importi in euro e centesimi sono testo esatto, senza formule. Massimo 10.000 ordini e 500 brand.",
+    "tooLarge": "Troppi risultati per l’esportazione. Restringi brand o periodo e riprova.",
+    "loadError": "Impossibile caricare le provvigioni. Ricarica la pagina e riprova.",
+    "invalidFilters": "Controlla i filtri. La data finale deve seguire quella iniziale.",
+    "shownBrands": "Visualizzati {shown} brand su {total}. Restringi i filtri per mostrare gli altri.",
+    "empty": "Nessuna provvigione",
+    "emptyHint": "Modifica i filtri oppure conferma un ordine per includerlo nel report.",
+    "filters": "Filtri",
+    "filter": "Filtro",
+    "value": "Valore",
+    "season": "Stagione",
+    "from": "Dal",
+    "to": "Al",
+    "all": "Tutti"
   }
 }

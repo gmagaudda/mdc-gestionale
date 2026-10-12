@@ -526,6 +526,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "documents_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "v_commissions";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "documents_uploaded_by_fkey";
             columns: ["uploaded_by"];
             isOneToOne: false;
@@ -781,6 +788,13 @@ export type Database = {
             referencedRelation: "portal_orders";
             referencedColumns: ["id", "brand_id"];
           },
+          {
+            foreignKeyName: "invoices_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_commissions";
+            referencedColumns: ["id", "brand_id"];
+          },
         ];
       };
       order_counters: {
@@ -877,6 +891,13 @@ export type Database = {
             referencedColumns: ["id", "brand_id"];
           },
           {
+            foreignKeyName: "order_lines_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_commissions";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
             foreignKeyName: "order_lines_variant_id_brand_id_fkey";
             columns: ["variant_id", "brand_id"];
             isOneToOne: false;
@@ -924,6 +945,13 @@ export type Database = {
             columns: ["id", "brand_id"];
             isOneToOne: false;
             referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "order_private_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_commissions";
             referencedColumns: ["id", "brand_id"];
           },
         ];
@@ -986,6 +1014,13 @@ export type Database = {
             columns: ["order_id", "brand_id"];
             isOneToOne: false;
             referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_commissions";
             referencedColumns: ["id", "brand_id"];
           },
         ];
@@ -1383,6 +1418,37 @@ export type Database = {
           },
         ];
       };
+      v_commissions: {
+        Row: {
+          brand_id: string | null;
+          brand_name: string | null;
+          commission_cents: string | null;
+          commission_pct: string | null;
+          has_override: boolean | null;
+          id: string | null;
+          net_cents: string | null;
+          number: string | null;
+          order_date: string | null;
+          season_id: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "orders_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       v_revenue_by_brand_period: {
         Row: {
           brand_id: string | null;
@@ -1493,6 +1559,17 @@ export type Database = {
           starts_at: string;
           title: string;
         }[];
+      };
+      commissions_report: {
+        Args: {
+          p_brand_id?: string;
+          p_end?: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_season_id?: string;
+          p_start?: string;
+        };
+        Returns: Json;
       };
       dashboard_report: {
         Args: {

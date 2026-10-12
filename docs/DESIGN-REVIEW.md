@@ -193,3 +193,18 @@ Ambito: dashboard → filtri brand/stagione/date → KPI → confronti/andamento
 | UI            | Skeleton finale, empty/error/risultati in pagina; filtri sync dopo indietro, Number Flow reduced motion, Arc immutabile      | Clear                         |
 
 Finding risolti: scorrimento readonly non raggiungibile da tastiera; Number Flow fallback SSR non aggiornato; filtri non sincronizzati con browser indietro. Grafici aria-hidden con tabella equivalente italiana; line-chart inert per non esporre controlli con istruzioni inglesi. La linea appare quando entra in viewport, secondo il comportamento Arc: screenshot full-page prima dello scroll può mostrarla ancora non disegnata. Test dedicato verifica percorso SVG e clip dopo lo scroll. Cinque e2e dashboard e desktop Workers passati; verifica editor per il wrapper condiviso. 179 test DB, 68 unit test, lint/typecheck/tokens/build OpenNext, DB lint. Screen reader reale, zoom 200%, RTL e accento alternativo rimangono nella verifica M8. Verdict: Approve entro il perimetro indicato.
+
+## M5-T3: leggere provvigioni e scaricare Excel
+
+Ambito: report → brand/periodo/stagione → origine percentuale → export → successo in pagina → restringere periodo → vuoto/errore. Next/React, Arc Input/Select/Button/Alert/Skeleton e tabelle condivise, Number Flow per i totali. AGENTS/DECISIONS/DESIGN-GUIDELINES e sei skill better-* già consultate. Esclusi portale e import futuri.
+
+| Dominio       | Evidenza                                                                                                                     | Esito                            |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| Accessibilità | Axe chiaro/scuro nei cinque viewport, link ordine nominati, stato download, campi native date                                | Clear                            |
+| Layout        | Overflow 360–1440, card mobile e tabelle dentro scroller; screenshot mobile/Workers desktop                                  | Clear nella geometria verificata |
+| Scrittura     | Percentuale brand/ordine, effetto modifica default, arrotondamento e limiti espliciti, errore recuperabile                   | Clear                            |
+| Tipografia    | Cifre tabulari, date/euro italiani, nomi lunghi raggiungibili, token Arc                                                     | Clear                            |
+| Colore        | Token e controllo axe nei due temi, nessuna distinzione solo cromatica                                                       | Clear                            |
+| UI            | Un primario export, skeleton/empty/error/success in pagina, download senza abbandonare il report, reduced motion Number Flow | Clear                            |
+
+Nessuna finding azionabile aperta nel flusso. Cinque e2e report e cinque dashboard, file riaperto con valori esatti e stringa pericolosa protetta, desktop Workers; 201 test DB, 77 unit test, lint/typecheck/tokens/build e DB lint. Screenshot raster mostra a volte skip-link/sidebar in posizione diversa dal DOM, già verificato in M5-T1; overflow reale controllato. Screen reader reale, zoom 200% e accento alternativo restano in M8. Verdict: Approve entro il perimetro indicato.
