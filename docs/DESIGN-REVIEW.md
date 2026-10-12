@@ -223,3 +223,18 @@ Ambito: login brand → filtri autorizzati → riepilogo/confronto → tema → 
 | UI            | Navigazione dedicata, skeleton dopo autorizzazione, vuoto/errore/risultati in pagina, zero azioni business | Clear                          |
 
 215 test DB, 78 unit test, cinque e2e portale e desktop Workers (incluso HTTP 404 e console pulita), lint/typecheck/tokens/build/DB lint. Rilevato warning di next-themes solo nel dev attraversando 404; funzionamento tema dopo il 404 verificato, nessun warning Workers. Corretto un difetto reale mobile: i filtri ereditavano position:sticky dalle azioni dei form e coprivano i campi. Classe report-actions statica nei filtri dashboard/portale e nel download provvigioni; test misura il pulsante dopo tutto il fieldset. Screen reader reale, zoom 200% e accento alternativo restano in M8. Verdict: Approve entro il perimetro verificato.
+
+## M6-T2: leggere ordini, vendite, documenti e calendario
+
+Ambito: liste/filtri → dettaglio ordine → download CSV/PDF/line sheet → vendite → file condiviso → evento readonly e abbonamento. Next/React, Arc gratuito e compositi condivisi, FullCalendar, Number Flow. Catalogo/documentazione Arc e sei skill better-* già consultati; revisione better-interface sull'intero flusso.
+
+| Dominio       | Evidenza                                                                                                           | Esito |
+| ------------- | ------------------------------------------------------------------------------------------------------------------ | ----- |
+| Accessibilità | Axe nei due temi/cinque viewport su quattro route, link nominati, dialog readonly con focus, download reali        | Clear |
+| Layout        | Overflow 360–1440, azioni report statiche, tabelle/card adattive, screenshot Workers ordini/calendario ispezionati | Clear |
+| Scrittura     | Cliente riservato, assenza modifiche, limiti e stati vuoti con istruzioni, nessun testo tecnico nei flussi         | Clear |
+| Tipografia    | Token Arc, date/euro italiani, dati tabulari, dettaglio completo per titoli evento troncati                        | Clear |
+| Colore        | Token semantici e axe chiaro/scuro; stati con label                                                                | Clear |
+| UI            | Skeleton dopo guardie, empty/error, controlli readonly, download nativi; nessuna modifica Arc o animazione nuova   | Clear |
+
+Cinque e2e portale e cinque regressioni calendario passati; desktop Workers, regressione dashboard e PDF estratto verificati. 227 test DB, 79 unit test, lint/typecheck/tokens/build/DB lint. Nessun finding azionabile residuo nel flusso verificato. Screen reader reale, zoom 200% e accento alternativo restano in M8. Verdict: Approve entro il perimetro indicato.

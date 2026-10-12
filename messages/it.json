@@ -38,7 +38,8 @@
     "budgets": "Budget",
     "tableRegion": "Tabella: {caption}",
     "commissions": "Provvigioni",
-    "portalName": "Portale brand"
+    "portalName": "Portale brand",
+    "sales": "Vendite"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -544,7 +545,8 @@
       "payment_due": "Scadenza pagamento",
       "other": "Altro"
     },
-    "events": "Eventi"
+    "events": "Eventi",
+    "emptyPortal": "Nessun evento condiviso nel periodo. Cambia periodo oppure chiedi allo showroom di verificarlo."
   },
   "reminders": {
     "heading": "Appuntamento di domani",
@@ -733,7 +735,7 @@
     "percentage": "{value}%",
     "trendChart": "Andamento del venduto",
     "noSales": "Nessun ordine confermato nel periodo",
-    "noSalesHint": "Amplia i filtri o conferma un ordine per vedere i dati.",
+    "noSalesHint": "Modifica i filtri oppure chiedi allo showroom di verificare gli ordini confermati.",
     "shownMonths": "Visualizzati i primi {shown} mesi su {total}. Restringi il periodo per vedere i successivi.",
     "month": "Mese",
     "customersChart": "Primi clienti per venduto",
@@ -744,6 +746,26 @@
     "readonly": "Consulta ordini confermati, venduto e budget dei brand a cui hai accesso. I dati sono in sola lettura.",
     "noBrands": "Nessun brand associato",
     "noBrandsHint": "Chiedi all’amministratore di associare il tuo account a un brand.",
-    "ordersCount": "Ordini confermati"
+    "ordersCount": "Ordini confermati",
+    "status": "Stato",
+    "statuses": {
+      "draft": "Bozza",
+      "confirmed": "Confermato",
+      "in_production": "In produzione",
+      "shipped": "Spedito",
+      "delivered": "Consegnato",
+      "invoiced": "Fatturato",
+      "cancelled": "Annullato"
+    },
+    "ordersReadonly": "Ordini dei tuoi brand, in sola lettura. Il cliente è mostrato secondo le autorizzazioni del brand.",
+    "exportOrders": "Esporta ordini CSV",
+    "exportTooLarge": "Troppi ordini per esportare. Restringi brand, stagione o periodo.",
+    "salesTitle": "Vendite",
+    "salesHint": "Venduto netto degli ordini confermati e successivi, raggruppato per brand, stagione e cliente. Bozze e annullati sono esclusi.",
+    "documentsHint": "Documenti condivisi dallo showroom con i tuoi brand. Seleziona il nome per scaricare il file.",
+    "calendarHint": "Eventi condivisi dallo showroom con i tuoi brand, in sola lettura. Puoi aprire un evento e abbonarti al calendario.",
+    "loadingReport": "Caricamento dei dati",
+    "noOrdersHint": "Modifica i filtri. Se manca un ordine, chiedi allo showroom di verificarlo.",
+    "noDocumentsHint": "Chiedi allo showroom di condividere i documenti del tuo brand."
   }
 }

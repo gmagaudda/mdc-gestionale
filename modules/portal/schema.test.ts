@@ -1,5 +1,9 @@
 import { it, expect } from "vitest";
-import { portalDashboardSchema } from "./schema";
+import {
+  portalDashboardSchema,
+  portalOrdersSchema,
+  portalOrderFiltersSchema,
+} from "./schema";
 it("rejects accidental internal fields in a portal report", () => {
   const report = {
     sold_cents: "1000",
@@ -16,4 +20,19 @@ it("rejects accidental internal fields in a portal report", () => {
     portalDashboardSchema.safeParse({ ...report, internal_notes: "secret" })
       .success,
   ).toBe(false);
+});
+it("limits order report shape and rejects unknown statuses", () => {
+  expect(
+    portalOrderFiltersSchema.safeParse({ status: "approved" }).success,
+  ).toBe(false);
+  expect(
+    portalOrdersSchema.safeParse({
+      count: 0,
+      rows: [],
+      internal_notes: "secret",
+    }).success,
+  ).toBe(false);
+  expect(portalOrdersSchema.safeParse({ count: 0, rows: [] }).success).toBe(
+    true,
+  );
 });

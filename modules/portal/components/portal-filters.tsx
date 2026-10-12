@@ -8,6 +8,8 @@ import { Select } from "@/components/arc/select/select";
 import { SearchSelect } from "@/components/shared/search-select";
 import { Alert } from "@/components/arc/alert/alert";
 import { portalFiltersSchema } from "../schema";
+import { portalOrderFiltersSchema } from "../schema";
+import { orderStatuses } from "@/modules/orders/schema";
 import type { DashboardFilters } from "@/modules/dashboard/schema";
 function ChoiceField(props: React.ComponentProps<typeof Select>) {
   return props.options.length <= 12 ? (
@@ -27,22 +29,24 @@ export function PortalFilters({
   brands,
   seasons,
   base = "/portal/dashboard",
+  status,
 }: {
   initial: DashboardFilters;
   brands: { id: string; name: string }[];
   seasons: { id: string; brand_id: string; code: string; name: string }[];
   base?: "/portal/dashboard" | "/portal/sales" | "/portal/orders";
+  status?: "" | (typeof orderStatuses)[number];
 }) {
   const t = useTranslations("portal"),
     router = useRouter(),
-    [value, setValue] = useState(initial),
+    [value, setValue] = useState({ ...initial, status: status ?? "" }),
     [pending, start] = useTransition(),
     [error, setError] = useState(false);
-  const key = JSON.stringify(initial),
+  const key = JSON.stringify({ ...initial, status }),
     [seen, setSeen] = useState(key);
   if (seen !== key) {
     setSeen(key);
-    setValue(initial);
+    setValue({ ...initial, status: status ?? "" });
   }
   const all = { value: "all", label: t("all") };
   return (
@@ -52,7 +56,13 @@ export function PortalFilters({
       aria-busy={pending}
       onSubmit={(event) => {
         event.preventDefault();
-        if (!portalFiltersSchema.safeParse(value).success) {
+        if (
+          !(
+            base === "/portal/orders"
+              ? portalOrderFiltersSchema
+              : portalFiltersSchema
+          ).safeParse(value).success
+        ) {
           setError(true);
           return;
         }
@@ -106,6 +116,28 @@ export function PortalFilters({
           value={value.from}
           onChange={(e) => setValue((v) => ({ ...v, from: e.target.value }))}
         />
+        {base === "/portal/orders" && (
+          <Select
+            label={t("status")}
+            placeholder={t("all")}
+            value={value.status || "all"}
+            disabled={pending}
+            options={[
+              all,
+              ...orderStatuses.map((s) => ({
+                value: s,
+                label: t(`statuses.${s}`),
+              })),
+            ]}
+            onValueChange={(s) =>
+              setValue((v) => ({
+                ...v,
+                status:
+                  s === "all" ? "" : (s as (typeof orderStatuses)[number]),
+              }))
+            }
+          />
+        )}
         <Input
           label={t("to")}
           type="date"
@@ -123,7 +155,7 @@ export function PortalFilters({
           type="button"
           size="lg"
           onClick={() => {
-            setValue(portalFiltersSchema.parse({}));
+            setValue({ ...portalFiltersSchema.parse({}), status: "" });
             start(() => router.push(base));
           }}
         >

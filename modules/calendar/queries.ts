@@ -75,5 +75,30 @@ export async function listEvents(input: unknown) {
       })),
     };
   }
-  return { ok: true as const, data: result.data };
+  return {
+    ok: true as const,
+    data: result.data.map(
+      ({
+        id,
+        brand_id,
+        title,
+        type,
+        description,
+        location,
+        starts_at,
+        ends_at,
+        all_day,
+      }) => ({
+        id,
+        brand_id,
+        title,
+        type,
+        description,
+        location,
+        starts_at,
+        ends_at,
+        all_day,
+      }),
+    ),
+  };
 }

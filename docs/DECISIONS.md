@@ -163,3 +163,7 @@ Guardie di brand/stagione prima della Suspense dei dati: il brand estraneo rispo
 Next dev/next-themes emette un warning React sul rimontaggio dello script quando si naviga a un documento 404 completo; il tema continua a funzionare. La console dei flussi normali è controllata senza eccezioni; l'errore HTTP 404 richiesto è distinto dagli errori inattesi. Sul runtime Workers di produzione anche la console attraverso il 404 è pulita. Nessuna modifica al provider per aggirare il warning dev.
 
 Le azioni dei report sono statiche: la regola sticky dei form di scrittura copriva campi filtro su mobile. report-actions nei filtri interni/portale ed export provvigioni, con geometria DOM verificata.
+
+## M6-T2: read model del portale
+
+Vista e RPC dedicate espongono solo i campi necessari ai brand. Le aggregazioni vendite si calcolano in SQL e il nome cliente passa da D1, senza accesso diretto all'anagrafica. Ordini bozza/annullati rimangono consultabili, ma non contribuiscono al venduto. Il calendario riusa FullCalendar e l'abbonamento personale con controlli readonly; cliente e assegnatario restano interni. Documenti e relativi contenuti sono pubblicabili solo dopo condivisione esplicita; non si promette anonimizzazione del file originale. Le guardie precedono Suspense per mantenere HTTP 404 sugli scope non autorizzati.

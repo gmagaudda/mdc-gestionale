@@ -33,6 +33,7 @@ export function EventForm({
   onSaved,
   onBusy,
   editable,
+  portal = false,
 }: {
   event?: CalendarEvent;
   initial: EventInput;
@@ -40,6 +41,7 @@ export function EventForm({
   onSaved: () => void;
   onBusy: (busy: boolean) => void;
   editable: boolean;
+  portal?: boolean;
 }) {
   const t = useTranslations("calendar");
   const form = useRef<HTMLFormElement>(null);
@@ -98,20 +100,24 @@ export function EventForm({
               t("none")}
           </dd>
         </div>
-        <div>
-          <dt>{t("customer_id")}</dt>
-          <dd>
-            {customerOptions.find((c) => c.value === initial.customer_id)
-              ?.label || t("none")}
-          </dd>
-        </div>
-        <div>
-          <dt>{t("assigned_to")}</dt>
-          <dd>
-            {choices.assignees.find((a) => a.id === initial.assigned_to)
-              ?.full_name || t("none")}
-          </dd>
-        </div>
+        {!portal && (
+          <div>
+            <dt>{t("customer_id")}</dt>
+            <dd>
+              {customerOptions.find((c) => c.value === initial.customer_id)
+                ?.label || t("none")}
+            </dd>
+          </div>
+        )}
+        {!portal && (
+          <div>
+            <dt>{t("assigned_to")}</dt>
+            <dd>
+              {choices.assignees.find((a) => a.id === initial.assigned_to)
+                ?.full_name || t("none")}
+            </dd>
+          </div>
+        )}
         <div>
           <dt>{t("description")}</dt>
           <dd className="preserve-text">{initial.description || t("none")}</dd>

@@ -48,15 +48,18 @@ const plugins = [theme, daygrid, timegrid, list, interaction];
 const locale = { ...it };
 export function CalendarBoard({
   choices,
-  editable,
+  editable: allowEdit,
   initialDate,
   userId,
+  portal = false,
 }: {
   choices: CalendarChoices;
   editable: boolean;
   initialDate: string;
   userId: string;
+  portal?: boolean;
 }) {
+  const editable = allowEdit && !portal;
   const t = useTranslations("calendar");
   const reduced = useReducedMotion();
   const desktop = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
@@ -113,11 +116,16 @@ export function CalendarBoard({
         const params = new URLSearchParams({
           start: info.startStr,
           end: info.endStr,
-          ...filters,
+          ...(portal
+            ? { brand_id: filters.brand_id, type: filters.type }
+            : filters),
         });
-        const response = await fetch(`/api/calendar?${params}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `${portal ? "/api/portal/calendar" : "/api/calendar"}?${params}`,
+          {
+            cache: "no-store",
+          },
+        );
         if (!response.ok) {
           if (request === ticket.current)
             notify(() =>
@@ -126,7 +134,18 @@ export function CalendarBoard({
           reject(Error("Calendar unavailable"));
           return;
         }
-        const rows: CalendarEvent[] = await response.json();
+        const received: CalendarEvent[] = await response.json();
+        const rows = portal
+          ? received.map((row) => ({
+              ...row,
+              customer_id: null,
+              assigned_to: null,
+              created_at: "",
+              updated_at: "",
+              deleted_at: null,
+              visible_to_brand: true,
+            }))
+          : received;
         resolve(
           rows.map((row) => ({
             id: row.id,
@@ -144,7 +163,7 @@ export function CalendarBoard({
         if (request === ticket.current) notify(() => setLoading(false));
       }
     },
-    [filters, notify],
+    [filters, notify, portal],
   );
   const changed = (info: EventDropInfo | EventResizeDoneInfo) => {
     const row = info.event.extendedProps.row as CalendarEvent;
@@ -231,6 +250,7 @@ export function CalendarBoard({
           event={selected}
           initial={initial}
           editable={editable}
+          portal={portal}
           choices={choices}
           onBusy={setBusy}
           onSaved={() => {
@@ -254,46 +274,50 @@ export function CalendarBoard({
               setFilters((f) => ({ ...f, brand_id: v === "all" ? "" : v }))
             }
           />
-          <SearchSelect
-            label={t("customer_id")}
-            value={filters.customer_id || "all"}
-            options={[
-              { value: "all", label: t("allCustomers") },
-              ...choices.customers.map((c) => ({
-                value: c.id,
-                label: c.legal_name,
-              })),
-            ]}
-            loadOptions={async (term) => {
-              const result = await searchOrderCustomers(term);
-              return result.ok
-                ? {
-                    ok: true as const,
-                    data: [
-                      { value: "all", label: t("allCustomers") },
-                      ...result.data,
-                    ],
-                  }
-                : result;
-            }}
-            onValueChange={(v) =>
-              setFilters((f) => ({ ...f, customer_id: v === "all" ? "" : v }))
-            }
-          />
-          <SelectField
-            label={t("assigned_to")}
-            value={filters.assigned_to || "all"}
-            options={[
-              { value: "all", label: t("allAssignees") },
-              ...choices.assignees.map((a) => ({
-                value: a.id,
-                label: a.full_name || a.email,
-              })),
-            ]}
-            onValueChange={(v) =>
-              setFilters((f) => ({ ...f, assigned_to: v === "all" ? "" : v }))
-            }
-          />
+          {!portal && (
+            <SearchSelect
+              label={t("customer_id")}
+              value={filters.customer_id || "all"}
+              options={[
+                { value: "all", label: t("allCustomers") },
+                ...choices.customers.map((c) => ({
+                  value: c.id,
+                  label: c.legal_name,
+                })),
+              ]}
+              loadOptions={async (term) => {
+                const result = await searchOrderCustomers(term);
+                return result.ok
+                  ? {
+                      ok: true as const,
+                      data: [
+                        { value: "all", label: t("allCustomers") },
+                        ...result.data,
+                      ],
+                    }
+                  : result;
+              }}
+              onValueChange={(v) =>
+                setFilters((f) => ({ ...f, customer_id: v === "all" ? "" : v }))
+              }
+            />
+          )}
+          {!portal && (
+            <SelectField
+              label={t("assigned_to")}
+              value={filters.assigned_to || "all"}
+              options={[
+                { value: "all", label: t("allAssignees") },
+                ...choices.assignees.map((a) => ({
+                  value: a.id,
+                  label: a.full_name || a.email,
+                })),
+              ]}
+              onValueChange={(v) =>
+                setFilters((f) => ({ ...f, assigned_to: v === "all" ? "" : v }))
+              }
+            />
+          )}
           <SelectField
             label={t("type")}
             value={filters.type || "all"}
@@ -310,7 +334,7 @@ export function CalendarBoard({
           />
         </div>
       </details>
-      <div className="form-actions">
+      <div className="form-actions report-actions">
         <Button
           size="lg"
           variant="secondary"
@@ -413,7 +437,7 @@ export function CalendarBoard({
           }}
           eventDrop={changed}
           eventResize={changed}
-          noEventsContent={() => t("empty")}
+          noEventsContent={() => t(portal ? "emptyPortal" : "empty")}
           eventColor="var(--accent)"
           eventContrastColor="var(--background)"
         />

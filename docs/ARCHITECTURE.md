@@ -25,3 +25,7 @@ v_commissions security_invoker combina orders e le percentuali private, imponend
 ## Portale
 
 Il layout richiede ruolo brand attivo. Il contesto usa solo sessione/RLS, valida i filtri con Zod e verifica accesso brand prima di inviare la shell con la Suspense dati. portal_dashboard_report impone ruolo brand e accesso allo scope, produce una whitelist di venduto/conteggi/budget, senza fatturato, provvigioni, note o contatti. Customer name è derivato con D1 da un ordine autorizzato, non da una lettura diretta di customers. Revoca associazione e profilo inattivo sono rivalutati a ogni lettura.
+
+Ordini e vendite del portale usano RPC invoker con whitelist esplicite, limiti/paginazione, centesimi testuali per gli aggregati e Zod sui payload. I dettagli passano da portal_orders e righe snapshot protette da RLS; non interrogano order_private o storico interno. L'export CSV usa un'unica snapshot e rifiuta oltre 10.000 ordini; scope estraneo restituisce 404. PDF e line sheet riusano le route autorizzate esistenti.
+
+portal_documents e portal_events sono viste security_invoker con sole colonne pubblicabili. `/api/portal/calendar` restituisce solo metadati condivisi, senza cliente o assegnatario. Il vecchio endpoint calendario applica la stessa whitelist per ruolo brand. L'UI disabilita ogni modifica anche quando riceve per errore un flag editable. Liste con Suspense dopo le guardie di ruolo/scope, errori inline e stati vuoti. Download nativi, niente prefetch dei file né cache di risposte autenticate.

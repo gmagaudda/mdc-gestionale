@@ -582,6 +582,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "event_reminders_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_events";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "event_reminders_recipient_id_fkey";
             columns: ["recipient_id"];
             isOneToOne: false;
@@ -1315,6 +1322,72 @@ export type Database = {
       };
     };
     Views: {
+      portal_documents: {
+        Row: {
+          brand_id: string | null;
+          brand_name: string | null;
+          created_at: string | null;
+          id: string | null;
+          kind: Database["public"]["Enums"]["document_kind"] | null;
+          name: string | null;
+          size_bytes: number | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "documents_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      portal_events: {
+        Row: {
+          all_day: boolean | null;
+          brand_id: string | null;
+          description: string | null;
+          ends_at: string | null;
+          id: string | null;
+          location: string | null;
+          starts_at: string | null;
+          title: string | null;
+          type: Database["public"]["Enums"]["event_type"] | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          all_day?: boolean | null;
+          brand_id?: string | null;
+          description?: string | null;
+          ends_at?: string | null;
+          id?: string | null;
+          location?: string | null;
+          starts_at?: string | null;
+          title?: string | null;
+          type?: Database["public"]["Enums"]["event_type"] | null;
+        };
+        Update: {
+          all_day?: boolean | null;
+          brand_id?: string | null;
+          description?: string | null;
+          ends_at?: string | null;
+          id?: string | null;
+          location?: string | null;
+          starts_at?: string | null;
+          title?: string | null;
+          type?: Database["public"]["Enums"]["event_type"] | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "events_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       portal_orders: {
         Row: {
           brand_id: string | null;
@@ -1590,6 +1663,29 @@ export type Database = {
         Args: {
           p_brand_id?: string;
           p_end?: string;
+          p_season_id?: string;
+          p_start?: string;
+        };
+        Returns: Json;
+      };
+      portal_orders_report: {
+        Args: {
+          p_brand_id?: string;
+          p_end?: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_season_id?: string;
+          p_start?: string;
+          p_status?: Database["public"]["Enums"]["order_status"];
+        };
+        Returns: Json;
+      };
+      portal_sales_report: {
+        Args: {
+          p_brand_id?: string;
+          p_end?: string;
+          p_limit?: number;
+          p_offset?: number;
           p_season_id?: string;
           p_start?: string;
         };

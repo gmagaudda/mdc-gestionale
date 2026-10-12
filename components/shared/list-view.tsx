@@ -16,6 +16,7 @@ export async function ListView({
   searchLabel,
   sortable = [],
   filterParams = {},
+  emptyDescription,
 }: {
   base: string;
   query: ListQuery;
@@ -26,6 +27,7 @@ export async function ListView({
   searchLabel?: string;
   sortable?: ListColumn[];
   filterParams?: Record<string, string>;
+  emptyDescription?: string;
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
@@ -84,7 +86,9 @@ export async function ListView({
       ) : (
         <EmptyState
           title={t("emptyTitle")}
-          description={t(query.q ? "emptySearch" : "emptyDescription")}
+          description={
+            emptyDescription ?? t(query.q ? "emptySearch" : "emptyDescription")
+          }
           action={
             query.q ? (
               <Link className="text-link" href={base}>
