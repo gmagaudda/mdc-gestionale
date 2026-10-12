@@ -1,5 +1,5 @@
 "use client";
-import NumberFlow from "@number-flow/react";
+import NumberFlow, { type Format } from "@number-flow/react";
 import { motionTokens } from "@/components/arc/lib/motion-tokens";
 import { formatMoney, MAX_CENTS } from "@/lib/money";
 const timing = {
@@ -13,28 +13,34 @@ export function AnimatedNumber({
   value: number;
   currency?: boolean;
 }) {
-  return (
-    <NumberFlow
-      value={value}
-      locales="it-IT"
-      className="tabular-nums"
-      format={
-        currency
-          ? {
-              style: "currency",
-              currency: "EUR",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }
-          : { maximumFractionDigits: 0 }
+  const format: Format = currency
+    ? {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       }
-      transformTiming={timing}
-      opacityTiming={{
-        duration: motionTokens.duration.fast * 1000,
-        easing: "ease-out",
-      }}
-      respectMotionPreference
-    />
+    : { maximumFractionDigits: 0 };
+  return (
+    <>
+      <span aria-hidden="true">
+        <NumberFlow
+          value={value}
+          locales="it-IT"
+          className="tabular-nums"
+          format={format}
+          transformTiming={timing}
+          opacityTiming={{
+            duration: motionTokens.duration.fast * 1000,
+            easing: "ease-out",
+          }}
+          respectMotionPreference
+        />
+      </span>
+      <span className="sr-only">
+        {new Intl.NumberFormat("it-IT", format).format(value)}
+      </span>
+    </>
   );
 }
 export function AnimatedMoney({ cents }: { cents: bigint }) {

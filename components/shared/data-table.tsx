@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
 import { Copy } from "lucide-react";
@@ -27,6 +27,32 @@ export function DataTable({
 }) {
   const t = useTranslations("common");
   const [feedback, setFeedback] = useState("");
+  const desktop = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const table = desktop.current?.querySelector("table");
+    const scroller = table?.parentElement;
+    if (!table || !scroller) return;
+    // Add keyboard access around the vendor table without changing Arc source.
+    const update = () => {
+      const needsFocus =
+        scroller.scrollWidth > scroller.clientWidth &&
+        !scroller.querySelector("a[href], button, input, select, textarea");
+      if (needsFocus) {
+        scroller.tabIndex = 0;
+        scroller.setAttribute("role", "region");
+        scroller.setAttribute("aria-label", t("tableRegion", { caption }));
+      } else {
+        scroller.removeAttribute("tabindex");
+        scroller.removeAttribute("role");
+        scroller.removeAttribute("aria-label");
+      }
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(scroller);
+    observer.observe(table);
+    return () => observer.disconnect();
+  }, [rows, columns, caption, t]);
   const render = (column: ListColumn, row: ListRow) =>
     column.linkBase ? (
       <Link
@@ -61,7 +87,7 @@ export function DataTable({
     );
   return (
     <>
-      <div className="desktop-table">
+      <div className="desktop-table" ref={desktop}>
         <SortableDataTable
           rows={rows}
           rowKey="id"

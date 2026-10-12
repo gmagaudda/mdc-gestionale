@@ -263,6 +263,13 @@ export type Database = {
             referencedRelation: "budgets";
             referencedColumns: ["id", "brand_id"];
           },
+          {
+            foreignKeyName: "budget_private_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_budget_vs_actual";
+            referencedColumns: ["id", "brand_id"];
+          },
         ];
       };
       budgets: {
@@ -686,6 +693,93 @@ export type Database = {
             isOneToOne: true;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoices: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          customer_id: string;
+          due_date: string;
+          external_id: string | null;
+          external_status: string | null;
+          gross_cents: number;
+          id: string;
+          issue_date: string;
+          net_cents: number;
+          number: string;
+          order_id: string | null;
+          pdf_path: string | null;
+          status: Database["public"]["Enums"]["invoice_status"];
+          updated_at: string;
+          vat_cents: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          customer_id: string;
+          due_date: string;
+          external_id?: string | null;
+          external_status?: string | null;
+          gross_cents: number;
+          id?: string;
+          issue_date: string;
+          net_cents: number;
+          number: string;
+          order_id?: string | null;
+          pdf_path?: string | null;
+          status?: Database["public"]["Enums"]["invoice_status"];
+          updated_at?: string;
+          vat_cents: number;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          customer_id?: string;
+          due_date?: string;
+          external_id?: string | null;
+          external_status?: string | null;
+          gross_cents?: number;
+          id?: string;
+          issue_date?: string;
+          net_cents?: number;
+          number?: string;
+          order_id?: string | null;
+          pdf_path?: string | null;
+          status?: Database["public"]["Enums"]["invoice_status"];
+          updated_at?: string;
+          vat_cents?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoices_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "invoices_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
           },
         ];
       };
@@ -1250,6 +1344,123 @@ export type Database = {
           },
         ];
       };
+      v_budget_vs_actual: {
+        Row: {
+          brand_id: string | null;
+          budget_cents: string | null;
+          customer_id: string | null;
+          difference_cents: string | null;
+          difference_pct: string | null;
+          id: string | null;
+          period_end: string | null;
+          period_start: string | null;
+          revenue_cents: string | null;
+          season_id: string | null;
+          sold_cents: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "budgets_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      v_revenue_by_brand_period: {
+        Row: {
+          brand_id: string | null;
+          invoice_count: number | null;
+          month: string | null;
+          net_cents: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "invoices_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      v_sales_by_brand_season: {
+        Row: {
+          brand_id: string | null;
+          net_total_cents: string | null;
+          order_count: number | null;
+          season_id: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "orders_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      v_sales_by_customer: {
+        Row: {
+          brand_id: string | null;
+          customer_city: string | null;
+          customer_display_name: string | null;
+          customer_id: string | null;
+          net_total_cents: string | null;
+          order_count: number | null;
+          season_id: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "orders_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
     };
     Functions: {
       calendar_assignees: {
@@ -1282,6 +1493,15 @@ export type Database = {
           starts_at: string;
           title: string;
         }[];
+      };
+      dashboard_report: {
+        Args: {
+          p_brand_id?: string;
+          p_end?: string;
+          p_season_id?: string;
+          p_start?: string;
+        };
+        Returns: Json;
       };
       duplicate_order: { Args: { p_id: string }; Returns: string };
       finish_event_reminder: {

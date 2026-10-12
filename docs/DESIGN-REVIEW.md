@@ -178,3 +178,18 @@ Ambito: lista/form → errori campi/date → creazione → conflitto sovrapposiz
 | UI            | Form nativo decimal/date, pending/empty/error/success, nessuna modifica Arc, note multilinea            | Clear                          |
 
 Nessuna finding azionabile residua nell’ambito verificato. `pnpm exec playwright test e2e/budgets.spec.ts` (5 passati), desktop workerd (1 passato), 157 test DB, 66 unit test, lint/typecheck/tokens/build OpenNext e DB lint. Uno screenshot completo mostra il skip link fuori dalla posizione attesa: misurazione DOM sul runtime Workers conferma transform -92,78 px e bottom -38,39 px, quindi nascosto fuori viewport senza focus; nessuna modifica basata sul solo raster. Screen reader reale, zoom 200%, RTL e accento alternativo non verificati (M8). Verdict: Approve entro il perimetro indicato.
+
+## M5-T2: filtrare e leggere i report economici
+
+Ambito: dashboard → filtri brand/stagione/date → KPI → confronti/andamento/clienti → filtro mese → indietro → vuoto → errore date. Next/React, Arc Input/Select/Button/Alert/EmptyState/Skeleton/LineChart, tabelle condivise e Recharts per barre raggruppate. AGENTS, DESIGN-GUIDELINES e DECISIONS; revisione better-interface con le sei skill di dominio già lette.
+
+| Dominio       | Evidenza                                                                                                                     | Esito                         |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| Accessibilità | Axe nei due temi/cinque viewport; scroller readonly tablet nominato, focus e ArrowRight; valori Number Flow correnti sr-only | Clear dopo correzioni wrapper |
+| Layout        | Overflow 360–1440, screenshot tablet/Workers desktop, barre con larghezza massima; un contenitore                            | Clear                         |
+| Scrittura     | Periodi budget completi distinti dai KPI, scostamento definito, zero percentuale, copertura/limiti e recupero filtri         | Clear                         |
+| Tipografia    | Date/importi italiani, cifre tabulari, scope lungo a capo, token                                                             | Clear                         |
+| Colore        | Token semantici, legenda testuale e tabella equivalente; axe due temi                                                        | Clear nei controlli indicati  |
+| UI            | Skeleton finale, empty/error/risultati in pagina; filtri sync dopo indietro, Number Flow reduced motion, Arc immutabile      | Clear                         |
+
+Finding risolti: scorrimento readonly non raggiungibile da tastiera; Number Flow fallback SSR non aggiornato; filtri non sincronizzati con browser indietro. Grafici aria-hidden con tabella equivalente italiana; line-chart inert per non esporre controlli con istruzioni inglesi. La linea appare quando entra in viewport, secondo il comportamento Arc: screenshot full-page prima dello scroll può mostrarla ancora non disegnata. Test dedicato verifica percorso SVG e clip dopo lo scroll. Cinque e2e dashboard e desktop Workers passati; verifica editor per il wrapper condiviso. 179 test DB, 68 unit test, lint/typecheck/tokens/build OpenNext, DB lint. Screen reader reale, zoom 200%, RTL e accento alternativo rimangono nella verifica M8. Verdict: Approve entro il perimetro indicato.

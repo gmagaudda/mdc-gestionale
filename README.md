@@ -108,4 +108,10 @@ Il bucket `documents` è privato. Il download verifica la sessione e genera un U
 
 Apri `/budgets`: admin/amministrazione creano, modificano e archiviano; staff legge. L’importo netto si inserisce in euro, con virgola o punto e massimo due decimali, senza separatori delle migliaia. Il database conserva centesimi interi. Seleziona brand, eventuale stagione/cliente e periodo inclusivo. Due periodi della stessa combinazione non possono sovrapporsi; senza stagione/cliente il budget generale è separato da quelli specifici. Le note sono interne. L’archivio conserva audit e dati, escludendoli dai confronti.
 
-Test: `pnpm e2e e2e/budgets.spec.ts`; i test DB verificano isolamento, vincolo dei periodi e rollback budget/note. Il confronto economico sarà disponibile con M5-T2.
+Test: `pnpm e2e e2e/budgets.spec.ts`; i test DB verificano isolamento, vincolo dei periodi e rollback budget/note. Il confronto economico è disponibile nella dashboard.
+
+### Dashboard
+
+Apri `/dashboard`: filtra per brand, stagione e periodo. Venduto netto include ordini confermati e successivi, escludendo bozze/annullati; fatturato netto include fatture emesse/inviate/pagate. Il modulo di emissione sarà disponibile in M7. Il confronto budget considera l'intero periodo di ogni budget che interseca i filtri; scostamento = venduto meno budget, percentuale non disponibile per budget zero.
+
+Ogni grafico ha una tabella con valori esatti. Per dataset ampi la pagina indica quanti confronti/mesi mostra: restringi i filtri o apri la lista budget. Test: `pnpm e2e e2e/dashboard.spec.ts`; test DB con risultati economici calcolati a mano e isolamento RLS. Prova Workers locale: `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/dashboard.spec.ts --project=desktop`.

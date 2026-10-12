@@ -1,10 +1,76 @@
 import { getTranslations } from "next-intl/server";
-export default async function DashboardPage() {
-  const t = await getTranslations("dashboard");
+import { requireRole } from "@/lib/auth";
+import { internalRoles } from "@/lib/auth/roles";
+import { createClient } from "@/lib/supabase/server";
+import { Alert } from "@/components/arc/alert/alert";
+import { searchBudgetBrands } from "@/modules/budgets/actions";
+import { dashboardFiltersSchema } from "@/modules/dashboard/schema";
+import { getDashboardReport } from "@/modules/dashboard/queries";
+import { DashboardFiltersForm } from "@/modules/dashboard/components/dashboard-filters";
+import { ReportMetrics } from "@/modules/dashboard/components/report-metrics";
+import {
+  BudgetVsActualChart,
+  SalesTrendChart,
+  TopCustomersChart,
+} from "@/modules/dashboard/components/report-charts";
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  await requireRole(internalRoles);
+  const t = await getTranslations("dashboard"),
+    parsed = dashboardFiltersSchema.safeParse(await searchParams),
+    filters = parsed.success ? parsed.data : dashboardFiltersSchema.parse({});
+  const brands = await searchBudgetBrands("");
+  if (!brands.ok) throw Error("Report choices unavailable");
+  const db = await createClient();
+  if (
+    filters.brand_id &&
+    !brands.data.some((b) => b.value === filters.brand_id)
+  ) {
+    const { data } = await db
+      .from("brands")
+      .select("id,name")
+      .eq("id", filters.brand_id)
+      .maybeSingle();
+    if (data) brands.data.push({ value: data.id, label: data.name });
+  }
+  const season = filters.season_id
+    ? (
+        await db
+          .from("seasons")
+          .select("id,code,name")
+          .eq("id", filters.season_id)
+          .eq("brand_id", filters.brand_id)
+          .maybeSingle()
+      ).data
+    : null;
+  const report = parsed.success ? await getDashboardReport(filters) : null;
   return (
-    <header className="stack">
+    <>
       <h1>{t("title")}</h1>
-      <p>{t("description")}</p>
-    </header>
+      <DashboardFiltersForm
+        initial={filters}
+        brands={brands.data}
+        season={
+          season
+            ? { value: season.id, label: `${season.code} · ${season.name}` }
+            : undefined
+        }
+      />
+      {!parsed.success ? (
+        <Alert tone="danger" title={t("invalidFilters")} />
+      ) : report?.ok ? (
+        <>
+          <ReportMetrics report={report.data} />
+          <BudgetVsActualChart report={report.data} />
+          <SalesTrendChart report={report.data} />
+          <TopCustomersChart report={report.data} />
+        </>
+      ) : (
+        <Alert tone="danger" title={t("loadError")} />
+      )}
+    </>
   );
 }
