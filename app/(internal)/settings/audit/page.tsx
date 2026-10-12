@@ -47,6 +47,8 @@ export default async function AuditPage({
     "ical_tokens",
     "event_reminders",
     "documents",
+    "budgets",
+    "budget_private",
   ];
   if (query.q) {
     const resource = resourceNames.find(

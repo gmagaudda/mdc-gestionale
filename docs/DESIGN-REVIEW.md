@@ -163,3 +163,18 @@ Ambito: lista → form con errore → upload → dettaglio → condivisione → 
 | UI            | Loading shell condivisa, pending/upload, empty/error/success in pagina, file nativo; movimento ridotto Arc            | Clear                                                     |
 
 Nessuna finding azionabile residua nell’ambito. Verifiche: `pnpm exec playwright test e2e/documents.spec.ts` (5 passati), desktop Workers anche al limite 10 MiB (1 passato), 134 test DB, 57 unit test, lint/typecheck/tokens/build OpenNext e DB lint. Il controllo statico del contrasto aspetta opacità finale 1 dei messaggi. Screen reader reale, zoom browser 200% e accento alternativo non verificati, nella revisione M8. Verdict: Approve entro il perimetro indicato.
+
+## M5-T1: definire e archiviare un budget
+
+Ambito: lista/form → errori campi/date → creazione → conflitto sovrapposizione → modifica importo → dettaglio → sola lettura staff → archivio. Stack e convenzioni del progetto; componenti Arc gratuiti, SearchSelect condiviso e Input nativo per date/importi, messaggi italiani. Revisione better-interface con le sei skill di dominio già lette; esclusi grafici e portale futuri.
+
+| Dominio       | Evidenza                                                                                                | Esito                          |
+| ------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Accessibilità | e2e/budgets.spec.ts, focus primo campo e data finale, errore inline, conferma Annulla; axe chiaro/scuro | Clear nei controlli eseguiti   |
+| Layout        | Overflow 360–1440, form mobile e dettaglio Workers desktop ispezionati, composizione form-grid          | Clear per geometria verificata |
+| Scrittura     | Scope dei NULL/periodi e euro spiegati prima dei campi, errore overlap con recupero, conferma archivio  | Clear                          |
+| Tipografia    | Scala/token Arc, importi italiani/tabulari, nomi lunghi raggiungibili nei dettagli/ricerca              | Clear                          |
+| Colore        | Axe dopo assestamento delle animazioni, due temi, check:tokens                                          | Clear per coppie misurate      |
+| UI            | Form nativo decimal/date, pending/empty/error/success, nessuna modifica Arc, note multilinea            | Clear                          |
+
+Nessuna finding azionabile residua nell’ambito verificato. `pnpm exec playwright test e2e/budgets.spec.ts` (5 passati), desktop workerd (1 passato), 157 test DB, 66 unit test, lint/typecheck/tokens/build OpenNext e DB lint. Uno screenshot completo mostra il skip link fuori dalla posizione attesa: misurazione DOM sul runtime Workers conferma transform -92,78 px e bottom -38,39 px, quindi nascosto fuori viewport senza focus; nessuna modifica basata sul solo raster. Screen reader reale, zoom 200%, RTL e accento alternativo non verificati (M8). Verdict: Approve entro il perimetro indicato.

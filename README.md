@@ -103,3 +103,9 @@ Verifica locale: `pnpm e2e e2e/calendar-feed.spec.ts`. Per la prova Workers: `pn
 Apri `/documents`: admin/staff caricano PDF, PNG o JPEG fino a 10 MiB, modificano i metadati, condividono con il brand o archiviano. Amministrazione legge. Cliente e ordine sono facoltativi; un ordine deve appartenere al brand selezionato e, se specificato, al cliente. Il file originale non si sostituisce. La condivisione rende visibile anche il contenuto: controllalo prima di abilitarla.
 
 Il bucket `documents` è privato. Il download verifica la sessione e genera un URL valido 120 secondi; un URL già firmato resta valido fino alla scadenza anche dopo revoca/archivio. L’upload controlla estensione, MIME, firma iniziale e dimensione; non esegue una scansione antivirus. I record non finalizzati sono nascosti dalle liste. Test: `pnpm e2e e2e/documents.spec.ts`; su Wrangler locale, `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/documents.spec.ts --project=desktop`.
+
+### Budget
+
+Apri `/budgets`: admin/amministrazione creano, modificano e archiviano; staff legge. L’importo netto si inserisce in euro, con virgola o punto e massimo due decimali, senza separatori delle migliaia. Il database conserva centesimi interi. Seleziona brand, eventuale stagione/cliente e periodo inclusivo. Due periodi della stessa combinazione non possono sovrapporsi; senza stagione/cliente il budget generale è separato da quelli specifici. Le note sono interne. L’archivio conserva audit e dati, escludendoli dai confronti.
+
+Test: `pnpm e2e e2e/budgets.spec.ts`; i test DB verificano isolamento, vincolo dei periodi e rollback budget/note. Il confronto economico sarà disponibile con M5-T2.

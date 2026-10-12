@@ -34,7 +34,8 @@
     "choiceError": "Ricerca non riuscita. Modifica il testo per riprovare.",
     "orders": "Ordini",
     "calendar": "Calendario",
-    "documents": "Documenti"
+    "documents": "Documenti",
+    "budgets": "Budget"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -153,7 +154,9 @@
       "events": "Eventi",
       "ical_tokens": "Abbonamenti iCal",
       "event_reminders": "Promemoria appuntamenti",
-      "documents": "Documenti"
+      "documents": "Documenti",
+      "budgets": "Budget",
+      "budget_private": "Note budget"
     }
   },
   "brands": {
@@ -571,5 +574,38 @@
       "contract": "Contratto",
       "other": "Altro"
     }
+  },
+  "budgets": {
+    "title": "Budget",
+    "create": "Crea budget",
+    "edit": "Modifica budget",
+    "save": "Salva budget",
+    "cancel": "Annulla",
+    "brand": "Brand",
+    "season": "Stagione (facoltativa)",
+    "customer": "Cliente (facoltativo)",
+    "amount": "Importo netto",
+    "start": "Inizio periodo",
+    "end": "Fine periodo",
+    "period": "Periodo",
+    "notes": "Note interne",
+    "none": "Nessuno",
+    "noNotes": "Nessuna nota",
+    "scopeHint": "Il periodo comprende sia il primo sia l’ultimo giorno. Per lo stesso brand, stagione e cliente i periodi non possono sovrapporsi. Senza stagione o cliente, il budget resta generale e separato da quelli specifici.",
+    "required": "Completa questo campo con un valore valido.",
+    "dateRange": "Scegli una fine uguale o successiva all’inizio del periodo.",
+    "validation": "Controlla i campi, il brand e i riferimenti selezionati.",
+    "overlap": "Esiste già un budget per questa combinazione con un periodo sovrapposto. Modifica le date o apri il budget esistente.",
+    "conflict": "Il budget è cambiato. Ricarica la pagina prima di modificarlo.",
+    "saveError": "Impossibile salvare il budget. Controlla la connessione e riprova.",
+    "loadError": "Impossibile caricare i budget. Ricarica la pagina e riprova.",
+    "saved": "Budget salvato.",
+    "all": "Tutti i budget",
+    "detail": "Budget: {brand}",
+    "periodValue": "{start} → {end}",
+    "search": "Cerca per brand",
+    "archive": "Archivia budget",
+    "archiveQuestion": "Archiviare questo budget? Non comparirà più nelle liste e nei confronti. I dati e lo storico saranno conservati.",
+    "amountHint": "Importo in euro, per esempio 1250,50. Usa al massimo due decimali, senza separatori delle migliaia."
   }
 }

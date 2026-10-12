@@ -232,6 +232,101 @@ export type Database = {
         };
         Relationships: [];
       };
+      budget_private: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          id: string;
+          notes: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          id: string;
+          notes?: string;
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          id?: string;
+          notes?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "budget_private_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "budgets";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      budgets: {
+        Row: {
+          amount_cents: number;
+          brand_id: string;
+          created_at: string;
+          customer_id: string | null;
+          deleted_at: string | null;
+          id: string;
+          period_end: string;
+          period_start: string;
+          season_id: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          brand_id: string;
+          created_at?: string;
+          customer_id?: string | null;
+          deleted_at?: string | null;
+          id?: string;
+          period_end: string;
+          period_start: string;
+          season_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          amount_cents?: number;
+          brand_id?: string;
+          created_at?: string;
+          customer_id?: string | null;
+          deleted_at?: string | null;
+          id?: string;
+          period_end?: string;
+          period_start?: string;
+          season_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "budgets_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_season_id_brand_id_fkey";
+            columns: ["season_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       customer_contacts: {
         Row: {
           created_at: string;
@@ -1205,6 +1300,10 @@ export type Database = {
       };
       rotate_ical_token: { Args: { p_hash: string }; Returns: undefined };
       save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
+      save_budget: {
+        Args: { p_data: Json; p_id: string; p_updated_at?: string };
+        Returns: string;
+      };
       save_order: {
         Args: { p_data: Json; p_id: string; p_lines: Json };
         Returns: string;

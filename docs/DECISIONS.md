@@ -125,3 +125,11 @@ Storage e metadata non condividono una transazione: prima record pending associa
 Next proxy bufferizza il corpo a 10 MB e tronca senza rifiutare. Impostato experimental.proxyClientMaxBodySize a 12 MB seguendo la guida della versione installata, lasciando spazio al multipart; la route limita lo stream a 10 MiB + 64 KiB e il file a 10 MiB. Verificato su Workers il limite incluso e l’errore 413 oltre limite. URL firmati per 120 secondi: revoca blocca nuove emissioni, non annulla un URL già emesso. Risposte private/no-store.
 
 L’audit axe degli errori attende la fine delle animazioni Arc: i frame intermedi a opacità parziale non rappresentano il colore finale. Nessun token o interno Arc modificato; contrasto finale verificato. MCP Arc finalmente disponibile nella sessione: skill/catalogo/documentazione input consultati direttamente.
+
+## 2026-10-12: budget e periodi (M5-T1)
+
+Vincolo di esclusione [GiST sui daterange](https://www.postgresql.org/docs/current/rangetypes.html#RANGETYPES-CONSTRAINT) con [btree_gist](https://www.postgresql.org/docs/current/btree-gist.html). Primo e ultimo giorno inclusi; periodi consecutivi sono ammessi dal giorno successivo. Stagione e cliente NULL identificano una combinazione generale distinta, non un wildcard che blocca ogni budget specifico. Nel vincolo, coalesce e flag NULL separati evitano collisioni anche con l’UUID zero. Non si sommano automaticamente budget generali e specifici come un unico obiettivo: il confronto successivo deve indicarne il perimetro.
+
+Note riservate in budget_private con RLS, come le note ordine; il portale legge importi/periodi senza note interne o dati fiscali del cliente. save_budget aggiorna budget, note e audit in una transazione; updated_at evita sovrascritture. Identità e brand immutabili. UI amministrazione e admin, staff in sola lettura.
+
+Consultati componenti gratuiti Arc money-input, input, textarea e date-picker. Usato Input con inputMode decimal e parsing esatto in centesimi: money-input corrente contiene messaggi/annunci dei limiti in inglese senza prop di traduzione, e non si modificano gli interni Arc. Date native nell’Input per immissione diretta/tastiera italiana, come negli altri form. Nessuna animazione superflua durante la digitazione; Number Flow resta per valori live mostrati fuori dai campi.
