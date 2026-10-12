@@ -1,10 +1,10 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/arc/input/input";
-import { Button } from "@/components/arc/button/button";
 import { Alert } from "@/components/arc/alert/alert";
 import { saveCustomerContact } from "../actions";
 import { customerContactSchema, type CustomerContactValues } from "../schema";
@@ -91,7 +91,7 @@ export function CustomerContactForm({
         tone={error ? "danger" : "success"}
         title={error ? t(error) : t("contactSaved")}
       />
-      <Button
+      <WriteButton
         variant="secondary"
         type="submit"
         size="lg"
@@ -99,7 +99,7 @@ export function CustomerContactForm({
         disabled={pending}
       >
         {t(id ? "saveCustomerContact" : "addContact")}
-      </Button>
+      </WriteButton>
     </form>
   );
 }

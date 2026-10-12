@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -127,9 +128,14 @@ export function CustomerForm({
         title={error ? t(error) : ""}
       />
       <div className="form-actions">
-        <Button size="lg" type="submit" loading={pending} disabled={pending}>
+        <WriteButton
+          size="lg"
+          type="submit"
+          loading={pending}
+          disabled={pending}
+        >
           {t("save")}
-        </Button>
+        </WriteButton>
         <Button
           size="lg"
           type="button"

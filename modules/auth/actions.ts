@@ -79,10 +79,17 @@ export async function setPassword(input: unknown): Promise<ActionResult> {
   redirect("/login?password=updated");
 }
 
-export async function logout() {
+export async function logout(): Promise<ActionResult> {
   if (hasSupabaseConfig()) {
     const client = await createClient();
-    await client.auth.signOut();
+    // Signing out revokes all notification consent for this account before its session ends.
+    const identity = await client.auth.getUser();
+    if (identity.data.user) {
+      const revoked = await client.rpc("revoke_push_subscription", {});
+      if (revoked.error) return { ok: false, error: "logoutError" };
+    }
+    const signedOut = await client.auth.signOut();
+    if (signedOut.error) return { ok: false, error: "logoutError" };
   }
   (await cookies()).delete("auth-flow");
   redirect("/login");

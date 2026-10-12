@@ -1,7 +1,7 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useState, useTransition, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/arc/button/button";
 import { Input } from "@/components/arc/input/input";
 import { Textarea } from "@/components/arc/textarea/textarea";
 import { Checkbox } from "@/components/arc/checkbox/checkbox";
@@ -325,9 +325,9 @@ export function EventForm({
         tone="danger"
         title={error ? t(error) : ""}
       />
-      <Button type="submit" size="lg" disabled={pending} loading={pending}>
+      <WriteButton type="submit" size="lg" disabled={pending} loading={pending}>
         {t("save")}
-      </Button>
+      </WriteButton>
       {event && (
         <ConfirmAction
           label={t("archive")}

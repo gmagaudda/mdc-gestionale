@@ -1,3 +1,5 @@
+import { writeFileSync } from "node:fs";
+import { selectChoice } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -136,21 +138,13 @@ test("saves a three-product matrix atomically with discounts and exact server to
       .single()
   ).data!.legal_name;
   await page.getByLabel("Cerca Brand", { exact: true }).fill(brand);
-  await page.getByLabel("Brand", { exact: true }).click();
-  await page.getByRole("option", { name: brand, exact: true }).click();
-  await page.getByLabel("Stagione", { exact: true }).click();
-  await page
-    .getByRole("option", { name: "FW26-EDITOR: Autunno prova", exact: true })
-    .click();
+  await selectChoice(page, "Brand", brand);
+  await selectChoice(page, "Stagione", "FW26-EDITOR: Autunno prova");
   await page.getByLabel("Cerca Cliente", { exact: true }).fill(customer);
   await expect(page.getByLabel("Cliente", { exact: true })).toBeEnabled();
-  await page.getByLabel("Cliente", { exact: true }).click();
-  await page
-    .getByRole("option", { name: `${customer} · Milano`, exact: true })
-    .click();
+  await selectChoice(page, "Cliente", `${customer} · Milano`);
   for (const name of productNames) {
-    await page.getByLabel("Prodotto da aggiungere", { exact: true }).click();
-    await page.getByRole("option").filter({ hasText: name }).click();
+    await selectChoice(page, "Prodotto da aggiungere", name, true);
     await page
       .getByRole("button", { name: "Aggiungi prodotto", exact: true })
       .click();
@@ -192,13 +186,29 @@ test("saves a three-product matrix atomically with discounts and exact server to
         .analyze()
     ).violations,
   ).toEqual([]);
-  expect(
-    await page.evaluate(() => document.documentElement.scrollWidth),
-  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.screenshot({
     path: testInfo.outputPath("order-editor.png"),
     fullPage: true,
   });
+  const overflow = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("body *"))
+      .filter((element) => element.getBoundingClientRect().right > innerWidth)
+      .map((element) => ({
+        tag: element.tagName,
+        className: element.className,
+        width: element.getBoundingClientRect().width,
+        right: element.getBoundingClientRect().right,
+      }))
+      .slice(0, 30),
+  );
+  writeFileSync(testInfo.outputPath("overflow.json"), JSON.stringify(overflow));
+  await testInfo.attach("overflow.json", {
+    body: JSON.stringify(overflow),
+    contentType: "application/json",
+  });
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.getByRole("button", { name: "Salva bozza", exact: true }).click();
   await expect(page).toHaveURL(/\/orders\/[\da-f-]+\/edit\?saved=1$/);
   orderId = new URL(page.url()).pathname.split("/")[2];

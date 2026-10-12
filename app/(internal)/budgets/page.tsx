@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
@@ -6,7 +7,6 @@ import { parseListQuery } from "@/lib/queries/list";
 import { formatMoney } from "@/lib/money";
 import { PageHeader } from "@/components/shared/page-header";
 import { ListView } from "@/components/shared/list-view";
-import { Alert } from "@/components/arc/alert/alert";
 import { listBudgets } from "@/modules/budgets/queries";
 export default async function BudgetsPage({
   searchParams,
@@ -38,7 +38,7 @@ export default async function BudgetsPage({
         }
       />
       {result.error ? (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/budgets"

@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { uuid } from "zod";
@@ -192,7 +193,7 @@ export default async function OrderPage({
       <section className="stack" aria-label={t("history")}>
         <h2>{t("history")}</h2>
         {history.error ? (
-          <Alert tone="danger" title={t("loadError")} />
+          <LoadError title={t("loadError")} />
         ) : (
           <ol className="stack">
             {history.data?.map((row) => (

@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Button } from "@/components/arc/button/button";
 import { Avatar } from "@/components/arc/avatar/avatar";
 import { AppNavigation } from "./app-navigation";
 import { ThemeControls } from "./theme-controls";
-import { logout } from "@/modules/auth/actions";
+import { LogoutForm } from "@/components/pwa/logout-form";
+import { PwaStatus, PwaInstall } from "@/components/pwa/pwa-status";
+import { PushSettings } from "@/components/pwa/push-settings";
+import { pushConfig } from "@/lib/pwa/push-config";
 import { type Role } from "@/lib/auth/roles";
 export async function SessionShell({
   user,
@@ -30,14 +32,21 @@ export async function SessionShell({
             <details className="user-preferences">
               <summary className="text-link">{t("preferences")}</summary>
               <ThemeControls />
+              <PwaInstall />
+              {user.role !== "brand" && (
+                <PushSettings
+                  publicKey={
+                    process.env.NODE_ENV === "production"
+                      ? (pushConfig()?.publicKey ?? null)
+                      : null
+                  }
+                />
+              )}
             </details>
-            <form action={logout}>
-              <Button type="submit" variant="secondary" size="lg">
-                {t("logout")}
-              </Button>
-            </form>
+            <LogoutForm />
           </header>
           <main id="content" tabIndex={-1} className="page-container stack">
+            <PwaStatus />
             {children}
           </main>
         </div>

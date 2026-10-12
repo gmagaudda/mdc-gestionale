@@ -1,4 +1,5 @@
 "use client";
+import { useOnlineStatus } from "@/lib/pwa/online";
 import {
   useCallback,
   useEffect,
@@ -59,6 +60,7 @@ export function CalendarBoard({
   userId: string;
   portal?: boolean;
 }) {
+  const online = useOnlineStatus();
   const editable = allowEdit && !portal;
   const t = useTranslations("calendar");
   const reduced = useReducedMotion();
@@ -166,6 +168,10 @@ export function CalendarBoard({
     [filters, notify, portal],
   );
   const changed = (info: EventDropInfo | EventResizeDoneInfo) => {
+    if (!navigator.onLine) {
+      info.revert();
+      return;
+    }
     const row = info.event.extendedProps.row as CalendarEvent;
     if (!info.event.start || !info.event.end) {
       info.revert();
@@ -406,8 +412,10 @@ export function CalendarBoard({
           height="auto"
           events={events}
           eventInteractive
-          editable={editable && desktop && !pending && !busy}
-          eventResizableFromStart={editable && desktop && !pending && !busy}
+          editable={editable && desktop && !pending && !busy && online}
+          eventResizableFromStart={
+            editable && desktop && !pending && !busy && online
+          }
           dragRevertDuration={reduced ? 0 : motionTokens.duration.fast * 1000}
           dayMaxEvents={false}
           datesSet={(info) => {

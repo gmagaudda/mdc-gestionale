@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
@@ -69,7 +70,7 @@ export default async function DashboardPage({
           <TopCustomersChart report={report.data} />
         </>
       ) : (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       )}
     </>
   );

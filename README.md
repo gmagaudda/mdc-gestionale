@@ -141,3 +141,27 @@ Apri /invoices per scadenzario, saldo e dettaglio. Registra incassi effettivi pa
 Test: pnpm e2e e2e/invoices.spec.ts. Il flusso ordine → fattura → due pagamenti → saldo, callback firmato e annullamento è verificato anche su Workers locale. Fatture in Cloud è il provider reale scelto, con integrazione nel task M7-T3 e accessi da configurare nell'ambiente.
 
 Configurazione Fatture in Cloud, OAuth, mapping delle aziende, retry e callback: [docs/INVOICING.md](docs/INVOICING.md). Solo INVOICING_PROVIDER=fic abilita l'adapter reale. Il default locale resta mock; nessun account reale è stato usato dai test.
+
+### PWA e notifiche
+
+La build Workers locale consente di provare manifest, installazione nel browser desktop, modalità offline e aggiornamento:
+
+```sh
+pnpm icons
+pnpm build:cf
+pnpm exec wrangler dev --port 8790 --test-scheduled
+```
+
+Apri `http://localhost:8790`. In `next dev` il service worker è disattivato. Preferenze utente include installazione e notifiche; offline si può compilare una bozza già aperta, ma i salvataggi richiedono connessione. Le bozze non vengono conservate alla chiusura del tab. Prima di aggiornare l’app, salva le modifiche. Il logout revoca il consenso push su tutti i dispositivi dell’account.
+
+Per le chiavi di prova, `pnpm push:keys` crea `.vapid.local` (ignorato, 0600, rifiuta di sovrascrivere). Copia le sue tre variabili in `.env.local` e `.dev.vars`, poi ricostruisci e riavvia la preview. Non inserire la chiave privata nel codice o nei log. Per un ambiente reale, imposta `VAPID_SUBJECT` con il contatto HTTPS/mailto dell’operatore e conserva le chiavi nei segreti di quell’ambiente. `NEXT_PUBLIC_VAPID_PUBLIC_KEY` è pubblica e deve essere disponibile anche durante la build.
+
+Per una prova reale: installa l’app, accedi come utente interno, apri Preferenze utente, premi Attiva le notifiche e accetta il permesso del browser. Premi Invia notifica di prova (massimo una al minuto), verifica la ricezione e il clic sul calendario. Revoca le notifiche e verifica che non arrivino nuovi promemoria. Un 201 del servizio non dimostra la ricezione: i test automatici verificano consenso/revoca con un browser sintetico, senza inviare notifiche esterne. Su iPhone serve un’origine HTTPS attendibile raggiungibile dal dispositivo e l’installazione da Safari.
+
+Test della build production locale:
+
+```sh
+E2E_BASE_URL=http://localhost:8790 E2E_PWA_PRODUCTION=1 pnpm e2e e2e/pwa.spec.ts e2e/push.spec.ts --project=mobile --project=desktop
+```
+
+Usa solo il database Supabase locale. Il test di aggiornamento modifica temporaneamente l’asset generato `.open-next/assets/sw.js` e lo ripristina; non eseguire questa prova contro ambienti remoti.

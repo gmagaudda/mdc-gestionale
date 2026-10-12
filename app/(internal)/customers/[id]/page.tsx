@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { uuid } from "zod";
 import { notFound } from "next/navigation";
@@ -80,7 +81,7 @@ export default async function CustomerPage({
       <section className="stack" aria-labelledby="customer-contacts">
         <h2 id="customer-contacts">{t("contacts")}</h2>
         {contacts.error ? (
-          <Alert tone="danger" title={t("loadError")} />
+          <LoadError title={t("loadError")} />
         ) : contacts.data?.length ? (
           contacts.data.map((contact) => (
             <article className="stack contact-row" key={contact.id}>

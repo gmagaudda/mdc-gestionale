@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -197,9 +198,14 @@ export function BudgetForm({
         />
       </fieldset>
       <div className="form-actions">
-        <Button type="submit" size="lg" loading={pending} disabled={pending}>
+        <WriteButton
+          type="submit"
+          size="lg"
+          loading={pending}
+          disabled={pending}
+        >
           {t("save")}
-        </Button>
+        </WriteButton>
         <Button
           type="button"
           size="lg"

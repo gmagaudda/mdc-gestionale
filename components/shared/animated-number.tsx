@@ -22,7 +22,7 @@ export function AnimatedNumber({
       }
     : { maximumFractionDigits: 0 };
   return (
-    <>
+    <span className="animated-value">
       <span aria-hidden="true">
         <NumberFlow
           value={value}
@@ -40,7 +40,7 @@ export function AnimatedNumber({
       <span className="sr-only">
         {new Intl.NumberFormat("it-IT", format).format(value)}
       </span>
-    </>
+    </span>
   );
 }
 export function AnimatedMoney({ cents }: { cents: bigint }) {

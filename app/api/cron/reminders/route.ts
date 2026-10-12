@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { tomorrowInRome, cronAuthorized } from "@/lib/calendar/reminders";
 import { renderAppointmentReminder } from "@/lib/email/appointment-reminder";
 import { deliverEmail } from "@/lib/email";
+import { sendPushReminders } from "@/lib/pwa/push-job";
 const headers = { "Cache-Control": "private, no-store" };
 export async function POST(request: Request) {
   if (!(await cronAuthorized(request, process.env.CRON_SECRET)))
@@ -40,11 +41,15 @@ export async function POST(request: Request) {
       if (batch === 9)
         throw Error("Reminder batch limit reached; retry required");
     }
-    console.info("[reminders]", JSON.stringify(counters));
-    return Response.json(counters, {
-      status: counters.failed ? 503 : 200,
-      headers,
-    });
+    const push = await sendPushReminders(period);
+    console.info("[reminders]", JSON.stringify({ ...counters, push }));
+    return Response.json(
+      { ...counters, push },
+      {
+        status: counters.failed || push.failed ? 503 : 200,
+        headers,
+      },
+    );
   } catch {
     return Response.json(
       { error: "REMINDERS_UNAVAILABLE" },

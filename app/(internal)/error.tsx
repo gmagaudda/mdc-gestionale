@@ -1,14 +1,12 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { Alert } from "@/components/arc/alert/alert";
-import { Button } from "@/components/arc/button/button";
+import { LoadError } from "@/components/shared/load-error";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   const t = useTranslations("lists");
   return (
-    <Alert tone="danger" title={t("loadError")}>
-      <Button variant="secondary" size="lg" onClick={reset}>
-        {t("retry")}
-      </Button>
-    </Alert>
+    <>
+      <h1>{t("errorTitle")}</h1>
+      <LoadError title={t("loadError")} retry={reset} />
+    </>
   );
 }

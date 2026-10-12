@@ -1,9 +1,9 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 
 import { useState, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/arc/button/button";
 import { Input } from "@/components/arc/input/input";
 import { PasswordField } from "@/components/arc/password-field/password-field";
 import { PasswordStrength } from "@/components/arc/password-strength/password-strength";
@@ -163,7 +163,7 @@ export function AuthForm({
         tone={error ? "danger" : "success"}
         title={error ? t(error) : t("resetSent")}
       />
-      <Button type="submit" size="lg" loading={pending} disabled={pending}>
+      <WriteButton type="submit" size="lg" loading={pending} disabled={pending}>
         {t(
           mode === "login"
             ? "signIn"
@@ -171,7 +171,7 @@ export function AuthForm({
               ? "sendReset"
               : "savePassword",
         )}
-      </Button>
+      </WriteButton>
     </form>
   );
 }

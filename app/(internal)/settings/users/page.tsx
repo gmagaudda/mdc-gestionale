@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -5,7 +6,6 @@ import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { parseListQuery, escapeLike } from "@/lib/queries/list";
 import { ListView } from "@/components/shared/list-view";
-import { Alert } from "@/components/arc/alert/alert";
 export default async function UsersPage({
   searchParams,
 }: {
@@ -44,7 +44,7 @@ export default async function UsersPage({
         </Link>
       </header>
       {result.error ? (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/settings/users"

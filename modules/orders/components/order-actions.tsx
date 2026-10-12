@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -65,7 +66,7 @@ export function OrderActions({
         {transitions
           .filter((next) => next !== "cancelled")
           .map((next) => (
-            <Button
+            <WriteButton
               key={next}
               size="lg"
               disabled={pending}
@@ -73,7 +74,7 @@ export function OrderActions({
               onClick={() => change(next)}
             >
               {t(`transitions.${next}`)}
-            </Button>
+            </WriteButton>
           ))}
         {transitions.includes("cancelled") && (
           <ResponsiveDialog
@@ -107,7 +108,7 @@ export function OrderActions({
               >
                 {t("closeCancellation")}
               </Button>
-              <Button
+              <WriteButton
                 variant="danger"
                 size="lg"
                 disabled={pending}
@@ -115,12 +116,12 @@ export function OrderActions({
                 onClick={() => change("cancelled")}
               >
                 {t("transitions.cancelled")}
-              </Button>
+              </WriteButton>
             </div>
           </ResponsiveDialog>
         )}
         {role !== "accounting" && (
-          <Button
+          <WriteButton
             variant="secondary"
             size="lg"
             disabled={pending}
@@ -142,7 +143,7 @@ export function OrderActions({
             }}
           >
             {t("duplicate")}
-          </Button>
+          </WriteButton>
         )}
       </div>
       {role !== "accounting" && ["draft", "cancelled"].includes(status) && (

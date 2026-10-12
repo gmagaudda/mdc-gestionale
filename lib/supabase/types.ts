@@ -1531,6 +1531,107 @@ export type Database = {
         };
         Relationships: [];
       };
+      push_deliveries: {
+        Row: {
+          attempted_at: string;
+          attempts: number;
+          completed_at: string | null;
+          event_id: string;
+          id: string;
+          lease_id: string;
+          starts_at: string;
+          status: string;
+          subscription_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempted_at?: string;
+          attempts?: number;
+          completed_at?: string | null;
+          event_id: string;
+          id?: string;
+          lease_id?: string;
+          starts_at: string;
+          status?: string;
+          subscription_id: string;
+        };
+        Update: {
+          attempted_at?: string;
+          attempts?: number;
+          completed_at?: string | null;
+          event_id?: string;
+          id?: string;
+          lease_id?: string;
+          starts_at?: string;
+          status?: string;
+          subscription_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "push_deliveries_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "push_deliveries_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "push_deliveries_subscription_id_fkey";
+            columns: ["subscription_id"];
+            isOneToOne: false;
+            referencedRelation: "push_subscriptions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          endpoint: string;
+          id: string;
+          last_test_at: string | null;
+          p256dh: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          auth: string;
+          created_at?: string;
+          endpoint: string;
+          id?: string;
+          last_test_at?: string | null;
+          p256dh: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          endpoint?: string;
+          id?: string;
+          last_test_at?: string | null;
+          p256dh?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       seasons: {
         Row: {
           brand_id: string;
@@ -1965,6 +2066,21 @@ export type Database = {
       claim_fic_webhooks: { Args: Record<PropertyKey, never>; Returns: Json };
       claim_invoice_cancellation: { Args: { p_id: string }; Returns: string };
       claim_invoice_issue: { Args: { p_id: string }; Returns: string };
+      claim_push_reminders: {
+        Args: { p_end: string; p_start: string };
+        Returns: {
+          auth: string;
+          delivery_id: string;
+          endpoint: string;
+          lease_id: string;
+          p256dh: string;
+          subscription_id: string;
+        }[];
+      };
+      claim_push_test: {
+        Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
+        Returns: boolean;
+      };
       commissions_report: {
         Args: {
           p_brand_id?: string;
@@ -2038,7 +2154,17 @@ export type Database = {
         };
         Returns: boolean;
       };
+      finish_push_reminder: {
+        Args: {
+          p_expired?: boolean;
+          p_id: string;
+          p_lease: string;
+          p_status: string;
+        };
+        Returns: boolean;
+      };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
+      has_push_subscription: { Args: { p_endpoint: string }; Returns: boolean };
       mock_invoice_put: {
         Args: {
           p_fingerprint: string;
@@ -2128,6 +2254,10 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
       };
+      revoke_push_subscription: {
+        Args: { p_endpoint?: string };
+        Returns: undefined;
+      };
       rotate_ical_token: { Args: { p_hash: string }; Returns: undefined };
       save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
       save_budget: {
@@ -2147,6 +2277,10 @@ export type Database = {
           p_is_active: boolean;
           p_role: Database["public"]["Enums"]["app_role"];
         };
+        Returns: undefined;
+      };
+      subscribe_push: {
+        Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
         Returns: undefined;
       };
       write_audit: {

@@ -18,9 +18,12 @@
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "check:tokens": "node scripts/check-tokens.mjs",
     "seed:demo": "node scripts/seed-demo.mjs",
-    "test:orders:concurrency": "node scripts/test-order-concurrency.mjs"
+    "test:orders:concurrency": "node scripts/test-order-concurrency.mjs",
+    "icons": "node scripts/icons.mjs",
+    "push:keys": "node scripts/vapid-keys.mjs"
   },
   "dependencies": {
+    "@block65/webcrypto-web-push": "2.0.0",
     "@fullcalendar/react": "7.1.1",
     "@hookform/resolvers": "5.9.1",
     "@number-flow/react": "0.6.2",

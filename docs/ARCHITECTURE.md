@@ -49,3 +49,26 @@ La factory abilita FIC solo con INVOICING_PROVIDER=fic, anche per riferimenti gi
 Journal nei campi invoices, non una seconda sorgente dei dati fiscali: fingerprint/azienda preparati con lock, uncertain prima del POST, identità collegata prima della finalizzazione. Una risposta incerta impone recupero per subject; una ricerca vuota non autorizza un nuovo POST. Retry automatici soltanto per letture/calcolo totali, limiti e codici di errore stabili. Annullamento verso cestino recuperabile soltanto prima di invio elettronico/lock/incassi, senza cancellare storico locale.
 
 Callback FIC: verifica firma ES256 con chiave pubblica ufficiale, issuer/audience/application ID/time/subject/event ID, corpo limitato. SQL enqueuer service_role conserva solo eventi di fatture localmente collegate, digest e stato di elaborazione, mai JWT/corpo originale. after avvia il job senza bloccare la risposta 202; cron ogni cinque minuti recupera una coda interrotta, dieci eventi per claim/tre letture concorrenti, lease dieci minuti. Stato riletto dall'API autenticata, aggiornamento fattura/audit/completamento atomico. Cron giornaliero email resta distinto. Dettagli operativi e gate per account reale in [INVOICING](INVOICING.md).
+
+## PWA, cache e connettività
+
+Manifest `/manifest.webmanifest`, scope e start URL `/`, modalità standalone, lingua italiana; icone 192/512, maskable 512 e Apple 180. Colori browser generati dai token, senza dipendere da window al primo render. `/offline` è statica, non legge cookies e non contiene dati di utenti.
+
+`public/sw.js` installa soltanto shell offline, icone e risorse `/_next/static/`. Fetch senza credenziali per asset pubblici, whitelist di origine/percorso senza query, controllo di no-store/private/Set-Cookie. Navigazioni autenticabili sempre network-first senza memorizzare la risposta. Nessuna cache di mutazioni, API, Supabase, RSC, PDF o download firmati. Cambiare CACHE_VERSION a ogni rilascio; il worker in attesa viene attivato con un gesto confermato. Header non-cache e Service-Worker-Allowed presenti sia nella configurazione Next sia negli asset Workers.
+
+PwaProvider usa snapshot server deterministici e ascolta online/offline. WriteButton e blocco submit in capture impediscono scritture offline; drag/resize calendario richiedono connessione. Gli input restano compilabili e la bozza in memoria sopravvive a riconnessione. Browser online non garantisce che il backend sia raggiungibile: errori di rete continuano a produrre feedback inline. Nessuna sincronizzazione differita implicita. Logout pulisce storage e cache private, revoca il consenso push prima di chiudere la sessione e disiscrive il browser corrente.
+
+## Notifiche push
+
+Migrazioni 021/022: `push_subscriptions` personali e `push_deliveries` accessibile solo dal job. Tabelle RLS; SELECT autenticato soltanto di ID/metadati della propria sottoscrizione. Scritture tramite RPC sessione, identità ricavata da auth.uid; massimo dieci dispositivi, contesa serializzata sul profilo. Audit della preferenza senza endpoint, auth o p256dh. Jobs con grant service_role esplicito, mai esposti al client.
+
+Il cron promemoria giornaliero invia email e, se VAPID completo, push. Finestra Europe/Rome, profilo attivo e ruolo interno rivalutati al claim. Unicità evento/dispositivo/starts_at, lease/backoff 15 minuti, tre tentativi massimi; completamento deve possedere la lease. Cinque chiamate concorrenti con timeout/redirect:error e allowlist HTTPS dei servizi push browser. Sottoscrizioni scadute eliminate atomicamente. Nessun dettaglio privato dell’appuntamento nel payload. Notification click ignora URL arbitrari e apre soltanto `/calendar` sull’origine dell’app.
+
+### Verifiche manuali PWA ancora aperte
+
+- [ ] Installazione e avvio effettivi su Android, icona/nome, aggiornamento dopo un nuovo rilascio.
+- [ ] Installazione da Safari su iOS/iPadOS, safe area, ritorno dal background.
+- [ ] Consenso esplicito, arrivo della notifica di prova, clic sul calendario e revoca sul dispositivo reale.
+- [ ] Lettura VoiceOver/NVDA dei form, degli annunci e dei numeri animati.
+
+Le simulazioni Chromium e i test workerd non attestano queste verifiche. Per iPhone serve un’origine HTTPS attendibile raggiungibile dal telefono; localhost del computer non è l’origine del telefono.

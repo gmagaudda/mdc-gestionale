@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -59,7 +60,7 @@ export function ConfirmAction({
         >
           {t("cancel")}
         </Button>
-        <Button
+        <WriteButton
           variant="danger"
           size="lg"
           loading={pending}
@@ -81,7 +82,7 @@ export function ConfirmAction({
           }
         >
           {confirmLabel ?? t("confirm")}
-        </Button>
+        </WriteButton>
       </div>
     </ResponsiveDialog>
   );

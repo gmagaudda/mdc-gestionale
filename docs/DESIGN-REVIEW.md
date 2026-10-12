@@ -270,3 +270,28 @@ Ambito UI: dettaglio con numero esterno/riferimento interno, stato creazione inc
 Nessun finding azionabile residuo. Corretto durante la revisione un testo che indicava documento creato anche per una prenotazione ancora incerta. Il primo controllo axe del test nuovo cambiava direttamente data-theme senza passare da next-themes e misurava colori durante la transizione: sostituito con l'interazione utente del tema, senza ignorare violazioni. Anche il test attende una sola istanza del campo dopo la sostituzione della Suspense server, senza selezionare arbitrariamente un duplicato.
 
 Verifiche: pnpm e2e e2e/invoices.spec.ts, cinque viewport con metadata FIC sintetici e flusso mock; unit/contract HTTP/JWT, 946 controlli DB, lint/typecheck/check:tokens/build OpenNext e DB lint. Spike workerd indipendente con timeout recuperato, un solo POST e verifica JWT ES256. Screen reader reale e zoom 200% non verificati qui, previsti in M8. Verdict: Approve entro il perimetro indicato.
+
+## M8: revisione trasversale responsive e PWA
+
+Ambito: 32 route interne e cinque del portale, editor e filtri, preferenze, installazione, offline, aggiornamento e consenso push. Revisione better-interface sul repository e sui flussi, con i sei domini better-*, checklist Arc, Lessons of Design, Rauno e Interface Cheat Sheet. `interface-review` resta un comando su invocazione umana: non viene inventato un ambito di diff per eseguirlo automaticamente. Nessuna modifica agli interni Arc.
+
+| Dominio       | Evidenza                                                                                                                                              | Esito                          |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Accessibilità | Axe AA chiaro/scuro, menu/Escape/focus, controlli nominati, target 44 px, tastiere email/tel/decimal, valori esatti Number Flow                       | Clear nelle prove automatiche  |
+| Layout        | Cinque viewport 360–1440; stress a 320 e 1440 con testo raddoppiato; scroller delle tabelle, hit test dopo focus/tastiera                             | Clear nel perimetro verificato |
+| Scrittura     | Testi italiani centralizzati, recupero errori inline, distinzione tra servizio push che accetta e dispositivo che riceve, istruzioni installazione    | Clear                          |
+| Tipografia    | Inter/Geist e token, cifre tabulari, euro/date italiani, testo selezionato lungo mostrato integralmente sotto il select                               | Clear                          |
+| Colore        | Token neutri, stati con etichette, axe nei due temi, icona MDC achromatica ispezionata                                                                | Clear nelle verifiche indicate |
+| UI            | Skeleton dopo autorizzazione, vuoto/errore/successo inline, offline preserva la bozza in memoria, aggiornamento solo dopo conferma, movimento ridotto | Clear nel perimetro verificato |
+
+Finding risolti:
+
+- SKU lungo nel menu Arc Select non raggiungibile su touch: SearchSelect composto con Input Arc e select nativo, mantenendo ricerca, stato e valori completi. Il catalogo Combobox non espone i testi italiani necessari.
+- Testo screen reader Number Flow usciva dallo scroller della tabella: wrapper relativo senza cambiare gli interni o il valore accessibile.
+- Errori di lettura senza recupero diretto: LoadError condiviso con Riprovare, preservando l’URL e i filtri; error boundary portale aggiunto.
+- Skeleton globale portale anticipava lo streaming prima della guardia del brand, trasformando HTTP 404 in 200: eliminato; Suspense dei dati resta dopo la verifica di accesso.
+- Copy del fatturato ancora riferita a un modulo futuro: aggiornata al perimetro effettivo delle fatture.
+
+Limiti della revisione: inventario sorgente di loading/empty/error/success per le aree dati e prove runtime di vuoto/validazione/successo nei flussi esistenti; non è stata simulata un’avaria del backend su ogni route. Testo raddoppiato e reflow sono verificati automaticamente; screen reader reale, pseudo-localizzazione/RTL, accento alternativo e installazione/ricezione push su dispositivi reali restano controlli manuali. Checklist in ARCHITECTURE. Non si dichiara superata l’accettazione push su dispositivo sulla base del solo HTTP 201 o degli stub del browser.
+
+Verifiche e risultato della regressione completa vengono riportati in PROGRESS. Controlli locali già verdi: 186 unit test, 1.012 test DB, lint/typecheck/token e build OpenNext. Spike Web Push su workerd con decifratura indipendente e firma VAPID verificata; 14 e2e di produzione locale PWA/push su mobile e desktop. Verdict: Approve per i flussi e i controlli ispezionati, con i limiti manuali sopra indicati.

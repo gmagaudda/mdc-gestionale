@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
@@ -76,7 +77,7 @@ export default async function CommissionsPage({
       {!parsed.success ? (
         <Alert tone="danger" title={t("invalidFilters")} />
       ) : !report?.ok ? (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       ) : (
         <>
           <section className="stack" aria-label={t("summary")}>

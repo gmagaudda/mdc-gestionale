@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/components/arc/input/input";
 import { Select } from "@/components/arc/select/select";
 import { Textarea } from "@/components/arc/textarea/textarea";
-import { Button } from "@/components/arc/button/button";
+import { WriteButton as Button } from "@/components/pwa/write-button";
 import { Alert } from "@/components/arc/alert/alert";
 import { ConfirmAction } from "@/components/shared/confirm-action";
 import { centsToDecimal } from "@/lib/money";

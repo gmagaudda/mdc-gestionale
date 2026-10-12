@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -118,9 +119,14 @@ export function BrandForm({
         title={error ? t(error) : ""}
       />
       <div className="form-actions">
-        <Button type="submit" size="lg" loading={pending} disabled={pending}>
+        <WriteButton
+          type="submit"
+          size="lg"
+          loading={pending}
+          disabled={pending}
+        >
           {t("save")}
-        </Button>
+        </WriteButton>
         <Button
           variant="secondary"
           size="lg"

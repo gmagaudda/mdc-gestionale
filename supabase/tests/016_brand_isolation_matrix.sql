@@ -34,6 +34,8 @@ insert into public.documents(id,name,brand_id,storage_path,original_filename,mim
 insert into storage.objects(bucket_id,name,metadata) values('documents',s.brand_id::text||'/'||s.document_id::text||'.pdf','{"size":10,"mimetype":"application/pdf"}');
 update public.documents set ready=true where id=s.document_id;
 insert into public.ical_tokens(user_id,token_hash) values(s.user_id,repeat(case when s.scope='A' then 'a' else 'b' end,64));
+insert into public.push_subscriptions(user_id,endpoint,p256dh,auth) values(s.user_id,'https://fcm.googleapis.com/fcm/send/isolation-'||s.scope,'BA'||repeat('A',85),repeat('A',22));
+insert into public.push_deliveries(event_id,subscription_id,starts_at) select s.event_id,id,'2033-01-01T09:00Z' from public.push_subscriptions where user_id=s.user_id;
 end loop;end;$$;
 insert into storage.buckets(id,name,public) values('isolation-other','isolation-other',false);
 -- Manifest requires a fixture and probes for every exposed public table/view.
@@ -67,6 +69,8 @@ insert into isolation_matrix(relation,own_where,foreign_where,own_count,write_co
 ('public.order_counters','year=2033','year=2033',0,'last_number'),
 ('public.ical_tokens','user_id=''00000000-0000-4000-8000-000000000704''','user_id=''00000000-0000-4000-8000-000000000705''',1,'revoked_at'),
 ('public.event_reminders','event_id=''00000000-0000-4000-8000-000000000750''','event_id=''00000000-0000-4000-8000-000000000751''',-1,'status'),
+('public.push_subscriptions','user_id=''00000000-0000-4000-8000-000000000704''','user_id=''00000000-0000-4000-8000-000000000705''',1,'created_at'),
+('public.push_deliveries','event_id=''00000000-0000-4000-8000-000000000750''','event_id=''00000000-0000-4000-8000-000000000751''',-1,'status'),
 ('public.portal_orders','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'currency'),
 ('public.v_sales_by_brand_season','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'brand_id'),
 ('public.v_sales_by_customer','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'brand_id'),
@@ -79,6 +83,7 @@ insert into isolation_matrix(relation,own_where,foreign_where,own_count,write_co
 ('storage.buckets','id=''documents''','id=''isolation-other''',0,'name');
 update isolation_matrix set read_column='*',allow_foreign_check=true where relation='public.budgets';
 update isolation_matrix set read_column='user_id',allow_foreign_check=false where relation='public.ical_tokens';
+update isolation_matrix set read_column='id',allow_foreign_check=false where relation='public.push_subscriptions';
 update isolation_matrix set read_column='*',allow_foreign_check=true where relation='public.v_budget_vs_actual';
 select results_eq($$select ('public.'||c.relname) collate "C" from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in('r','v','m','p') order by 1$$,$$select relation collate "C" from isolation_matrix where relation like 'public.%' order by 1$$,'every exposed public table/view has an isolation fixture');
 select ok(not exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in('r','p') and not c.relrowsecurity),'every public business table has RLS');

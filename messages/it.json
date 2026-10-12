@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Gestionale showroom",
+    "appName": "MDC Gestionale",
     "theme": "Aspetto",
     "system": "Sistema",
     "light": "Chiaro",
@@ -40,7 +40,9 @@
     "commissions": "Provvigioni",
     "portalName": "Portale brand",
     "sales": "Vendite",
-    "invoices": "Fatture"
+    "invoices": "Fatture",
+    "appDescription": "Ordini, clienti e appuntamenti dello showroom",
+    "logoutError": "Non è stato possibile uscire e revocare le notifiche. Controlla la connessione e riprova."
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -113,7 +115,7 @@
     "revenue": "Fatturato netto",
     "orders": "Ordini confermati",
     "soldHint": "Ordini confermati o successivi. Esclusi bozze e annullati.",
-    "revenueHint": "Fatture emesse, inviate o pagate. Il flusso fatture sarà disponibile nel modulo dedicato.",
+    "revenueHint": "Fatture emesse, inviate o pagate, nel periodo e nel perimetro selezionati.",
     "ordersHint": "Nel periodo e nel perimetro selezionati.",
     "budget": "Budget netto",
     "budgetChart": "Budget e venduto",
@@ -164,7 +166,8 @@
     "cancel": "Annulla",
     "saveError": "Salvataggio non riuscito. Riprova.",
     "loadError": "Impossibile caricare i dati. Riprova.",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "errorTitle": "Dati non disponibili"
   },
   "audit": {
     "title": "Registro modifiche",
@@ -714,7 +717,7 @@
     "revenue": "Fatturato netto",
     "orders": "Ordini confermati",
     "soldHint": "Ordini confermati o successivi. Esclusi bozze e annullati.",
-    "revenueHint": "Fatture emesse, inviate o pagate. Il flusso fatture sarà disponibile nel modulo dedicato.",
+    "revenueHint": "Fatture emesse, inviate o pagate, nel periodo e nel perimetro selezionati.",
     "ordersHint": "Nel periodo e nel perimetro selezionati.",
     "budget": "Budget netto",
     "budgetChart": "Budget e venduto",
@@ -861,5 +864,50 @@
     "localReference": "Riferimento nel gestionale",
     "ficUncertain": "L’esito della creazione è incerto. Riprova per cercare il documento già creato; se non viene trovato, verifica in Fatture in Cloud e contatta l’amministratore prima di procedere.",
     "ficCancellationUnavailable": "Il documento non può essere annullato dal gestionale. Verifica lo stato e le eventuali rettifiche in Fatture in Cloud. Gli incassi restano registrabili."
+  },
+  "pwa": {
+    "offlineTitle": "Sei offline",
+    "offlineDescription": "Controlla la connessione e riprova. I dati del gestionale sono disponibili solo online.",
+    "offlineHint": "Puoi continuare a compilare i campi. Per salvare, riconnettiti a Internet.",
+    "retry": "Riprova",
+    "install": "Installa app",
+    "installed": "App installata",
+    "installIOS": "In Safari, apri Condividi e scegli “Aggiungi alla schermata Home”. Poi seleziona “Aggiungi”.",
+    "installBrowser": "Apri il menu del browser e scegli “Installa MDC Gestionale” o “Aggiungi alla schermata Home”, se disponibile.",
+    "installError": "Installazione non disponibile. Riprova dal menu del browser.",
+    "updateTitle": "Nuova versione disponibile",
+    "updateDescription": "Salva le modifiche prima di aggiornare l’app.",
+    "update": "Aggiorna",
+    "updateQuestion": "Aggiornare MDC Gestionale?",
+    "updateWarning": "La pagina verrà ricaricata. Le modifiche non salvate andranno perse.",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "registrationError": "La modalità offline non è disponibile. Riprova ricaricando la pagina."
+  },
+  "push": {
+    "title": "Notifiche degli appuntamenti",
+    "description": "Ricevi un promemoria degli appuntamenti assegnati a te, il giorno prima. La notifica non contiene nomi o dati dei clienti. Puoi revocare il consenso in qualsiasi momento. Uscendo dall’account, il consenso viene revocato su tutti i dispositivi.",
+    "unconfigured": "Le notifiche push non sono ancora disponibili in questo ambiente.",
+    "loading": "Caricamento delle preferenze delle notifiche",
+    "active": "Notifiche attive su questo dispositivo.",
+    "inactive": "Notifiche disattivate su questo dispositivo.",
+    "unsupported": "Questo browser non supporta le notifiche push. Usa un browser aggiornato o l’app installata.",
+    "denied": "Le notifiche sono bloccate nel browser. Per attivarle, modifica i permessi del sito nelle impostazioni del browser.",
+    "iosInstall": "Su iPhone e iPad, installa prima l’app dalla funzione Aggiungi alla schermata Home di Safari.",
+    "enable": "Attiva le notifiche",
+    "revoke": "Revoca le notifiche",
+    "enabled": "Notifiche attivate su questo dispositivo.",
+    "revoked": "Consenso revocato. Non riceverai altri promemoria su questo dispositivo.",
+    "errorTitle": "Notifiche non aggiornate",
+    "saveError": "Non è stato possibile aggiornare le notifiche. Controlla la connessione e riprova.",
+    "invalid": "Il servizio di notifiche del browser non è supportato. Prova con un browser aggiornato.",
+    "reminder": "Hai un appuntamento domani. Apri il calendario per vedere i dettagli.",
+    "revokeAll": "Revoca su tutti i dispositivi",
+    "revokedAll": "Consenso revocato su tutti i dispositivi.",
+    "sendTest": "Invia notifica di prova",
+    "testMessage": "Questa è una notifica di prova di MDC Gestionale.",
+    "testSent": "Notifica accettata dal servizio. Verifica che sia arrivata sul dispositivo.",
+    "testWait": "Attendi un minuto prima di inviare un’altra prova. Verifica che le notifiche siano attive su questo dispositivo.",
+    "testError": "Il servizio non ha confermato la notifica. Controlla i permessi e riprova tra un minuto."
   }
 }

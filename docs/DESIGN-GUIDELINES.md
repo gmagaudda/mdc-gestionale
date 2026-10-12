@@ -18,7 +18,15 @@ Le nove skill richieste sono in `.agents/skills`; ogni `SKILL.md` è stato letto
 
 ## Lessons of Design
 
-Il sito [Lessons of Design](https://lessons.design) non restituisce testo leggibile allo strumento. Sintesi da completare in M8-T6 con il contenuto fornito dall’utente, come previsto dal piano.
+Fonte: [Lessons of Design](https://lessons.design), Fabricio Teixeira. Letta con Chromium/Playwright il 12 ottobre 2026, incluse le sette sezioni e i relativi esempi. Sintesi in parole proprie:
+
+1. **Modelli concettuali:** una struttura comprensibile rende coerente la crescita del prodotto. Nel gestionale brand, stagione, cliente e ordine restano riconoscibili nei filtri e nei dettagli.
+2. **Semplicità:** eliminare ridondanze e mostrare i dettagli al momento opportuno. Azione principale unica, filtri espandibili e prezzi per variante sotto una disclosure.
+3. **Contesto delle decisioni:** spiegare il beneficio e le conseguenze di una scelta. Conferme di annullamento, fatturazione e aggiornamento descrivono l’effetto sui dati.
+4. **Coerenza:** controlli e parole familiari riducono il lavoro necessario per imparare. Token, form, stati e formati italiani condivisi tra area interna e portale.
+5. **Variazioni intenzionali:** adattare un sistema quando il compito richiede una soluzione diversa. Tabelle come card su telefono e controlli nativi per liste con identificativi lunghi.
+6. **Miglioramento continuo:** portare le decisioni fino all’esperienza effettivamente utilizzabile. Testare i flussi completi, correggere i difetti e conservare la motivazione della soluzione.
+7. **Qualità delle relazioni:** il valore del lavoro comprende l’effetto sulle persone. Messaggi rispettosi, errori recuperabili, accessibilità e documentazione comprensibile per ciascun ruolo.
 
 ## Numeri animati
 

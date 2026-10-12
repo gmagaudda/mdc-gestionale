@@ -2,7 +2,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/arc/input/input";
-import { SelectField } from "./select-field";
+import { NativeSelectField } from "./native-select-field";
 import type { ActionResult } from "@/lib/errors";
 export type Choice = { value: string; label: string };
 export function SearchSelect({
@@ -68,7 +68,7 @@ export function SearchSelect({
           }
         }}
       />
-      <SelectField
+      <NativeSelectField
         id={id}
         label={label}
         placeholder={t("selectChoice")}

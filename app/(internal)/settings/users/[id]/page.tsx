@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import { uuid } from "zod";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -34,7 +35,7 @@ export default async function UserPage({
       <h1>{t("edit")}</h1>
       <Alert open={saved} tone="success" title={t("saved")} />
       {brands.error || memberships.error ? (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       ) : (
         <UserForm
           id={id}

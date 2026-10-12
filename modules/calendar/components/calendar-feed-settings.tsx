@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
@@ -57,7 +58,7 @@ export function CalendarFeedSettings({
       )}
       <div className="list-sort">
         {!enabled ? (
-          <Button
+          <WriteButton
             ref={createButton}
             variant="secondary"
             size="lg"
@@ -70,7 +71,7 @@ export function CalendarFeedSettings({
             }
           >
             {t("create")}
-          </Button>
+          </WriteButton>
         ) : (
           <>
             <ConfirmAction

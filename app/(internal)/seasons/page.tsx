@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
@@ -5,7 +6,6 @@ import { internalRoles } from "@/lib/auth/roles";
 import { parseListQuery } from "@/lib/queries/list";
 import { PageHeader } from "@/components/shared/page-header";
 import { ListView } from "@/components/shared/list-view";
-import { Alert } from "@/components/arc/alert/alert";
 import { listSeasons } from "@/modules/seasons/queries";
 export default async function SeasonsPage({
   searchParams,
@@ -34,7 +34,7 @@ export default async function SeasonsPage({
         }
       />
       {result.error ? (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/seasons"

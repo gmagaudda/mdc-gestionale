@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/page-header";
 import { getTranslations } from "next-intl/server";
@@ -6,7 +7,6 @@ import { internalRoles } from "@/lib/auth/roles";
 import { parseListQuery } from "@/lib/queries/list";
 import { listBrands } from "@/modules/brands/queries";
 import { ListView } from "@/components/shared/list-view";
-import { Alert } from "@/components/arc/alert/alert";
 export default async function BrandsPage({
   searchParams,
 }: {
@@ -40,7 +40,7 @@ export default async function BrandsPage({
         }
       />
       {result.error ? (
-        <Alert tone="danger" title={t("loadError")} />
+        <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/brands"

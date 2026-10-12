@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -79,7 +80,7 @@ export default async function BrandPage({
       <section className="stack" aria-labelledby="contacts-title">
         <h2 id="contacts-title">{t("contacts")}</h2>
         {contacts.error ? (
-          <Alert tone="danger" title={t("loadError")} />
+          <LoadError title={t("loadError")} />
         ) : contacts.data?.length ? (
           contacts.data.map((contact) => (
             <article className="stack contact-row" key={contact.id}>

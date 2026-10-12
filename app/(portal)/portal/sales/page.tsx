@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import { AsyncReport } from "@/components/shared/async-report";
 import { getTranslations } from "next-intl/server";
 import { parseListQuery } from "@/lib/queries/list";
@@ -35,7 +36,7 @@ export default async function Sales({
           label={t("loadingReport")}
           render={(report) =>
             !report.ok ? (
-              <Alert tone="danger" title={t("loadError")} />
+              <LoadError title={t("loadError")} />
             ) : (
               <>
                 <p className="report-value">

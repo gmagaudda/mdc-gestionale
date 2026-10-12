@@ -89,8 +89,9 @@ test("creates edits moves filters and archives events with accessible mobile con
   await dialog
     .getByRole("searchbox", { name: "Cerca Brand", exact: true })
     .fill(brandName);
-  await dialog.getByRole("combobox", { name: "Brand", exact: true }).click();
-  await page.getByRole("option", { name: brandName, exact: true }).click();
+  await dialog
+    .getByRole("combobox", { name: "Brand", exact: true })
+    .selectOption({ label: brandName });
   await dialog.getByLabel("Luogo", { exact: true }).fill("Showroom Milano");
   expect(
     (

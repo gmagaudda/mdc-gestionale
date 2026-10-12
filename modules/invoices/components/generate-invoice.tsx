@@ -1,9 +1,9 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/arc/input/input";
-import { Button } from "@/components/arc/button/button";
 import { Alert } from "@/components/arc/alert/alert";
 import { generateInvoiceSchema } from "../schema";
 import { generateInvoice } from "../actions";
@@ -90,9 +90,14 @@ export function GenerateInvoice({
         </fieldset>
         <Alert open={!!error} tone="danger" title={error} />
         <div className="form-actions report-actions">
-          <Button size="lg" type="submit" disabled={pending} loading={pending}>
+          <WriteButton
+            size="lg"
+            type="submit"
+            disabled={pending}
+            loading={pending}
+          >
             {t("generate")}
-          </Button>
+          </WriteButton>
         </div>
       </form>
     </section>

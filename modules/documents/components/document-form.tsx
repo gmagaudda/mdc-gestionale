@@ -1,4 +1,5 @@
 "use client";
+import { WriteButton } from "@/components/pwa/write-button";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -246,9 +247,14 @@ export function DocumentForm({
         />
       </fieldset>
       <div className="form-actions">
-        <Button size="lg" type="submit" loading={pending} disabled={pending}>
+        <WriteButton
+          size="lg"
+          type="submit"
+          loading={pending}
+          disabled={pending}
+        >
           {t(existing ? "save" : "upload")}
-        </Button>
+        </WriteButton>
         <Button
           size="lg"
           type="button"

@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
@@ -92,7 +93,7 @@ export default async function InvoicesPage({
           load={listInvoices(query, status, overdue)}
           render={(result) =>
             result.error ? (
-              <Alert tone="danger" title={t("loadError")} />
+              <LoadError title={t("loadError")} />
             ) : (
               <ListView
                 base="/invoices"

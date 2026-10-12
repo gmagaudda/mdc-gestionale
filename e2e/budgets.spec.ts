@@ -1,3 +1,4 @@
+import { selectChoice } from "./helpers/navigation";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -94,8 +95,7 @@ async function fill(page: Page, start: string, end: string) {
     await expect(
       page.getByRole("combobox", { name: label, exact: true }),
     ).toBeEnabled();
-    await page.getByRole("combobox", { name: label, exact: true }).click();
-    await page.getByRole("option", { name: result, exact: true }).click();
+    await selectChoice(page, label, result);
   }
   await page.getByLabel("Importo netto", { exact: true }).fill("1234,56");
   await page.getByLabel("Inizio periodo", { exact: true }).fill(start);
@@ -176,7 +176,9 @@ test("accounting validates periods writes cents and archives while staff reads",
   await page.getByRole("button", { name: "Salva budget", exact: true }).click();
   await expect(page).toHaveURL(/\/budgets\/[a-f0-9-]+\?saved=1$/);
   await page.goto(`/budgets/${firstId}/edit`);
-  await page.getByLabel("Importo netto", { exact: true }).fill("4321,10");
+  await page
+    .getByRole("textbox", { name: "Importo netto", exact: true })
+    .fill("4321,10");
   await page.getByRole("button", { name: "Salva budget", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/budgets/${firstId}\\?saved=1$`));
   expect(

@@ -1,3 +1,4 @@
+import { selectChoice } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { PDFDocument } from "pdf-lib";
@@ -111,8 +112,7 @@ test("uploads validates downloads shares and archives a private document", async
   await page
     .getByRole("searchbox", { name: "Cerca Brand", exact: true })
     .fill(brandName);
-  await page.getByRole("combobox", { name: "Brand", exact: true }).click();
-  await page.getByRole("option", { name: brandName, exact: true }).click();
+  await selectChoice(page, "Brand", brandName);
   const file = page.getByLabel("File", { exact: true });
   await file.setInputFiles({
     name: "false.pdf",

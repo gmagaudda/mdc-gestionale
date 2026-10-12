@@ -1,3 +1,4 @@
+import { LoadError } from "@/components/shared/load-error";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/arc/skeleton/skeleton";
@@ -18,7 +19,7 @@ async function Data({ filters }: { filters: DashboardFilters }) {
       <BudgetVsActualChart report={report.data} namespace="portal" />
     </>
   ) : (
-    <Alert tone="danger" title={t("loadError")} />
+    <LoadError title={t("loadError")} />
   );
 }
 export default async function PortalDashboard({
