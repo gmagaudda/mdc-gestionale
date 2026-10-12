@@ -73,3 +73,11 @@ Gli admin gestiscono utenti da `/settings/users`, brand da `/brands` e modifiche
 Stagioni in `/seasons` e prodotti in `/products`: admin/staff creano e modificano il catalogo; amministrazione legge. Prima crea una stagione del brand, poi un prodotto con taglie e colori separati da virgole. Il salvataggio genera tutte le combinazioni in una transazione e conserva le varianti archiviate per lo storico. Prezzi in EUR e centesimi interi; SKU variante copiabile dal dettaglio.
 
 Con `EMAIL_MODE=log`, i link di invito compaiono nel terminale locale e non viene inviata alcuna email. Questa modalità è per sviluppo; configurare e verificare Resend prima dell’uso reale. Le fixture e2e usano soltanto Supabase locale e account sintetici, poi rimuovono gli account creati.
+
+### PDF e numeri live
+
+Dal dettaglio ordine si scarica la conferma PDF, dal dettaglio stagione il catalogo. Il generatore pdf-lib funziona anche su Workers locale; Inter e la licenza sono inclusi negli asset. I download verificano la sessione/RLS, rispettano il cliente riservato per i brand e non includono note interne o provvigioni. Non sono memorizzati in cache. Caratteri non supportati dal font producono un messaggio di correzione; i cataloghi oltre 5.000 prodotti non vengono troncati.
+
+Number Flow anima i totali live dell’editor, rispetta il movimento ridotto e mantiene i calcoli in centesimi/BigInt.
+
+Verifica PDF nel runtime Workers: avvia `pnpm preview:cf`, poi `E2E_BASE_URL=http://localhost:8787 pnpm e2e e2e/pdf.spec.ts` (adatta la porta alla preview). I test creano e rimuovono solo fixture nel database locale. I documenti di prova sono salvati in `output/pdf/`, esclusi dal versionamento.

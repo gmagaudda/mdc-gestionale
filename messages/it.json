@@ -418,5 +418,17 @@
     "archive": "Archivia ordine",
     "archiveQuestion": "L’ordine verrà rimosso dall’elenco. Le righe e lo storico resteranno conservati.",
     "defaultCommission": "Percentuale prevista dal brand"
+  },
+  "pdf": {
+    "orderTitle": "Conferma ordine {number}",
+    "lineSheetTitle": "Catalogo stagione",
+    "variant": "Colore / taglia",
+    "page": "Pagina",
+    "variants": "Varianti",
+    "retail": "Prezzo al pubblico",
+    "generationError": "Impossibile generare il PDF. Controlla i dati e riprova.",
+    "downloadOrder": "Scarica PDF ordine",
+    "downloadLineSheet": "Scarica catalogo PDF",
+    "unsupportedCharacters": "Il font PDF non supporta alcuni caratteri del documento. Sostituisci emoji o simboli nei nomi e nelle descrizioni, poi riprova."
   }
 }

@@ -26,6 +26,7 @@ export default async function OrderPage({
   const order = result.data;
   if (!order) notFound();
   const t = await getTranslations("orders");
+  const pdf = await getTranslations("pdf");
   const date = (value: string) =>
     new Intl.DateTimeFormat("it-IT", {
       dateStyle: "short",
@@ -45,6 +46,9 @@ export default async function OrderPage({
           )
         }
       />
+      <a className="text-link" href={`/api/pdf/order-confirmation/${id}`}>
+        {pdf("downloadOrder")}
+      </a>
       <div>
         <Badge
           key={order.status}

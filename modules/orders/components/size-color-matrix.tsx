@@ -1,6 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/arc/input/input";
+import { AnimatedNumber } from "@/components/shared/animated-number";
 import { Alert } from "@/components/arc/alert/alert";
 export type MatrixVariant = {
   id: string;
@@ -119,7 +120,9 @@ export function SizeColorMatrix({
                     </td>
                   );
                 })}
-                <td className="tabular-nums">{totals.rows[color]}</td>
+                <td className="tabular-nums">
+                  <AnimatedNumber value={totals.rows[color]} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -128,10 +131,12 @@ export function SizeColorMatrix({
               <th scope="row">{t("total")}</th>
               {sizes.map((size) => (
                 <td className="tabular-nums" key={size}>
-                  {totals.columns[size]}
+                  <AnimatedNumber value={totals.columns[size]} />
                 </td>
               ))}
-              <td className="tabular-nums">{totals.total}</td>
+              <td className="tabular-nums">
+                <AnimatedNumber value={totals.total} />
+              </td>
             </tr>
           </tfoot>
         </table>

@@ -6,6 +6,7 @@ import { Input } from "@/components/arc/input/input";
 import { Textarea } from "@/components/arc/textarea/textarea";
 import { MoneyInput } from "@/components/arc/money-input/money-input";
 import { Button } from "@/components/arc/button/button";
+import { AnimatedMoney } from "@/components/shared/animated-number";
 import { Alert } from "@/components/arc/alert/alert";
 import { SearchSelect } from "@/components/shared/search-select";
 import { calculateLine, formatMoney } from "@/lib/money";
@@ -402,15 +403,21 @@ export function OrderEditor({
           <dl className="details-grid tabular-nums">
             <div>
               <dt>{t("net")}</dt>
-              <dd>{formatMoney(net)}</dd>
+              <dd>
+                <AnimatedMoney cents={net} />
+              </dd>
             </div>
             <div>
               <dt>{t("vat")}</dt>
-              <dd>{formatMoney(vat)}</dd>
+              <dd>
+                <AnimatedMoney cents={vat} />
+              </dd>
             </div>
             <div>
               <dt>{t("gross")}</dt>
-              <dd>{formatMoney(net + vat)}</dd>
+              <dd>
+                <AnimatedMoney cents={net + vat} />
+              </dd>
             </div>
           </dl>
         )}

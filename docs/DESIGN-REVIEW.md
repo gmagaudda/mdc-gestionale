@@ -101,3 +101,18 @@ Ambito: elenco filtrato → dettaglio → annullamento interrotto → conferma/p
 | UI            | Pending/feedback in pagina, storico nativo, dialog annullamento, snapshot protetti                                                     | Clear                                                            |
 
 Finding risolti: WCAG 2.1.1, scroller tabella senza controlli su tablet, aggiunta copia SKU; testo badge in transizione con contrasto temporaneamente insufficiente, stato reso senza interpolazione tramite composizione/key. Nessuna finding azionabile residua nell’ambito. Verifiche: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/orders-flow.spec.ts` (5 passati), 89 test DB, 40 unit test, lint/typecheck/check:tokens e build Next. Screen reader reale e zoom browser 200% non verificati (M8). Verdict: Approve nelle verifiche indicate.
+
+## M3-T5 e numeri live: download e lettura dei documenti
+
+Ambito: dettaglio ordine/stagione → link PDF → documento stampabile, più totali live dell’editor. Stack/convenzioni e sei skill better-* delle revisioni precedenti. PDF chiaro indipendente dal tema dell’app; confine: nessun viewer o portale completo.
+
+| Dominio       | Evidenza                                                                                                   | Esito                                                    |
+| ------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Accessibilità | Link nativi nominati; axe AA nei cinque viewport; Number Flow con respectMotionPreference                  | Clear nei controlli eseguiti; PDF non certificato PDF/UA |
+| Layout        | Overflow browser 360–1440; render Poppler PDF A4 e 100 righe/7 pagine                                      | Clear dopo ampliamento colonna Quantità                  |
+| Scrittura     | messages/pdf, stato Bozza stampato, errore font con percorso di recupero                                   | Clear                                                    |
+| Tipografia    | Inter OFL incorporato, testi a capo, importi italiani; rifiuto dei glifi mancanti                          | Clear entro copertura Inter                              |
+| Colore        | Stampa neutra chiara; link/token Arc; axe e check:tokens                                                   | Clear                                                    |
+| UI            | Nessun prefetch dei download; animazione Number Flow con timing Arc, cifre tabulari, importi BigInt esatti | Clear                                                    |
+
+Nessuna finding azionabile residua nell’ambito. Verifiche: cinque e2e PDF su Workers, cinque editor dopo Number Flow, 42 unit test, lint/typecheck e build:cf. PDF interno/brand confrontati via pypdf: nome cliente solo interno, note interne assenti, totale esatto. Pagine iniziali/intermedie/finali ispezionate tramite Poppler. Screen reader reale, zoom browser 200% e struttura PDF/UA non verificati. Verdict: Approve entro il perimetro indicato.

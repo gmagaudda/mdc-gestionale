@@ -19,3 +19,7 @@ Le nove skill richieste sono in `.agents/skills`; ogni `SKILL.md` è stato letto
 ## Lessons of Design
 
 Il sito [Lessons of Design](https://lessons.design) non restituisce testo leggibile allo strumento. Sintesi da completare in M8-T6 con il contenuto fornito dall’utente, come previsto dal piano.
+
+## Numeri animati
+
+Per indicazione dell’umano, i valori numerici che cambiano in tempo reale usano [Number Flow](https://number-flow.barvian.me). Wrapper AnimatedNumber/AnimatedMoney: formato italiano, numeri tabulari, tempi dai token Arc e respectMotionPreference attivo. Nessuna animazione nei controlli di immissione o nei documenti di stampa. Per anteprime monetarie fuori dal limite applicativo resta la formattazione BigInt esatta.

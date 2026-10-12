@@ -21,6 +21,7 @@ export default async function SeasonPage({
   const { data } = await getSeason(id);
   if (!data) notFound();
   const t = await getTranslations("catalog");
+  const pdf = await getTranslations("pdf");
   return (
     <>
       <Link href="/seasons" className="text-link">
@@ -29,6 +30,9 @@ export default async function SeasonPage({
       <h1>
         {data.code}: {data.name}
       </h1>
+      <a className="text-link" href={`/api/pdf/line-sheet/${id}`}>
+        {pdf("downloadLineSheet")}
+      </a>
       {(await searchParams).saved === "1" && (
         <Alert tone="success" title={t("saved")} />
       )}
