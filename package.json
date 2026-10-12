@@ -20,7 +20,11 @@
     "seed:demo": "node scripts/seed-demo.mjs",
     "test:orders:concurrency": "node scripts/test-order-concurrency.mjs",
     "icons": "node scripts/icons.mjs",
-    "push:keys": "node scripts/vapid-keys.mjs"
+    "push:keys": "node scripts/vapid-keys.mjs",
+    "import:assets": "node scripts/import-assets.mjs",
+    "predev": "pnpm import:assets",
+    "prebuild": "pnpm import:assets",
+    "fixtures:import": "node scripts/import-fixtures.mjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "2.0.0",

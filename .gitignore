@@ -4,6 +4,8 @@
 /node_modules
 /test-results/
 /test-results-*/
+/public/vendor/
+/.fixtures/
 /playwright-report/
 /.pnp
 .pnp.*

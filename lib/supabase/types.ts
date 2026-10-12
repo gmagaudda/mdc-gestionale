@@ -205,6 +205,7 @@ export type Database = {
           deleted_at: string | null;
           external_code: string | null;
           id: string;
+          import_batch_id: string | null;
           legal_name: string;
           name: string;
           updated_at: string;
@@ -216,6 +217,7 @@ export type Database = {
           deleted_at?: string | null;
           external_code?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           legal_name?: string;
           name: string;
           updated_at?: string;
@@ -226,11 +228,20 @@ export type Database = {
           deleted_at?: string | null;
           external_code?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           legal_name?: string;
           name?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "brands_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       budget_private: {
         Row: {
@@ -280,6 +291,7 @@ export type Database = {
           customer_id: string | null;
           deleted_at: string | null;
           id: string;
+          import_batch_id: string | null;
           period_end: string;
           period_start: string;
           season_id: string | null;
@@ -293,6 +305,7 @@ export type Database = {
           customer_id?: string | null;
           deleted_at?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           period_end: string;
           period_start: string;
           season_id?: string | null;
@@ -305,6 +318,7 @@ export type Database = {
           customer_id?: string | null;
           deleted_at?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           period_end?: string;
           period_start?: string;
           season_id?: string | null;
@@ -323,6 +337,13 @@ export type Database = {
             columns: ["customer_id"];
             isOneToOne: false;
             referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "budgets_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
           {
@@ -388,6 +409,7 @@ export type Database = {
           deleted_at: string | null;
           external_code: string | null;
           id: string;
+          import_batch_id: string | null;
           legal_name: string;
           notes: string;
           payment_terms: string;
@@ -408,6 +430,7 @@ export type Database = {
           deleted_at?: string | null;
           external_code?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           legal_name: string;
           notes?: string;
           payment_terms?: string;
@@ -427,6 +450,7 @@ export type Database = {
           deleted_at?: string | null;
           external_code?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           legal_name?: string;
           notes?: string;
           payment_terms?: string;
@@ -438,7 +462,15 @@ export type Database = {
           updated_at?: string;
           vat_number?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "customers_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       documents: {
         Row: {
@@ -706,6 +738,210 @@ export type Database = {
             columns: ["user_id"];
             isOneToOne: true;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      import_batches: {
+        Row: {
+          budget_season_id: string | null;
+          completed_at: string | null;
+          created_at: string;
+          created_by: string;
+          expected_totals: NonNullable<Json>;
+          file_expires_at: string;
+          file_name: string;
+          file_removed_at: string | null;
+          file_sha256: string;
+          id: string;
+          kind: string;
+          options: NonNullable<Json>;
+          profile_id: string | null;
+          rolled_back_at: string | null;
+          season_id: string | null;
+          size_bytes: number;
+          stats: NonNullable<Json>;
+          status: string;
+          storage_path: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          budget_season_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          expected_totals?: NonNullable<Json>;
+          file_expires_at?: string;
+          file_name: string;
+          file_removed_at?: string | null;
+          file_sha256: string;
+          id?: string;
+          kind: string;
+          options?: NonNullable<Json>;
+          profile_id?: string | null;
+          rolled_back_at?: string | null;
+          season_id?: string | null;
+          size_bytes: number;
+          stats?: NonNullable<Json>;
+          status?: string;
+          storage_path: string;
+          updated_at?: string;
+        };
+        Update: {
+          budget_season_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          expected_totals?: NonNullable<Json>;
+          file_expires_at?: string;
+          file_name?: string;
+          file_removed_at?: string | null;
+          file_sha256?: string;
+          id?: string;
+          kind?: string;
+          options?: NonNullable<Json>;
+          profile_id?: string | null;
+          rolled_back_at?: string | null;
+          season_id?: string | null;
+          size_bytes?: number;
+          stats?: NonNullable<Json>;
+          status?: string;
+          storage_path?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "import_batches_budget_season_id_fkey";
+            columns: ["budget_season_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "import_batches_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "import_batches_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "import_profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "import_batches_season_id_fkey";
+            columns: ["season_id"];
+            isOneToOne: false;
+            referencedRelation: "seasons";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      import_profiles: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          entity: string;
+          header_row: number;
+          id: string;
+          mapping: NonNullable<Json>;
+          name: string;
+          options: NonNullable<Json>;
+          sheet_name: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          entity: string;
+          header_row: number;
+          id?: string;
+          mapping: NonNullable<Json>;
+          name: string;
+          options?: NonNullable<Json>;
+          sheet_name: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          entity?: string;
+          header_row?: number;
+          id?: string;
+          mapping?: NonNullable<Json>;
+          name?: string;
+          options?: NonNullable<Json>;
+          sheet_name?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "import_profiles_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      import_rows: {
+        Row: {
+          batch_id: string;
+          created_at: string;
+          entity: string;
+          id: string;
+          mapped: NonNullable<Json>;
+          match: NonNullable<Json>;
+          messages: NonNullable<Json>;
+          raw: NonNullable<Json>;
+          row_number: number;
+          sheet: string;
+          status: string;
+          target_id: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          batch_id: string;
+          created_at?: string;
+          entity: string;
+          id?: string;
+          mapped: NonNullable<Json>;
+          match?: NonNullable<Json>;
+          messages?: NonNullable<Json>;
+          raw: NonNullable<Json>;
+          row_number: number;
+          sheet: string;
+          status: string;
+          target_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          batch_id?: string;
+          created_at?: string;
+          entity?: string;
+          id?: string;
+          mapped?: NonNullable<Json>;
+          match?: NonNullable<Json>;
+          messages?: NonNullable<Json>;
+          raw?: NonNullable<Json>;
+          row_number?: number;
+          sheet?: string;
+          status?: string;
+          target_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "import_rows_batch_id_fkey";
+            columns: ["batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
         ];
@@ -1033,6 +1269,7 @@ export type Database = {
           created_at: string;
           discount_pct: number;
           id: string;
+          import_batch_id: string | null;
           line_net_cents: number;
           line_vat_cents: number;
           order_id: string;
@@ -1052,6 +1289,7 @@ export type Database = {
           created_at?: string;
           discount_pct?: number;
           id?: string;
+          import_batch_id?: string | null;
           line_net_cents: number;
           line_vat_cents: number;
           order_id: string;
@@ -1070,6 +1308,7 @@ export type Database = {
           created_at?: string;
           discount_pct?: number;
           id?: string;
+          import_batch_id?: string | null;
           line_net_cents?: number;
           line_vat_cents?: number;
           order_id?: string;
@@ -1083,6 +1322,13 @@ export type Database = {
           vat_rate?: number;
         };
         Relationships: [
+          {
+            foreignKeyName: "order_lines_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "order_lines_order_id_brand_id_fkey";
             columns: ["order_id", "brand_id"];
@@ -1242,8 +1488,11 @@ export type Database = {
           deleted_at: string | null;
           delivery_date: string | null;
           discount_pct: number;
+          external_ref: string | null;
           gross_total_cents: number;
           id: string;
+          import_batch_id: string | null;
+          import_granularity: string | null;
           net_total_cents: number;
           number: string;
           order_date: string;
@@ -1263,8 +1512,11 @@ export type Database = {
           deleted_at?: string | null;
           delivery_date?: string | null;
           discount_pct?: number;
+          external_ref?: string | null;
           gross_total_cents?: number;
           id?: string;
+          import_batch_id?: string | null;
+          import_granularity?: string | null;
           net_total_cents?: number;
           number: string;
           order_date?: string;
@@ -1283,8 +1535,11 @@ export type Database = {
           deleted_at?: string | null;
           delivery_date?: string | null;
           discount_pct?: number;
+          external_ref?: string | null;
           gross_total_cents?: number;
           id?: string;
+          import_batch_id?: string | null;
+          import_granularity?: string | null;
           net_total_cents?: number;
           number?: string;
           order_date?: string;
@@ -1314,6 +1569,13 @@ export type Database = {
             columns: ["customer_id"];
             isOneToOne: false;
             referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
           {
@@ -1394,6 +1656,7 @@ export type Database = {
           created_at: string;
           deleted_at: string | null;
           id: string;
+          import_batch_id: string | null;
           product_id: string;
           size: string;
           sku: string;
@@ -1406,6 +1669,7 @@ export type Database = {
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           product_id: string;
           size: string;
           sku: string;
@@ -1417,6 +1681,7 @@ export type Database = {
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           product_id?: string;
           size?: string;
           sku?: string;
@@ -1428,6 +1693,13 @@ export type Database = {
             columns: ["brand_id"];
             isOneToOne: false;
             referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "product_variants_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
           {
@@ -1446,6 +1718,7 @@ export type Database = {
           deleted_at: string | null;
           description: string;
           id: string;
+          import_batch_id: string | null;
           name: string;
           retail_price_cents: number;
           season_id: string;
@@ -1461,6 +1734,7 @@ export type Database = {
           deleted_at?: string | null;
           description?: string;
           id?: string;
+          import_batch_id?: string | null;
           name: string;
           retail_price_cents?: number;
           season_id: string;
@@ -1475,6 +1749,7 @@ export type Database = {
           deleted_at?: string | null;
           description?: string;
           id?: string;
+          import_batch_id?: string | null;
           name?: string;
           retail_price_cents?: number;
           season_id?: string;
@@ -1489,6 +1764,13 @@ export type Database = {
             columns: ["brand_id"];
             isOneToOne: false;
             referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "products_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
           {
@@ -1643,6 +1925,7 @@ export type Database = {
           delivery_end: string | null;
           delivery_start: string | null;
           id: string;
+          import_batch_id: string | null;
           name: string;
           updated_at: string;
         };
@@ -1657,6 +1940,7 @@ export type Database = {
           delivery_end?: string | null;
           delivery_start?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           name: string;
           updated_at?: string;
         };
@@ -1670,6 +1954,7 @@ export type Database = {
           delivery_end?: string | null;
           delivery_start?: string | null;
           id?: string;
+          import_batch_id?: string | null;
           name?: string;
           updated_at?: string;
         };
@@ -1679,6 +1964,13 @@ export type Database = {
             columns: ["brand_id"];
             isOneToOne: false;
             referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "seasons_import_batch_id_fkey";
+            columns: ["import_batch_id"];
+            isOneToOne: false;
+            referencedRelation: "import_batches";
             referencedColumns: ["id"];
           },
         ];
@@ -2092,6 +2384,14 @@ export type Database = {
         };
         Returns: Json;
       };
+      complete_performance_import: {
+        Args: { p_confirm_differences?: boolean; p_id: string };
+        Returns: Json;
+      };
+      configure_import_batch: {
+        Args: { p_expected: Json; p_id: string; p_options: Json };
+        Returns: undefined;
+      };
       dashboard_report: {
         Args: {
           p_brand_id?: string;
@@ -2115,6 +2415,7 @@ export type Database = {
         Args: { p_id: string; p_lease: string };
         Returns: undefined;
       };
+      fail_import_upload: { Args: { p_id: string }; Returns: undefined };
       fail_invoice_issue: {
         Args: { p_error: string; p_id: string; p_lease: string };
         Returns: boolean;
@@ -2179,6 +2480,10 @@ export type Database = {
           p_external_id: string;
           p_status: Database["public"]["Enums"]["invoice_status"];
         };
+        Returns: Json;
+      };
+      performance_report: {
+        Args: { p_dimension?: string; p_filters?: Json; p_id: string };
         Returns: Json;
       };
       portal_dashboard_report: {
@@ -2258,10 +2563,18 @@ export type Database = {
         Args: { p_endpoint?: string };
         Returns: undefined;
       };
+      rollback_performance_import: {
+        Args: { p_id: string };
+        Returns: undefined;
+      };
       rotate_ical_token: { Args: { p_hash: string }; Returns: undefined };
       save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
       save_budget: {
         Args: { p_data: Json; p_id: string; p_updated_at?: string };
+        Returns: string;
+      };
+      save_import_profile: {
+        Args: { p_data: Json; p_id: string };
         Returns: string;
       };
       save_order: {
@@ -2278,6 +2591,20 @@ export type Database = {
           p_role: Database["public"]["Enums"]["app_role"];
         };
         Returns: undefined;
+      };
+      stage_import_rows: {
+        Args: { p_id: string; p_rows: Json };
+        Returns: number;
+      };
+      start_import_batch: {
+        Args: {
+          p_filename: string;
+          p_id: string;
+          p_kind: string;
+          p_sha256: string;
+          p_size: number;
+        };
+        Returns: string;
       };
       subscribe_push: {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string };

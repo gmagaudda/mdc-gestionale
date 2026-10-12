@@ -11,7 +11,7 @@ export async function selectChoice(
   option: string,
   partial = false,
 ) {
-  const control = page.getByLabel(label, { exact: true });
+  const control = page.getByRole("combobox", { name: label, exact: true });
   if (await control.evaluate((element) => element.tagName === "SELECT")) {
     const item = partial
       ? control.locator("option").filter({ hasText: option })

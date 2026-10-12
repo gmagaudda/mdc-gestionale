@@ -36,6 +36,9 @@ update public.documents set ready=true where id=s.document_id;
 insert into public.ical_tokens(user_id,token_hash) values(s.user_id,repeat(case when s.scope='A' then 'a' else 'b' end,64));
 insert into public.push_subscriptions(user_id,endpoint,p256dh,auth) values(s.user_id,'https://fcm.googleapis.com/fcm/send/isolation-'||s.scope,'BA'||repeat('A',85),repeat('A',22));
 insert into public.push_deliveries(event_id,subscription_id,starts_at) select s.event_id,id,'2033-01-01T09:00Z' from public.push_subscriptions where user_id=s.user_id;
+insert into public.import_profiles(id,name,entity,sheet_name,header_row,mapping,created_by) values(case when s.scope='A' then pg_temp.fixture_id(780) else pg_temp.fixture_id(781) end,'Private import profile','performance','Synthetic',1,'{}',pg_temp.fixture_id(703));
+insert into public.import_batches(id,kind,file_name,file_sha256,storage_path,size_bytes,created_by) values(case when s.scope='A' then pg_temp.fixture_id(770) else pg_temp.fixture_id(771) end,'performance','private.xlsx',repeat(case when s.scope='A' then 'a' else 'b' end,64),(case when s.scope='A' then pg_temp.fixture_id(770) else pg_temp.fixture_id(771) end)::text||'.xlsx',100,pg_temp.fixture_id(703));
+insert into public.import_rows(batch_id,entity,sheet,row_number,raw,mapped,status) values(case when s.scope='A' then pg_temp.fixture_id(770) else pg_temp.fixture_id(771) end,'performance','Synthetic',1,'{"private":"data"}','{"private":"data"}','valid');
 end loop;end;$$;
 insert into storage.buckets(id,name,public) values('isolation-other','isolation-other',false);
 -- Manifest requires a fixture and probes for every exposed public table/view.
@@ -71,6 +74,9 @@ insert into isolation_matrix(relation,own_where,foreign_where,own_count,write_co
 ('public.event_reminders','event_id=''00000000-0000-4000-8000-000000000750''','event_id=''00000000-0000-4000-8000-000000000751''',-1,'status'),
 ('public.push_subscriptions','user_id=''00000000-0000-4000-8000-000000000704''','user_id=''00000000-0000-4000-8000-000000000705''',1,'created_at'),
 ('public.push_deliveries','event_id=''00000000-0000-4000-8000-000000000750''','event_id=''00000000-0000-4000-8000-000000000751''',-1,'status'),
+('public.import_profiles','id=''00000000-0000-4000-8000-000000000780''','id=''00000000-0000-4000-8000-000000000781''',0,'name'),
+('public.import_batches','id=''00000000-0000-4000-8000-000000000770''','id=''00000000-0000-4000-8000-000000000771''',0,'file_name'),
+('public.import_rows','batch_id=''00000000-0000-4000-8000-000000000770''','batch_id=''00000000-0000-4000-8000-000000000771''',0,'status'),
 ('public.portal_orders','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'currency'),
 ('public.v_sales_by_brand_season','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'brand_id'),
 ('public.v_sales_by_customer','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'brand_id'),

@@ -6,10 +6,17 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    files: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "modules/**/*.{ts,tsx}"],
+    files: [
+      "app/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}",
+      "modules/**/*.{ts,tsx}",
+    ],
     ignores: ["app/api/**"],
     rules: {
-      "no-restricted-imports": ["error", { patterns: ["@/lib/supabase/admin", "**/supabase/admin"] }],
+      "no-restricted-imports": [
+        "error",
+        { patterns: ["@/lib/supabase/admin", "**/supabase/admin"] },
+      ],
     },
   },
   // Override default ignores of eslint-config-next.
@@ -20,6 +27,7 @@ const eslintConfig = defineConfig([
     ".wrangler/**",
     "out/**",
     "build/**",
+    "public/vendor/**",
     "next-env.d.ts",
   ]),
 ]);
