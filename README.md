@@ -129,3 +129,5 @@ Un utente brand accede a `/portal/dashboard`: consulta soltanto venduto e budget
 Test: `pnpm e2e e2e/portal-dashboard.spec.ts`; isolamento e revoca sono verificati anche nei test SQL.
 
 Nel portale sono disponibili anche `/portal/orders` (dettaglio, conferma PDF, line sheet e CSV), `/portal/sales` (vendite aggregate per cliente/stagione), `/portal/documents` (file esplicitamente condivisi) e `/portal/calendar` (eventi condivisi e abbonamento iCal personale). Tutte le funzioni business sono in sola lettura. Con visibilità clienti disabilitata, UI e file generati mostrano “Cliente riservato”. Il contenuto di un documento caricato viene condiviso integralmente: il personale deve controllarlo prima della condivisione. Test: `pnpm e2e e2e/portal-flow.spec.ts`; lo stesso flusso è verificato su Workers locale.
+
+`pnpm supabase:test` include una matrice obbligatoria di isolamento per ogni tabella/vista pubblica e per lo Storage. Quando si aggiunge una relazione, aggiungere anche la fixture e i probe in `supabase/tests/016_brand_isolation_matrix.sql`; il controllo inventario impedisce di saltare nuove tabelle. Ogni prova è transazionale e non modifica i dati demo.
