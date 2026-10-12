@@ -167,3 +167,7 @@ Le azioni dei report sono statiche: la regola sticky dei form di scrittura copri
 ## M6-T2: read model del portale
 
 Vista e RPC dedicate espongono solo i campi necessari ai brand. Le aggregazioni vendite si calcolano in SQL e il nome cliente passa da D1, senza accesso diretto all'anagrafica. Ordini bozza/annullati rimangono consultabili, ma non contribuiscono al venduto. Il calendario riusa FullCalendar e l'abbonamento personale con controlli readonly; cliente e assegnatario restano interni. Documenti e relativi contenuti sono pubblicabili solo dopo condivisione esplicita; non si promette anonimizzazione del file originale. Le guardie precedono Suspense per mantenere HTTP 404 sugli scope non autorizzati.
+
+## M7-T1: provider simulato e storico fiscale
+
+MockInvoicingProvider richiede uno store esplicito; l'implementazione memory è solo per test/spike. Il flusso applicativo userà un adapter SQL persistente per condividere stato/idempotenza tra richieste e isolate Workers. Non simulare consegna o pagamenti reali: i sei stati sono scenari controllati. Una chiave idempotente riusata con input diverso viene rifiutata. Snapshot fiscali, righe, date, importi e condizioni sono immutabili dalla creazione, anche durante la bozza; stati provider restano aggiornabili solo tramite RPC autorizzate nel T2. Le righe legacy del read model M5 mantengono snapshot null, senza ricostruire dati storici dalle anagrafiche attuali.

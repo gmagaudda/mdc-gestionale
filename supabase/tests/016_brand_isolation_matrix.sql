@@ -24,6 +24,7 @@ update isolation_scopes set order_id=v_order where scope=s.scope;
 insert into public.budgets(id,brand_id,amount_cents,period_start,period_end) values(s.budget_id,s.brand_id,5000,'2033-01-01','2033-12-31');
 insert into public.budget_private(id,brand_id,notes) values(s.budget_id,s.brand_id,'Private budget');
 insert into public.invoices(number,brand_id,customer_id,order_id,status,issue_date,due_date,net_cents,vat_cents,gross_cents) values('ISOLATION-'||s.scope,s.brand_id,pg_temp.fixture_id(706),v_order,'issued','2033-01-01','2033-02-01',1000,220,1220);
+insert into public.payments(invoice_id,brand_id,amount_cents,paid_at,method) select id,s.brand_id,100,'2033-01-02T10:00Z','bank_transfer' from public.invoices where number='ISOLATION-'||s.scope;
 insert into public.events(id,brand_id,title,starts_at,ends_at,visible_to_brand,assigned_to) values(s.event_id,s.brand_id,'Shared isolation','2033-01-01T09:00Z','2033-01-01T10:00Z',true,pg_temp.fixture_id(703));
 insert into public.event_reminders(event_id,recipient_id,starts_at) values(s.event_id,pg_temp.fixture_id(703),'2033-01-01T09:00Z');
 insert into public.documents(id,name,brand_id,storage_path,original_filename,mime_type,size_bytes,uploaded_by,shared_with_brand) values(s.document_id,'Shared isolation',s.brand_id,s.brand_id::text||'/'||s.document_id::text||'.pdf','isolation.pdf','application/pdf',10,pg_temp.fixture_id(703),true);
@@ -51,6 +52,7 @@ insert into isolation_matrix(relation,own_where,foreign_where,own_count,write_co
 ('public.events','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'title'),
 ('public.budgets','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'amount_cents'),
 ('public.budget_private','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',0,'notes'),
+('public.payments','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',0,'amount_cents'),
 ('public.invoices','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',0,'number'),
 ('public.documents','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'name'),
 ('public.customers','id=''00000000-0000-4000-8000-000000000706''','id=''00000000-0000-4000-8000-000000000706''',0,'legal_name'),

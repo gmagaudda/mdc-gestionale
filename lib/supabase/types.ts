@@ -714,18 +714,26 @@ export type Database = {
         Row: {
           brand_id: string;
           created_at: string;
+          currency: string;
           customer_id: string;
+          customer_snapshot: Json | null;
           due_date: string;
           external_id: string | null;
           external_status: string | null;
           gross_cents: number;
           id: string;
+          idempotency_key: string;
           issue_date: string;
+          lines_snapshot: Json | null;
           net_cents: number;
           number: string;
+          order_discount_pct: number;
           order_id: string | null;
+          payment_terms: string;
           pdf_path: string | null;
+          provider: string | null;
           status: Database["public"]["Enums"]["invoice_status"];
+          supplier_snapshot: Json | null;
           updated_at: string;
           vat_cents: number;
         };
@@ -733,36 +741,52 @@ export type Database = {
         Insert: {
           brand_id: string;
           created_at?: string;
+          currency?: string;
           customer_id: string;
+          customer_snapshot?: Json | null;
           due_date: string;
           external_id?: string | null;
           external_status?: string | null;
           gross_cents: number;
           id?: string;
+          idempotency_key?: string;
           issue_date: string;
+          lines_snapshot?: Json | null;
           net_cents: number;
           number: string;
+          order_discount_pct?: number;
           order_id?: string | null;
+          payment_terms?: string;
           pdf_path?: string | null;
+          provider?: string | null;
           status?: Database["public"]["Enums"]["invoice_status"];
+          supplier_snapshot?: Json | null;
           updated_at?: string;
           vat_cents: number;
         };
         Update: {
           brand_id?: string;
           created_at?: string;
+          currency?: string;
           customer_id?: string;
+          customer_snapshot?: Json | null;
           due_date?: string;
           external_id?: string | null;
           external_status?: string | null;
           gross_cents?: number;
           id?: string;
+          idempotency_key?: string;
           issue_date?: string;
+          lines_snapshot?: Json | null;
           net_cents?: number;
           number?: string;
+          order_discount_pct?: number;
           order_id?: string | null;
+          payment_terms?: string;
           pdf_path?: string | null;
+          provider?: string | null;
           status?: Database["public"]["Enums"]["invoice_status"];
+          supplier_snapshot?: Json | null;
           updated_at?: string;
           vat_cents?: number;
         };
@@ -1121,6 +1145,61 @@ export type Database = {
             columns: ["season_id", "brand_id"];
             isOneToOne: false;
             referencedRelation: "seasons";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      payments: {
+        Row: {
+          amount_cents: number;
+          brand_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          idempotency_key: string;
+          invoice_id: string;
+          method: string;
+          note: string;
+          paid_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          brand_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          idempotency_key?: string;
+          invoice_id: string;
+          method: string;
+          note?: string;
+          paid_at: string;
+        };
+        Update: {
+          amount_cents?: number;
+          brand_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          idempotency_key?: string;
+          invoice_id?: string;
+          method?: string;
+          note?: string;
+          paid_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payments_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payments_invoice_id_brand_id_fkey";
+            columns: ["invoice_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
             referencedColumns: ["id", "brand_id"];
           },
         ];
