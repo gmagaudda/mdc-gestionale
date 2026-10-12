@@ -18,6 +18,7 @@ export function AppNavigation({ role }: { role: Role }) {
           { href: "/customers", label: t("customers") },
           { href: "/seasons", label: t("seasons") },
           { href: "/products", label: t("products") },
+          { href: "/orders", label: t("orders") },
         ]
       : []),
     ...(role === "admin"
@@ -25,9 +26,6 @@ export function AppNavigation({ role }: { role: Role }) {
           { href: "/settings/users", label: t("users") },
           { href: "/settings/audit", label: t("audit") },
         ]
-      : []),
-    ...(["admin", "staff"].includes(role)
-      ? [{ href: "/orders/new", label: t("newOrder") }]
       : []),
   ];
   const navigation = (mobile = false) => (

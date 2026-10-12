@@ -11,11 +11,13 @@ export function ConfirmAction({
   question,
   action,
   destination,
+  confirmLabel,
 }: {
   label: string;
   question: string;
   action: () => Promise<ActionResult>;
   destination?: string;
+  confirmLabel?: string;
 }) {
   const t = useTranslations("lists");
   const router = useRouter();
@@ -78,7 +80,7 @@ export function ConfirmAction({
             })
           }
         >
-          {t("confirm")}
+          {confirmLabel ?? t("confirm")}
         </Button>
       </div>
     </ResponsiveDialog>

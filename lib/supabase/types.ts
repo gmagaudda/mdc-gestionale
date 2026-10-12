@@ -909,6 +909,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      duplicate_order: { Args: { p_id: string }; Returns: string };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
       recalculate_order_totals: {
         Args: { p_order_id: string };

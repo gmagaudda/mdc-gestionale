@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { uuid } from "zod";
 import { getTranslations } from "next-intl/server";
@@ -10,7 +11,7 @@ export default async function EditOrderPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; duplicated?: string }>;
 }) {
   await requireRole(["admin", "staff"]);
   const { id } = await params;
@@ -23,11 +24,18 @@ export default async function EditOrderPage({
     { brand_id: data.brand_id, season_id: data.season_id },
   );
   const t = await getTranslations("orders");
+  const search = await searchParams;
   return (
     <>
-      <h1>{t("edit", { number: data.number })}</h1>
-      {(await searchParams).saved === "1" && (
-        <Alert tone="success" title={t("saved")} />
+      <header className="page-header">
+        <h1>{t("edit", { number: data.number })}</h1>
+        <Link className="text-link" href={`/orders/${id}`}>
+          {t("detail", { number: data.number })}
+        </Link>
+      </header>
+      {search.saved === "1" && <Alert tone="success" title={t("saved")} />}
+      {search.duplicated === "1" && (
+        <Alert tone="success" title={t("duplicated")} />
       )}
       <OrderEditor
         key={id}

@@ -431,3 +431,8 @@ summary {
     display: none;
   }
 }
+
+.preserve-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

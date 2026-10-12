@@ -86,3 +86,18 @@ Ambito: creare/modificare una bozza con tre prodotti, ricerca cliente, quantità
 | UI            | Controlli Arc originali; salvataggio pending, errore, conferma in pagina                                                        | Clear                          |
 
 Finding risolto: HIGH, app/globals.css (size-color-matrix), colonna colore senza limite occupava tutto il contenitore di 320 px; table-layout fixed e colonne da 6/10 rem con overflow-wrap anywhere rendono raggiungibili le quantità. Proprietari better-layout/better-typography, screenshot browser della correzione ispezionato. Nessuna finding residua nel perimetro. Verifiche: cinque e2e con quattro righe persistite/totali e reload, 37 unit test, lint/typecheck/check:tokens e build Next. Zoom browser 200% e screen reader reale non verificati, restano nella revisione M8. Verdict: Approve per le verifiche indicate.
+
+## M3-T4: elenco, dettaglio e cambio stato
+
+Ambito: elenco filtrato → dettaglio → annullamento interrotto → conferma/produzione/spedizione/consegna → duplicazione/archiviazione → fatturazione con ruolo amministrazione. Stack, convenzioni e sei skill di dominio della revisione precedente. Esclusi PDF e portale futuri.
+
+| Dominio       | Evidenza                                                                                                                               | Esito                                                            |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Accessibilità | OrderFilters/OrderActions, dialog focus/Escape, copia SKU; axe AA nei cinque viewport chiaro/scuro                                     | Clear dopo correzione scroller tablet                            |
+| Layout        | ListView filtri conservati, DataTable card con tutti i campi; screenshot 360/1440 px e overflow                                        | Clear                                                            |
+| Scrittura     | Stati, verbi delle transizioni, conseguenze annullamento, nota duplicazione, percentuale di default distinta dal suggerimento del form | Clear                                                            |
+| Tipografia    | Token Arc, importi/date italiane, SKU e nomi lunghi a capo                                                                             | Clear                                                            |
+| Colore        | Badge Arc semantico, testo stato sempre visibile; axe/check:tokens                                                                     | Clear dopo rimozione interpolazione transitoria nel cambio stato |
+| UI            | Pending/feedback in pagina, storico nativo, dialog annullamento, snapshot protetti                                                     | Clear                                                            |
+
+Finding risolti: WCAG 2.1.1, scroller tabella senza controlli su tablet, aggiunta copia SKU; testo badge in transizione con contrasto temporaneamente insufficiente, stato reso senza interpolazione tramite composizione/key. Nessuna finding azionabile residua nell’ambito. Verifiche: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/orders-flow.spec.ts` (5 passati), 89 test DB, 40 unit test, lint/typecheck/check:tokens e build Next. Screen reader reale e zoom browser 200% non verificati (M8). Verdict: Approve nelle verifiche indicate.

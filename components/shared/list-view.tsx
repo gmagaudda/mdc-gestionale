@@ -15,6 +15,7 @@ export async function ListView({
   title,
   searchLabel,
   sortable = [],
+  filterParams = {},
 }: {
   base: string;
   query: ListQuery;
@@ -24,6 +25,7 @@ export async function ListView({
   title: string;
   searchLabel?: string;
   sortable?: ListColumn[];
+  filterParams?: Record<string, string>;
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
@@ -50,14 +52,19 @@ export async function ListView({
             <Link
               className="text-link"
               key={column.key}
-              href={listHref(base, query, {
-                page: 1,
-                sort: column.key,
-                direction:
-                  query.sort === column.key && query.direction === "asc"
-                    ? "desc"
-                    : "asc",
-              })}
+              href={listHref(
+                base,
+                query,
+                {
+                  page: 1,
+                  sort: column.key,
+                  direction:
+                    query.sort === column.key && query.direction === "asc"
+                      ? "desc"
+                      : "asc",
+                },
+                filterParams,
+              )}
             >
               {t("sortBy", {
                 field: column.label,
@@ -93,7 +100,12 @@ export async function ListView({
           {query.page > 1 && (
             <Link
               className="text-link"
-              href={listHref(base, query, { page: query.page - 1 })}
+              href={listHref(
+                base,
+                query,
+                { page: query.page - 1 },
+                filterParams,
+              )}
             >
               {t("previous")}
             </Link>
@@ -104,7 +116,12 @@ export async function ListView({
           {query.page < pages && (
             <Link
               className="text-link"
-              href={listHref(base, query, { page: query.page + 1 })}
+              href={listHref(
+                base,
+                query,
+                { page: query.page + 1 },
+                filterParams,
+              )}
             >
               {t("next")}
             </Link>

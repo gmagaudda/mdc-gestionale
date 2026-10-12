@@ -90,3 +90,36 @@ export async function changeOrderStatus(input: unknown): Promise<ActionResult> {
   revalidatePath(`/orders/${parsed.data.id}`);
   return { ok: true, data: undefined };
 }
+
+export async function duplicateOrder(
+  id: string,
+): Promise<ActionResult<string>> {
+  await requireRole(["admin", "staff"]);
+  if (!uuid().safeParse(id).success) return { ok: false, error: "validation" };
+  const db = await createClient();
+  const { data, error } = await db.rpc("duplicate_order", { p_id: id });
+  if (error || !data)
+    return {
+      ok: false,
+      error: error?.code === "23514" ? "duplicateUnavailable" : "saveError",
+    };
+  revalidatePath("/orders");
+  return { ok: true, data };
+}
+
+export async function archiveOrder(id: string): Promise<ActionResult> {
+  await requireRole(["admin", "staff"]);
+  if (!uuid().safeParse(id).success) return { ok: false, error: "validation" };
+  const db = await createClient();
+  const result = await db
+    .from("orders")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id)
+    .is("deleted_at", null)
+    .in("status", ["draft", "cancelled"])
+    .select("id")
+    .single();
+  if (result.error) return { ok: false, error: "saveError" };
+  revalidatePath("/orders");
+  return { ok: true, data: undefined };
+}

@@ -39,6 +39,10 @@ export default async function AuditPage({
     "seasons",
     "products",
     "product_variants",
+    "orders",
+    "order_lines",
+    "order_private",
+    "order_status_history",
   ];
   if (query.q) {
     const resource = resourceNames.find(

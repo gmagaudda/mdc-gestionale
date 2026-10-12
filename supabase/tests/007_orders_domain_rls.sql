@@ -1,5 +1,5 @@
 begin;
-select plan(28);
+select plan(37);
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000101','orders-staff@example.test'),('00000000-0000-4000-8000-000000000102','orders-brand@example.test'),('00000000-0000-4000-8000-000000000103','orders-accounting@example.test');
 update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000101';
 update public.profiles set role='accounting' where id='00000000-0000-4000-8000-000000000103';
@@ -55,4 +55,17 @@ set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000103';
 select lives_ok($$select public.change_order_status(id,'invoiced','') from test_orders$$,'accounting invoices delivered order');
 select throws_ok($$select public.change_order_status(id,'cancelled','') from test_orders$$,'42501',null,'accounting cannot cancel final invoice');
 select throws_ok($$insert into public.order_status_history(order_id,brand_id,to_status) values((select id from test_orders),'00000000-0000-4000-8000-000000000104','cancelled')$$,'42501',null,'history cannot be forged');
+
+select throws_ok($$select public.duplicate_order(id) from test_orders$$,'42501',null,'accounting cannot duplicate');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000102';
+select throws_ok($$select public.duplicate_order(id) from test_orders$$,'42501',null,'brand cannot duplicate');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000101';
+select lives_ok($$update test_orders set other_id=public.duplicate_order(id)$$,'staff duplicates final order atomically');
+select is((select status::text from public.orders where id=(select other_id from test_orders)),'draft','copy starts in draft');
+select isnt((select number from public.orders where id=(select other_id from test_orders)),(select number from public.orders where id=(select id from test_orders)),'copy receives a new number');
+select is((select internal_notes from public.order_private where id=(select other_id from test_orders)),'Private commission and notes','copy preserves private fields');
+select is((select unit_price_cents from public.order_lines where order_id=(select other_id from test_orders)),1999::bigint,'copy preserves agreed price');
+update public.product_variants set deleted_at=now() where id='00000000-0000-4000-8000-000000000110';
+select throws_ok($$select public.duplicate_order(id) from test_orders$$,'23514',null,'archived variant refuses duplication');
+select is((select count(*) from public.orders where brand_id='00000000-0000-4000-8000-000000000104'),2::bigint,'failed duplication leaves no partial copy');
 select * from finish();rollback;

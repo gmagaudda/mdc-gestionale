@@ -32,9 +32,11 @@ export function listHref(
   base: string,
   query: ListQuery,
   changes: Partial<ListQuery> = {},
+  filterParams: Record<string, string> = {},
 ) {
   const next = { ...query, ...changes };
   const params = new URLSearchParams({
+    ...filterParams,
     page: String(next.page),
     q: next.q,
     sort: next.sort,

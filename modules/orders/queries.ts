@@ -1,4 +1,5 @@
 import "server-only";
+import { escapeLike } from "@/lib/queries/list";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 export type MatrixProduct = Pick<
@@ -113,4 +114,66 @@ export async function getOrder(id: string) {
     .eq("id", id)
     .is("deleted_at", null)
     .single();
+}
+
+export async function listOrders(
+  query: import("@/lib/queries/list").ListQuery,
+  filters: import("./filters").OrderFilters,
+) {
+  const db = await createClient();
+  let request = db
+    .from("orders")
+    .select(
+      "id,number,order_date,status,net_total_cents,vat_total_cents,gross_total_cents,brands(name),customers(legal_name,city),seasons(code)",
+      { count: "exact" },
+    )
+    .is("deleted_at", null)
+    .order(query.sort, { ascending: query.direction === "asc" })
+    .order("id")
+    .range((query.page - 1) * query.size, query.page * query.size - 1);
+  if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);
+  if (filters.status) request = request.eq("status", filters.status);
+  if (filters.brand_id) request = request.eq("brand_id", filters.brand_id);
+  if (filters.customer_id)
+    request = request.eq("customer_id", filters.customer_id);
+  if (filters.season_id) request = request.eq("season_id", filters.season_id);
+  if (filters.from) request = request.gte("order_date", filters.from);
+  if (filters.to) request = request.lte("order_date", filters.to);
+  return request;
+}
+export async function orderFilterChoices(customerId = "") {
+  const db = await createClient();
+  const [brands, seasons, customers] = await Promise.all([
+    db.from("brands").select("id,name").order("name"),
+    db.from("seasons").select("id,brand_id,code,name").order("code"),
+    db
+      .from("customers")
+      .select("id,legal_name,city")
+      .order("legal_name")
+      .limit(50),
+  ]);
+  if (brands.error || seasons.error || customers.error)
+    throw Error("Order filters unavailable");
+  if (customerId && !customers.data.some((row) => row.id === customerId)) {
+    const current = await db
+      .from("customers")
+      .select("id,legal_name,city")
+      .eq("id", customerId)
+      .single();
+    if (current.data) customers.data.push(current.data);
+  }
+  return {
+    brands: brands.data,
+    seasons: seasons.data,
+    customers: customers.data,
+  };
+}
+export async function getOrderHistory(id: string) {
+  const db = await createClient();
+  return db
+    .from("order_status_history")
+    .select("id,from_status,to_status,changed_at,note")
+    .eq("order_id", id)
+    .order("changed_at")
+    .order("id");
 }
