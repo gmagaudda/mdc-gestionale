@@ -139,3 +139,5 @@ Da un ordine consegnato admin/amministrazione possono generare una fattura: dati
 Apri /invoices per scadenzario, saldo e dettaglio. Registra incassi effettivi parziali o completi; una chiave stabile evita duplicati nelle ripetizioni della stessa richiesta. Aggiorna stato consulta il provider. Un annullamento richiede conferma, conserva lo storico ed è possibile solo senza incassi e senza stato esterno pagato. Il provider paid non registra automaticamente denaro ricevuto. Staff legge; brand non accede. Dopo un errore riprova sulla fattura già prenotata, senza crearne una seconda.
 
 Test: pnpm e2e e2e/invoices.spec.ts. Il flusso ordine → fattura → due pagamenti → saldo, callback firmato e annullamento è verificato anche su Workers locale. Fatture in Cloud è il provider reale scelto, con integrazione nel task M7-T3 e accessi da configurare nell'ambiente.
+
+Configurazione Fatture in Cloud, OAuth, mapping delle aziende, retry e callback: [docs/INVOICING.md](docs/INVOICING.md). Solo INVOICING_PROVIDER=fic abilita l'adapter reale. Il default locale resta mock; nessun account reale è stato usato dai test.

@@ -157,7 +157,18 @@ export async function cancelInvoice(id: string): Promise<ActionResult> {
       throw new InvoicingError("unavailable", true);
     refresh(id, data.order_id);
     return { ok: true, data: undefined };
-  } catch {
+  } catch (error) {
+    if (
+      error instanceof InvoicingError &&
+      error.code === "invalid_transition"
+    ) {
+      await db.rpc("release_invoice_cancellation", {
+        p_id: id,
+        p_lease: claim.data,
+      });
+      refresh(id);
+      return { ok: false, error: "ficCancellationUnavailable" };
+    }
     await db.rpc("fail_invoice_issue", {
       p_id: id,
       p_lease: claim.data,

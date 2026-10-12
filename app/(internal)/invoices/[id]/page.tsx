@@ -46,10 +46,19 @@ export default async function InvoicePage({
     lines = z.array(invoiceLineSchema).safeParse(invoice.lines_snapshot);
   return (
     <>
-      <PageHeader title={t("detail", { number: invoice.number })} />
+      <PageHeader
+        title={t("detail", {
+          number: invoice.fic_document_number ?? invoice.number,
+        })}
+      />
       {invoice.provider === "mock" && (
         <Alert tone="info" title={t("mockHint")} />
       )}
+      {invoice.provider === "fic" && <Alert tone="info" title={t("ficHint")} />}
+      {invoice.fic_request_state === "uncertain" &&
+        invoice.processing_status === "failed" && (
+          <Alert tone="warning" title={t("ficUncertain")} />
+        )}
       <div>
         <Badge
           tone={
@@ -81,6 +90,18 @@ export default async function InvoicePage({
         </Alert>
       )}
       <dl className="details-grid">
+        {invoice.provider === "fic" && (
+          <>
+            <div>
+              <dt>{t("localReference")}</dt>
+              <dd>{invoice.number}</dd>
+            </div>
+            <div>
+              <dt>{t("ficNumber")}</dt>
+              <dd>{invoice.fic_document_number ?? t("notSet")}</dd>
+            </div>
+          </>
+        )}
         <div>
           <dt>{t("supplier")}</dt>
           <dd>

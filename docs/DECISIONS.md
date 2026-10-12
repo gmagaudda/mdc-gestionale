@@ -175,3 +175,11 @@ MockInvoicingProvider richiede uno store esplicito; l'implementazione memory è 
 ## Conferme dell’umano: provider e identità
 
 Confermato Fatture in Cloud come provider definitivo per M7-T3. Preparare integrazione/contract test con HTTP simulato; accessi reali da configurare nell'ambiente, senza attivazione o emissione reale in questa fase locale. Nome definitivo “MDC Gestionale”, accento neutro attuale, per manifest/icone e identità in M8. Nessun deploy autorizzato in questa fase.
+
+## M7-T3: Fatture in Cloud (12 ottobre 2026)
+
+Confermato dall'umano. Adapter fetch senza SDK Node, attivazione esplicita e configurazione per brand: un unico FIC_COMPANY_ID globale rischierebbe di scegliere l'emittente sbagliato. Numerazione fiscale assegnata dal provider, distinta dal riferimento interno. Nessun invio SdI automatico e nessuna anagrafica esterna nuova; gestione elettronica/rettifiche nel provider.
+
+La API non documenta una chiave HTTP idempotente per creazione: journal SQL prima del POST e correlazione subject con fingerprint. Dopo timeout/5xx, recupero autenticato; se manca una corrispondenza non si ritenta la scrittura alla cieca. Totali esterni devono coincidere esattamente. I token OAuth ruotati vanno conservati dall'operatore in ambiente sicuro; niente refresh runtime in memoria che li perderebbe fra isolate.
+
+Webhook FIC usa JWT ES256, non l'HMAC del mock. Coda sulla tabella eventi già protetta, metadati minimi e lettura stato via API. after più cron di recupero rispettano la raccomandazione ufficiale di risposta rapida; nessun pagamento creato da un callback. Fonti, configurazione ed eventuali limitazioni fiscali sono documentate in INVOICING.md. Le prove di contratto sono sintetiche; OAuth/account/sezionali/webhook HTTPS reali richiedono ancora la configurazione umana.

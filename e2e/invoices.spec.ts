@@ -13,7 +13,8 @@ let email: string,
   seasonId: string,
   productId: string,
   orderId: string,
-  cancelOrderId: string;
+  cancelOrderId: string,
+  ficOrderId: string;
 const admin = () =>
   createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -106,7 +107,7 @@ test.beforeAll(async () => {
     { auth: { persistSession: false } },
   );
   await session.auth.signInWithPassword({ email, password });
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 3; index++) {
     const order = await session.rpc("save_order", {
       p_id: null as unknown as string,
       p_data: {
@@ -130,7 +131,8 @@ test.beforeAll(async () => {
     if (order.error) throw order.error;
     const createdOrderId = order.data!;
     if (index === 0) orderId = createdOrderId;
-    else cancelOrderId = createdOrderId;
+    else if (index === 1) cancelOrderId = createdOrderId;
+    else ficOrderId = createdOrderId;
     for (const status of [
       "confirmed",
       "in_production",
@@ -379,6 +381,9 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     page.getByRole("region", { name: "Riepilogo", exact: true }),
   ).toContainText("20,00");
   await page.goto(`/orders/${cancelOrderId}`);
+  await expect(page.getByLabel("Data emissione", { exact: true })).toHaveCount(
+    1,
+  );
   await page.getByLabel("Data emissione", { exact: true }).fill("2033-01-01");
   await page.getByLabel("Data scadenza", { exact: true }).fill("2033-02-01");
   await page
@@ -402,6 +407,93 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
   await expect(
     page.getByRole("button", { name: "Registra pagamento", exact: true }),
   ).toHaveCount(0);
+  // Synthetic FIC metadata only. No access token or real provider HTTP call is made.
+  const accounting = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false } },
+  );
+  await accounting.auth.signInWithPassword({ email, password });
+  const reserved = await accounting.rpc("reserve_invoice_from_order", {
+    p_order_id: ficOrderId,
+    p_issue_date: "2033-01-01",
+    p_due_date: "2033-02-01",
+    p_provider: "fic",
+  });
+  if (reserved.error) throw reserved.error;
+  const ficId = reserved.data!,
+    claim = await accounting.rpc("claim_invoice_issue", { p_id: ficId });
+  if (claim.error) throw claim.error;
+  for (const result of [
+    await accounting.rpc("fic_prepare_invoice", {
+      p_id: ficId,
+      p_company_id: 12345,
+      p_fingerprint: "a".repeat(64),
+    }),
+    await accounting.rpc("fic_mark_attempt", { p_id: ficId }),
+    await accounting.rpc("fail_invoice_issue", {
+      p_id: ficId,
+      p_lease: claim.data!,
+      p_error: "provider_unavailable",
+    }),
+  ])
+    if (result.error) throw result.error;
+  await page.goto(`/invoices/${ficId}`);
+  await expect(
+    page.getByText("L’esito della creazione è incerto.", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Riferimento nel gestionale", { exact: true }),
+  ).toBeVisible();
+  const retry = await accounting.rpc("claim_invoice_issue", { p_id: ficId });
+  if (retry.error) throw retry.error;
+  const linked = await accounting.rpc("fic_link_invoice", {
+    p_id: ficId,
+    p_document_id: 9876,
+    p_number: "17/MDC",
+  });
+  if (linked.error) throw linked.error;
+  const finished = await accounting.rpc("finish_invoice_issue", {
+    p_id: ficId,
+    p_lease: retry.data!,
+    p_external_id: "fic_12345_9876",
+    p_status: "issued",
+  });
+  if (finished.error) throw finished.error;
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Fattura 17/MDC", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Numero in Fatture in Cloud", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Questa fattura è gestita con Fatture in Cloud.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page
+    .locator("summary")
+    .filter({ hasText: "Preferenze utente" })
+    .click();
+  for (const theme of ["Chiaro", "Scuro"]) {
+    await page.getByRole("button", { name: theme, exact: true }).click();
+    await page.waitForTimeout(400);
+    expect(
+      (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
+        ["serious", "critical"].includes(v.impact ?? ""),
+      ),
+    ).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.screenshot({
+    path: info.outputPath("invoice-fic-metadata.png"),
+    fullPage: true,
+  });
   await db.from("profiles").update({ role: "staff" }).eq("id", userId);
   await page.goto(`/invoices/${invoiceId}`);
   await expect(

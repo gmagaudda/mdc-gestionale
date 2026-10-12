@@ -752,9 +752,14 @@ export type Database = {
           created_at: string;
           event_id: string;
           external_status: Database["public"]["Enums"]["invoice_status"];
+          fic_digest: string | null;
           id: string;
           invoice_id: string;
           provider: string;
+          reconcile_error: boolean;
+          reconcile_lease: string | null;
+          reconcile_pending: boolean;
+          reconcile_started_at: string | null;
         };
         ComputedFields: never;
         Insert: {
@@ -762,18 +767,28 @@ export type Database = {
           created_at?: string;
           event_id: string;
           external_status: Database["public"]["Enums"]["invoice_status"];
+          fic_digest?: string | null;
           id?: string;
           invoice_id: string;
           provider: string;
+          reconcile_error?: boolean;
+          reconcile_lease?: string | null;
+          reconcile_pending?: boolean;
+          reconcile_started_at?: string | null;
         };
         Update: {
           brand_id?: string;
           created_at?: string;
           event_id?: string;
           external_status?: Database["public"]["Enums"]["invoice_status"];
+          fic_digest?: string | null;
           id?: string;
           invoice_id?: string;
           provider?: string;
+          reconcile_error?: boolean;
+          reconcile_lease?: string | null;
+          reconcile_pending?: boolean;
+          reconcile_started_at?: string | null;
         };
         Relationships: [
           {
@@ -802,6 +817,11 @@ export type Database = {
           due_date: string;
           external_id: string | null;
           external_status: string | null;
+          fic_company_id: number | null;
+          fic_document_id: number | null;
+          fic_document_number: string | null;
+          fic_request_fingerprint: string | null;
+          fic_request_state: string | null;
           gross_cents: number;
           id: string;
           idempotency_key: string;
@@ -834,6 +854,11 @@ export type Database = {
           due_date: string;
           external_id?: string | null;
           external_status?: string | null;
+          fic_company_id?: number | null;
+          fic_document_id?: number | null;
+          fic_document_number?: string | null;
+          fic_request_fingerprint?: string | null;
+          fic_request_state?: string | null;
           gross_cents: number;
           id?: string;
           idempotency_key?: string;
@@ -865,6 +890,11 @@ export type Database = {
           due_date?: string;
           external_id?: string | null;
           external_status?: string | null;
+          fic_company_id?: number | null;
+          fic_document_id?: number | null;
+          fic_document_number?: string | null;
+          fic_request_fingerprint?: string | null;
+          fic_request_state?: string | null;
           gross_cents?: number;
           id?: string;
           idempotency_key?: string;
@@ -1932,6 +1962,7 @@ export type Database = {
           title: string;
         }[];
       };
+      claim_fic_webhooks: { Args: Record<PropertyKey, never>; Returns: Json };
       claim_invoice_cancellation: { Args: { p_id: string }; Returns: string };
       claim_invoice_issue: { Args: { p_id: string }; Returns: string };
       commissions_report: {
@@ -1955,12 +1986,43 @@ export type Database = {
         Returns: Json;
       };
       duplicate_order: { Args: { p_id: string }; Returns: string };
+      enqueue_fic_webhook: {
+        Args: {
+          p_company_id: number;
+          p_digest: string;
+          p_document_ids: number[];
+          p_event_id: string;
+        };
+        Returns: number;
+      };
+      fail_fic_webhook: {
+        Args: { p_id: string; p_lease: string };
+        Returns: undefined;
+      };
       fail_invoice_issue: {
         Args: { p_error: string; p_id: string; p_lease: string };
         Returns: boolean;
       };
+      fic_definite_failure: { Args: { p_id: string }; Returns: undefined };
+      fic_link_invoice: {
+        Args: { p_document_id: number; p_id: string; p_number: string };
+        Returns: undefined;
+      };
+      fic_mark_attempt: { Args: { p_id: string }; Returns: boolean };
+      fic_prepare_invoice: {
+        Args: { p_company_id: number; p_fingerprint: string; p_id: string };
+        Returns: Json;
+      };
       finish_event_reminder: {
         Args: { p_id: string; p_lease: string; p_status: string };
+        Returns: boolean;
+      };
+      finish_fic_webhook: {
+        Args: {
+          p_id: string;
+          p_lease: string;
+          p_status: Database["public"]["Enums"]["invoice_status"];
+        };
         Returns: boolean;
       };
       finish_invoice_cancellation: {
@@ -2048,6 +2110,10 @@ export type Database = {
           p_paid_at: string;
         };
         Returns: string;
+      };
+      release_invoice_cancellation: {
+        Args: { p_id: string; p_lease: string };
+        Returns: boolean;
       };
       reserve_invoice_from_order: {
         Args: {

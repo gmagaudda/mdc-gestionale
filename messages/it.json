@@ -855,6 +855,11 @@
     "cancelInvoice": "Annulla fattura",
     "cancelQuestion": "La fattura sarà annullata e non contribuirà più al fatturato. I dati e lo storico restano conservati. L’ordine mantiene lo stato fatturato.",
     "invoiceCancelled": "Fattura annullata.",
-    "cancellationFailed": "Annullamento non completato. Aggiorna lo stato o riprova."
+    "cancellationFailed": "Annullamento non completato. Aggiorna lo stato o riprova.",
+    "ficHint": "Questa fattura è gestita con Fatture in Cloud. L’invio elettronico e le eventuali rettifiche si gestiscono in Fatture in Cloud.",
+    "ficNumber": "Numero in Fatture in Cloud",
+    "localReference": "Riferimento nel gestionale",
+    "ficUncertain": "L’esito della creazione è incerto. Riprova per cercare il documento già creato; se non viene trovato, verifica in Fatture in Cloud e contatta l’amministratore prima di procedere.",
+    "ficCancellationUnavailable": "Il documento non può essere annullato dal gestionale. Verifica lo stato e le eventuali rettifiche in Fatture in Cloud. Gli incassi restano registrabili."
   }
 }

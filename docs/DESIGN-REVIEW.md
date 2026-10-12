@@ -253,3 +253,20 @@ Ambito: ordine consegnato → date/validazione → snapshot fattura → scadenza
 | UI            | Un primario per superficie, azioni secondarie raggruppate, skeleton/vuoto/errore/successo, movimento ridotto Number Flow      | Clear |
 
 Nessun finding azionabile residuo nel flusso ispezionato. Verifiche: pnpm e2e e2e/invoices.spec.ts (cinque viewport), pnpm e2e e2e/orders-flow.spec.ts (cinque viewport), portal-flow desktop; invoices desktop su Workers con callback reale locale firmato. Lint/typecheck/test/check:tokens/build:cf/supabase:test e DB lint verdi: 902 controlli DB, 99 unit test. Screen reader reale, zoom 200% e accento alternativo non verificati in questo task, previsti in M8. Verdict: Approve entro il perimetro e le verifiche indicati.
+
+## M7-T3: riferimenti e stati Fatture in Cloud
+
+Ambito UI: dettaglio con numero esterno/riferimento interno, stato creazione incerta, istruzioni di recupero e avviso per invio elettronico/rettifiche. Riutilizzo Arc Alert/Badge/controlli esistenti e token; nessun nuovo componente o modifica interna. Sei skill better-* e better-interface consultati, AGENTS/DESIGN-GUIDELINES/DECISIONS applicati. Esclusi account reale, sottoscrizione HTTPS e invio elettronico.
+
+| Dominio       | Evidenza                                                                                                                           | Esito |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| Accessibilità | Axe due temi/cinque viewport su mock e metadata FIC sintetici, focus errore/conferma/successo                                      | Clear |
+| Layout        | Overflow 360–1440, screenshot mobile-s e desktop del numero FIC ispezionati, azioni raggiungibili                                  | Clear |
+| Scrittura     | Numero esterno distinto dal riferimento, avviso esito incerto con recupero, nessuna affermazione di creazione prima della conferma | Clear |
+| Tipografia    | Token Arc, nomi lunghi completi, numeri/date italiani                                                                              | Clear |
+| Colore        | Contrasto axe con cambio tema tramite controlli reali, stati con testo                                                             | Clear |
+| UI            | Loading/empty/error/success condivisi, avvisi inline, primario incassi e secondari status/annullamento                             | Clear |
+
+Nessun finding azionabile residuo. Corretto durante la revisione un testo che indicava documento creato anche per una prenotazione ancora incerta. Il primo controllo axe del test nuovo cambiava direttamente data-theme senza passare da next-themes e misurava colori durante la transizione: sostituito con l'interazione utente del tema, senza ignorare violazioni. Anche il test attende una sola istanza del campo dopo la sostituzione della Suspense server, senza selezionare arbitrariamente un duplicato.
+
+Verifiche: pnpm e2e e2e/invoices.spec.ts, cinque viewport con metadata FIC sintetici e flusso mock; unit/contract HTTP/JWT, 946 controlli DB, lint/typecheck/check:tokens/build OpenNext e DB lint. Spike workerd indipendente con timeout recuperato, un solo POST e verifica JWT ES256. Screen reader reale e zoom 200% non verificati qui, previsti in M8. Verdict: Approve entro il perimetro indicato.
