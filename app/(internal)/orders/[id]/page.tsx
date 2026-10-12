@@ -6,6 +6,9 @@ import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
 import { formatMoney } from "@/lib/money";
 import { getOrder, getOrderHistory } from "@/modules/orders/queries";
+import { GenerateInvoice } from "@/modules/invoices/components/generate-invoice";
+import { getOrderInvoice } from "@/modules/invoices/queries";
+import { invoicingProviderName } from "@/lib/invoicing";
 import { OrderActions } from "@/modules/orders/components/order-actions";
 import { PageHeader } from "@/components/shared/page-header";
 import { DataTable } from "@/components/shared/data-table";
@@ -33,6 +36,14 @@ export default async function OrderPage({
       timeZone: "Europe/Rome",
     }).format(new Date(`${value}T12:00:00Z`));
   const privateData = order.order_private[0];
+  const invoice = await getOrderInvoice(id);
+  const billing = await getTranslations("invoices");
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Rome",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
   return (
     <>
       <PageHeader
@@ -165,6 +176,19 @@ export default async function OrderPage({
         </p>
       </section>
       <OrderActions id={id} status={order.status} role={user.role} />
+      {invoice.error ? (
+        <Alert tone="danger" title={billing("loadError")} />
+      ) : invoice.data ? (
+        <Link className="text-link" href={`/invoices/${invoice.data.id}`}>
+          {billing("openInvoice")}
+        </Link>
+      ) : order.status === "delivered" && user.role !== "staff" ? (
+        <GenerateInvoice
+          orderId={id}
+          today={today}
+          mock={invoicingProviderName() === "mock"}
+        />
+      ) : null}
       <section className="stack" aria-label={t("history")}>
         <h2>{t("history")}</h2>
         {history.error ? (

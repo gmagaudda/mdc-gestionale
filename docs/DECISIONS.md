@@ -171,3 +171,7 @@ Vista e RPC dedicate espongono solo i campi necessari ai brand. Le aggregazioni 
 ## M7-T1: provider simulato e storico fiscale
 
 MockInvoicingProvider richiede uno store esplicito; l'implementazione memory è solo per test/spike. Il flusso applicativo userà un adapter SQL persistente per condividere stato/idempotenza tra richieste e isolate Workers. Non simulare consegna o pagamenti reali: i sei stati sono scenari controllati. Una chiave idempotente riusata con input diverso viene rifiutata. Snapshot fiscali, righe, date, importi e condizioni sono immutabili dalla creazione, anche durante la bozza; stati provider restano aggiornabili solo tramite RPC autorizzate nel T2. Le righe legacy del read model M5 mantengono snapshot null, senza ricostruire dati storici dalle anagrafiche attuali.
+
+## Conferme dell’umano: provider e identità
+
+Confermato Fatture in Cloud come provider definitivo per M7-T3. Preparare integrazione/contract test con HTTP simulato; accessi reali da configurare nell'ambiente, senza attivazione o emissione reale in questa fase locale. Nome definitivo “MDC Gestionale”, accento neutro attuale, per manifest/icone e identità in M8. Nessun deploy autorizzato in questa fase.

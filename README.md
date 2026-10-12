@@ -112,7 +112,7 @@ Test: `pnpm e2e e2e/budgets.spec.ts`; i test DB verificano isolamento, vincolo d
 
 ### Dashboard
 
-Apri `/dashboard`: filtra per brand, stagione e periodo. Venduto netto include ordini confermati e successivi, escludendo bozze/annullati; fatturato netto include fatture emesse/inviate/pagate. Il modulo di emissione sarà disponibile in M7. Il confronto budget considera l'intero periodo di ogni budget che interseca i filtri; scostamento = venduto meno budget, percentuale non disponibile per budget zero.
+Apri `/dashboard`: filtra per brand, stagione e periodo. Venduto netto include ordini confermati e successivi, escludendo bozze/annullati; fatturato netto include fatture emesse/inviate/pagate. Il modulo di emissione è descritto nella sezione Fatture. Il confronto budget considera l'intero periodo di ogni budget che interseca i filtri; scostamento = venduto meno budget, percentuale non disponibile per budget zero.
 
 Ogni grafico ha una tabella con valori esatti. Per dataset ampi la pagina indica quanti confronti/mesi mostra: restringi i filtri o apri la lista budget. Test: `pnpm e2e e2e/dashboard.spec.ts`; test DB con risultati economici calcolati a mano e isolamento RLS. Prova Workers locale: `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/dashboard.spec.ts --project=desktop`.
 
@@ -131,3 +131,11 @@ Test: `pnpm e2e e2e/portal-dashboard.spec.ts`; isolamento e revoca sono verifica
 Nel portale sono disponibili anche `/portal/orders` (dettaglio, conferma PDF, line sheet e CSV), `/portal/sales` (vendite aggregate per cliente/stagione), `/portal/documents` (file esplicitamente condivisi) e `/portal/calendar` (eventi condivisi e abbonamento iCal personale). Tutte le funzioni business sono in sola lettura. Con visibilità clienti disabilitata, UI e file generati mostrano “Cliente riservato”. Il contenuto di un documento caricato viene condiviso integralmente: il personale deve controllarlo prima della condivisione. Test: `pnpm e2e e2e/portal-flow.spec.ts`; lo stesso flusso è verificato su Workers locale.
 
 `pnpm supabase:test` include una matrice obbligatoria di isolamento per ogni tabella/vista pubblica e per lo Storage. Quando si aggiunge una relazione, aggiungere anche la fixture e i probe in `supabase/tests/016_brand_isolation_matrix.sql`; il controllo inventario impedisce di saltare nuove tabelle. Ogni prova è transazionale e non modifica i dati demo.
+
+### Fatture
+
+Da un ordine consegnato admin/amministrazione possono generare una fattura: dati fiscali e righe sono copiati in uno snapshot immutabile. In locale INVOICING_PROVIDER=mock simula l'emissione, senza inviare documenti fiscali. Configura lo stesso INVOICING_WEBHOOK_SECRET casuale (almeno 32 caratteri) nei file locali ignorati .env.local e .dev.vars. Il callback mock richiede HMAC-SHA256 e timestamp; non inviare payload non firmati.
+
+Apri /invoices per scadenzario, saldo e dettaglio. Registra incassi effettivi parziali o completi; una chiave stabile evita duplicati nelle ripetizioni della stessa richiesta. Aggiorna stato consulta il provider. Un annullamento richiede conferma, conserva lo storico ed è possibile solo senza incassi e senza stato esterno pagato. Il provider paid non registra automaticamente denaro ricevuto. Staff legge; brand non accede. Dopo un errore riprova sulla fattura già prenotata, senza crearne una seconda.
+
+Test: pnpm e2e e2e/invoices.spec.ts. Il flusso ordine → fattura → due pagamenti → saldo, callback firmato e annullamento è verificato anche su Workers locale. Fatture in Cloud è il provider reale scelto, con integrazione nel task M7-T3 e accessi da configurare nell'ambiente.

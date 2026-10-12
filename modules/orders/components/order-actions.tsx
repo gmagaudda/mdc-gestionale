@@ -28,7 +28,9 @@ export function OrderActions({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [note, setNote] = useState("");
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const transitions = allowedTransitions(status, role);
+  const transitions = allowedTransitions(status, role).filter(
+    (next) => next !== "invoiced",
+  );
   const change = (next: OrderStatus) => {
     setError("");
     setNotice("");

@@ -319,9 +319,13 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await expect(
     page.getByRole("button", { name: "Avvia produzione", exact: true }),
   ).toHaveCount(0);
-  await page
-    .getByRole("button", { name: "Segna come fatturato", exact: true })
-    .click();
+  await expect(
+    page.getByRole("button", { name: "Genera fattura", exact: true }),
+  ).toBeVisible();
+  expect(
+    (await admin().from("orders").select("status").eq("id", orderId).single())
+      .data?.status,
+  ).toBe("delivered");
   await expect(
     page.getByRole("button", { name: "Segna come fatturato", exact: true }),
   ).toHaveCount(0);

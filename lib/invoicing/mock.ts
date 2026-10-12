@@ -24,7 +24,7 @@ export interface MockInvoiceStore {
 export function canTransitionInvoice(from: ExternalStatus, to: ExternalStatus) {
   if (from === to) return true;
   const transitions: Record<ExternalStatus, ExternalStatus[]> = {
-    draft: ["issued", "cancelled", "rejected"],
+    draft: ["issued", "sent", "paid", "cancelled", "rejected"],
     issued: ["sent", "paid", "cancelled", "rejected"],
     sent: ["paid", "cancelled", "rejected"],
     paid: [],

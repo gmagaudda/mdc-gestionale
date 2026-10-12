@@ -238,3 +238,18 @@ Ambito: liste/filtri → dettaglio ordine → download CSV/PDF/line sheet → ve
 | UI            | Skeleton dopo guardie, empty/error, controlli readonly, download nativi; nessuna modifica Arc o animazione nuova   | Clear |
 
 Cinque e2e portale e cinque regressioni calendario passati; desktop Workers, regressione dashboard e PDF estratto verificati. 227 test DB, 79 unit test, lint/typecheck/tokens/build/DB lint. Nessun finding azionabile residuo nel flusso verificato. Screen reader reale, zoom 200% e accento alternativo restano in M8. Verdict: Approve entro il perimetro indicato.
+
+## M7-T2: emettere una fattura e registrare incassi
+
+Ambito: ordine consegnato → date/validazione → snapshot fattura → scadenzario → aggiornamento provider → incassi parziali/completi → annullamento separato → lettura staff e protezione portale. Next/React, componenti gratuiti Arc e compositi condivisi, Number Flow. AGENTS, DESIGN-GUIDELINES, DECISIONS e sei skill better-* consultati; revisione better-interface sul flusso completo, esclusa integrazione reale T3.
+
+| Dominio       | Evidenza                                                                                                                      | Esito |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----- |
+| Accessibilità | Axe chiaro/scuro, focus errore date/importo, conferma con focus Annulla, successo in pagina, controlli nominati               | Clear |
+| Layout        | Overflow 360–1440, screenshot mobile e Workers desktop, pulsanti inline statici, stato vuoto tabelle visibile su mobile       | Clear |
+| Scrittura     | Simulazione esplicita, snapshot e saldo, stato esterno pagato distinto da incasso, errori recuperabili, annullamento spiegato | Clear |
+| Tipografia    | Euro/date italiani, tabular-nums, nomi lunghi completi, token Arc                                                             | Clear |
+| Colore        | Axe due temi, token semantici, badge con testo                                                                                | Clear |
+| UI            | Un primario per superficie, azioni secondarie raggruppate, skeleton/vuoto/errore/successo, movimento ridotto Number Flow      | Clear |
+
+Nessun finding azionabile residuo nel flusso ispezionato. Verifiche: pnpm e2e e2e/invoices.spec.ts (cinque viewport), pnpm e2e e2e/orders-flow.spec.ts (cinque viewport), portal-flow desktop; invoices desktop su Workers con callback reale locale firmato. Lint/typecheck/test/check:tokens/build:cf/supabase:test e DB lint verdi: 902 controlli DB, 99 unit test. Screen reader reale, zoom 200% e accento alternativo non verificati in questo task, previsti in M8. Verdict: Approve entro il perimetro e le verifiche indicati.

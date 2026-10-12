@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
 import { Copy } from "lucide-react";
 import { SortableDataTable } from "@/components/arc/sortable-data-table/sortable-data-table";
+import { EmptyState } from "./empty-state";
 
 export type ListRow = { id: string; [key: string]: string | number | null };
 export type ListColumn = {
@@ -89,6 +90,10 @@ export function DataTable({
       </div>
     ) : (
       <span className="wrap-value">{String(row[column.key] ?? "")}</span>
+    );
+  if (!rows.length)
+    return (
+      <EmptyState title={caption} description={emptyMessage} label={caption} />
     );
   return (
     <>

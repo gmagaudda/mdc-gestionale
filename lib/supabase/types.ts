@@ -710,6 +710,88 @@ export type Database = {
           },
         ];
       };
+      invoice_counters: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          id: string;
+          last_number: number;
+          updated_at: string;
+          year: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          id?: string;
+          last_number: number;
+          updated_at?: string;
+          year: number;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          id?: string;
+          last_number?: number;
+          updated_at?: string;
+          year?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoice_counters_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoice_webhook_events: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          event_id: string;
+          external_status: Database["public"]["Enums"]["invoice_status"];
+          id: string;
+          invoice_id: string;
+          provider: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          event_id: string;
+          external_status: Database["public"]["Enums"]["invoice_status"];
+          id?: string;
+          invoice_id: string;
+          provider: string;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          event_id?: string;
+          external_status?: Database["public"]["Enums"]["invoice_status"];
+          id?: string;
+          invoice_id?: string;
+          provider?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoice_webhook_events_invoice_id_brand_id_fkey";
+            columns: ["invoice_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "invoice_webhook_events_invoice_id_brand_id_fkey";
+            columns: ["invoice_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_invoice_balances";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       invoices: {
         Row: {
           brand_id: string;
@@ -731,6 +813,11 @@ export type Database = {
           order_id: string | null;
           payment_terms: string;
           pdf_path: string | null;
+          processing_error: string | null;
+          processing_kind: string;
+          processing_lease: string | null;
+          processing_started_at: string | null;
+          processing_status: string;
           provider: string | null;
           status: Database["public"]["Enums"]["invoice_status"];
           supplier_snapshot: Json | null;
@@ -758,6 +845,11 @@ export type Database = {
           order_id?: string | null;
           payment_terms?: string;
           pdf_path?: string | null;
+          processing_error?: string | null;
+          processing_kind?: string;
+          processing_lease?: string | null;
+          processing_started_at?: string | null;
+          processing_status?: string;
           provider?: string | null;
           status?: Database["public"]["Enums"]["invoice_status"];
           supplier_snapshot?: Json | null;
@@ -784,6 +876,11 @@ export type Database = {
           order_id?: string | null;
           payment_terms?: string;
           pdf_path?: string | null;
+          processing_error?: string | null;
+          processing_kind?: string;
+          processing_lease?: string | null;
+          processing_started_at?: string | null;
+          processing_status?: string;
           provider?: string | null;
           status?: Database["public"]["Enums"]["invoice_status"];
           supplier_snapshot?: Json | null;
@@ -824,6 +921,55 @@ export type Database = {
             columns: ["order_id", "brand_id"];
             isOneToOne: false;
             referencedRelation: "v_commissions";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
+      mock_invoice_records: {
+        Row: {
+          brand_id: string;
+          created_at: string;
+          external_id: string;
+          fingerprint: string;
+          id: string;
+          idempotency_key: string;
+          status: Database["public"]["Enums"]["invoice_status"];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          brand_id: string;
+          created_at?: string;
+          external_id: string;
+          fingerprint: string;
+          id: string;
+          idempotency_key: string;
+          status: Database["public"]["Enums"]["invoice_status"];
+          updated_at?: string;
+        };
+        Update: {
+          brand_id?: string;
+          created_at?: string;
+          external_id?: string;
+          fingerprint?: string;
+          id?: string;
+          idempotency_key?: string;
+          status?: Database["public"]["Enums"]["invoice_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "mock_invoice_records_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "mock_invoice_records_id_brand_id_fkey";
+            columns: ["id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_invoice_balances";
             referencedColumns: ["id", "brand_id"];
           },
         ];
@@ -1200,6 +1346,13 @@ export type Database = {
             columns: ["invoice_id", "brand_id"];
             isOneToOne: false;
             referencedRelation: "invoices";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "payments_invoice_id_brand_id_fkey";
+            columns: ["invoice_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_invoice_balances";
             referencedColumns: ["id", "brand_id"];
           },
         ];
@@ -1601,6 +1754,64 @@ export type Database = {
           },
         ];
       };
+      v_invoice_balances: {
+        Row: {
+          balance_cents: string | null;
+          brand_id: string | null;
+          customer_id: string | null;
+          due_date: string | null;
+          gross_cents: number | null;
+          id: string | null;
+          issue_date: string | null;
+          net_cents: number | null;
+          number: string | null;
+          order_id: string | null;
+          overdue: boolean | null;
+          paid_cents: string | null;
+          processing_status: string | null;
+          provider: string | null;
+          status: Database["public"]["Enums"]["invoice_status"] | null;
+          vat_cents: number | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "invoices_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "invoices_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "portal_orders";
+            referencedColumns: ["id", "brand_id"];
+          },
+          {
+            foreignKeyName: "invoices_order_id_brand_id_fkey";
+            columns: ["order_id", "brand_id"];
+            isOneToOne: false;
+            referencedRelation: "v_commissions";
+            referencedColumns: ["id", "brand_id"];
+          },
+        ];
+      };
       v_revenue_by_brand_period: {
         Row: {
           brand_id: string | null;
@@ -1681,6 +1892,15 @@ export type Database = {
       };
     };
     Functions: {
+      apply_invoice_webhook: {
+        Args: {
+          p_event_id: string;
+          p_external_id: string;
+          p_provider: string;
+          p_status: Database["public"]["Enums"]["invoice_status"];
+        };
+        Returns: boolean;
+      };
       calendar_assignees: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -1712,6 +1932,8 @@ export type Database = {
           title: string;
         }[];
       };
+      claim_invoice_cancellation: { Args: { p_id: string }; Returns: string };
+      claim_invoice_issue: { Args: { p_id: string }; Returns: string };
       commissions_report: {
         Args: {
           p_brand_id?: string;
@@ -1733,11 +1955,44 @@ export type Database = {
         Returns: Json;
       };
       duplicate_order: { Args: { p_id: string }; Returns: string };
+      fail_invoice_issue: {
+        Args: { p_error: string; p_id: string; p_lease: string };
+        Returns: boolean;
+      };
       finish_event_reminder: {
         Args: { p_id: string; p_lease: string; p_status: string };
         Returns: boolean;
       };
+      finish_invoice_cancellation: {
+        Args: { p_id: string; p_lease: string };
+        Returns: boolean;
+      };
+      finish_invoice_issue: {
+        Args: {
+          p_external_id: string;
+          p_id: string;
+          p_lease: string;
+          p_status: Database["public"]["Enums"]["invoice_status"];
+        };
+        Returns: boolean;
+      };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
+      mock_invoice_put: {
+        Args: {
+          p_fingerprint: string;
+          p_id: string;
+          p_key: string;
+          p_status: Database["public"]["Enums"]["invoice_status"];
+        };
+        Returns: Json;
+      };
+      mock_invoice_transition: {
+        Args: {
+          p_external_id: string;
+          p_status: Database["public"]["Enums"]["invoice_status"];
+        };
+        Returns: Json;
+      };
       portal_dashboard_report: {
         Args: {
           p_brand_id?: string;
@@ -1774,6 +2029,34 @@ export type Database = {
       recalculate_order_totals: {
         Args: { p_order_id: string };
         Returns: undefined;
+      };
+      reconcile_invoice_status: {
+        Args: {
+          p_external_id: string;
+          p_id: string;
+          p_status: Database["public"]["Enums"]["invoice_status"];
+        };
+        Returns: undefined;
+      };
+      register_invoice_payment: {
+        Args: {
+          p_amount: number;
+          p_id: string;
+          p_key: string;
+          p_method: string;
+          p_note?: string;
+          p_paid_at: string;
+        };
+        Returns: string;
+      };
+      reserve_invoice_from_order: {
+        Args: {
+          p_due_date: string;
+          p_issue_date: string;
+          p_order_id: string;
+          p_provider: string;
+        };
+        Returns: string;
       };
       revoke_ical_token: {
         Args: Record<PropertyKey, never>;
