@@ -149,7 +149,9 @@
       "order_private": "Dati privati ordini",
       "order_lines": "Righe ordine",
       "order_status_history": "Storico stati ordini",
-      "events": "Eventi"
+      "events": "Eventi",
+      "ical_tokens": "Abbonamenti iCal",
+      "event_reminders": "Promemoria appuntamenti"
     }
   },
   "brands": {
@@ -490,5 +492,33 @@
       "other": "Altro"
     },
     "events": "Eventi"
+  },
+  "reminders": {
+    "heading": "Appuntamento di domani",
+    "subject": "Promemoria appuntamento di domani",
+    "allDay": "Tutto il giorno",
+    "timeZone": "Orario di Roma",
+    "location": "Luogo",
+    "footer": "Se l’appuntamento cambia, consulta il calendario aggiornato nel gestionale."
+  },
+  "calendarFeed": {
+    "title": "Abbonamento iCal",
+    "intro": "Aggiungi il calendario alla tua app tramite un abbonamento al link. Gli eventi si aggiornano secondo i tempi della tua app.",
+    "privacy": "Il link permette di leggere gli eventi a cui hai accesso. Condividilo solo con persone autorizzate.",
+    "empty": "Non hai un link attivo.",
+    "active": "Hai un link attivo. Per motivi di sicurezza viene mostrato solo quando lo generi.",
+    "create": "Genera link iCal",
+    "rotate": "Rigenera link iCal",
+    "rotateQuestion": "Il link precedente smetterà di funzionare. Dovrai aggiornare l’abbonamento nella tua app calendario.",
+    "revoke": "Revoca link iCal",
+    "revokeQuestion": "Il link smetterà di funzionare. Gli eventi già scaricati resteranno nella tua app calendario.",
+    "created": "Link generato. Copialo prima di lasciare questa pagina.",
+    "revoked": "Link revocato.",
+    "url": "Link di abbonamento iCal",
+    "copy": "Copia link",
+    "copied": "Link copiato.",
+    "copyError": "Non è stato possibile copiare il link. Selezionalo nel campo e copialo manualmente.",
+    "error": "Operazione non riuscita. Riprova.",
+    "loadError": "Non è stato possibile caricare l’abbonamento. Ricarica la pagina per riprovare."
   }
 }

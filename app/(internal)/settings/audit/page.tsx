@@ -44,6 +44,8 @@ export default async function AuditPage({
     "order_private",
     "order_status_history",
     "events",
+    "ical_tokens",
+    "event_reminders",
   ];
   if (query.q) {
     const resource = resourceNames.find(

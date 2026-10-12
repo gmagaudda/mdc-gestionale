@@ -338,6 +338,55 @@ export type Database = {
         };
         Relationships: [];
       };
+      event_reminders: {
+        Row: {
+          attempted_at: string;
+          completed_at: string | null;
+          event_id: string;
+          id: string;
+          lease_id: string;
+          recipient_id: string;
+          starts_at: string;
+          status: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempted_at?: string;
+          completed_at?: string | null;
+          event_id: string;
+          id?: string;
+          lease_id?: string;
+          recipient_id: string;
+          starts_at: string;
+          status?: string;
+        };
+        Update: {
+          attempted_at?: string;
+          completed_at?: string | null;
+          event_id?: string;
+          id?: string;
+          lease_id?: string;
+          recipient_id?: string;
+          starts_at?: string;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_reminders_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_reminders_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       events: {
         Row: {
           all_day: boolean;
@@ -411,6 +460,42 @@ export type Database = {
             columns: ["customer_id"];
             isOneToOne: false;
             referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      ical_tokens: {
+        Row: {
+          created_at: string;
+          id: string;
+          revoked_at: string | null;
+          token_hash: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          revoked_at?: string | null;
+          token_hash: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          revoked_at?: string | null;
+          token_hash?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ical_tokens_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -994,12 +1079,37 @@ export type Database = {
         };
         Returns: undefined;
       };
+      claim_event_reminders: {
+        Args: { p_end: string; p_start: string };
+        Returns: {
+          all_day: boolean;
+          description: string;
+          email: string;
+          ends_at: string;
+          event_id: string;
+          lease_id: string;
+          location: string;
+          reminder_id: string;
+          starts_at: string;
+          title: string;
+        }[];
+      };
       duplicate_order: { Args: { p_id: string }; Returns: string };
+      finish_event_reminder: {
+        Args: { p_id: string; p_lease: string; p_status: string };
+        Returns: boolean;
+      };
       has_brand_access: { Args: { p_brand_id: string }; Returns: boolean };
+      read_ical_feed: { Args: { p_hash: string }; Returns: Json };
       recalculate_order_totals: {
         Args: { p_order_id: string };
         Returns: undefined;
       };
+      revoke_ical_token: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      rotate_ical_token: { Args: { p_hash: string }; Returns: undefined };
       save_brand: { Args: { p_data: Json; p_id: string }; Returns: string };
       save_order: {
         Args: { p_data: Json; p_id: string; p_lines: Json };

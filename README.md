@@ -85,3 +85,15 @@ Verifica PDF nel runtime Workers: avvia `pnpm preview:cf`, poi `E2E_BASE_URL=htt
 ### Calendario
 
 Apri `/calendar`: admin/staff creano e modificano eventi da finestra; amministrazione legge. Lista predefinita su mobile/touch, mese su desktop. Il trascinamento è disponibile solo su desktop; le date si modificano anche da tastiera nel form. Gli orari sono sempre Europe/Rome e vengono salvati in UTC. I brand leggono solo i propri eventi esplicitamente condivisi; titolo, descrizione e luogo sono inclusi nella condivisione. Il seed locale aggiunge un appuntamento dimostrativo. `pnpm e2e e2e/calendar.spec.ts` verifica i cinque viewport.
+
+### Abbonamento iCal e promemoria
+
+Nella pagina calendario genera un link iCal e aggiungilo alla tua app con “Abbonati al calendario da URL”. Copialo subito: al rientro si mostra solo lo stato dell’abbonamento. Rigenerare invalida il link precedente; revocare blocca le letture successive, ma non cancella eventi già scaricati dal client. Il feed include tutti gli eventi non archiviati consentiti al proprietario, anche quelli futuri; ai brand arrivano soltanto gli eventi condivisi dei brand ancora associati. Oltre 5.000 eventi risponde 413, senza un calendario parziale. Il portale brand riutilizzerà questa impostazione nella milestone M6.
+
+Il job `POST /api/cron/reminders` richiede `Authorization: Bearer <CRON_SECRET>` (segreto casuale di almeno 32 caratteri). Cloudflare Cron in `custom-worker.mjs` lo invoca ogni giorno alle 06:00 UTC, cioè 07:00/08:00 a Roma. Seleziona gli appuntamenti che iniziano domani a Roma e invia un promemoria alla persona interna assegnata e attiva. Nessun destinatario esterno; gli eventi non assegnati non generano email.
+
+Per il test locale imposta lo stesso `CRON_SECRET` in `.env.local` e `.dev.vars`, `APP_URL` all’URL locale del rispettivo server ed `EMAIL_MODE=log`. Il template HTML/testo viene generato; il database registra `logged`, senza inviare email. I log riportano solo metadati tecnici. Per l’invio reale dei promemoria servono `EMAIL_MODE=resend`, `RESEND_API_KEY` e `EMAIL_FROM` con mittente verificato, da configurare come segreti Workers. Inviti email reali e configurazione hosted saranno completati con M9.
+
+Le elaborazioni completate non vengono ripetute. Gli errori sono ritentabili; una lavorazione interrotta può essere ripresa dopo 10 minuti. Resend riceve una chiave idempotente stabile. Un cambiamento di data/persona assegnata genera un nuovo promemoria; i messaggi già consegnati non possono essere ritirati. Un’esecuzione elabora fino a 5.000 promemoria e risponde 503 se restano errori o si raggiunge il limite: ripetere il POST protetto, che salta quelli completati. Non assumere consegna dopo un errore.
+
+Verifica locale: `pnpm e2e e2e/calendar-feed.spec.ts`. Per la prova Workers: `pnpm build:cf`, `pnpm exec wrangler dev --port 8790 --test-scheduled`, poi `E2E_BASE_URL=http://localhost:8790 pnpm e2e e2e/calendar-feed.spec.ts --project=desktop`. Il trigger si prova con `curl 'http://localhost:8790/__scheduled?cron=0+6+*+*+*'`; non pubblica né distribuisce il Worker.

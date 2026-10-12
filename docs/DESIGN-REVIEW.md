@@ -131,3 +131,20 @@ Ambito: calendario interno → finestra evento → errore condivisione → creaz
 | UI            | Lista mobile, toolbar Arc, pending/error/empty/success, rollback drag se salvataggio fallisce; reduced motion | Clear                                                 |
 
 Finding risolte: HIGH accessibilità, FullCalendar esponeva button come figli diretti di list; adattatore cambia i contenitori interessati a group mantenendo focus/azioni. Avvisi React di aggiornamento durante render/prima del montaggio risolti accodando le notifiche iniziali fino al commit. Test all-day copre cancellazione/ripristino del campo data senza crash. Nessuna finding azionabile residua nell’ambito verificato. Cinque e2e finali con console pulita, 103 test DB, 44 unit test, lint/typecheck/check:tokens, DB lint e build OpenNext; flusso desktop completo anche su Workers con console pulita. Screen reader reale e zoom browser 200% non verificati, nella revisione M8. Verdict: Approve entro il perimetro indicato.
+
+## M4-T2: abbonamento iCal
+
+Scope: generare, copiare, rigenerare e revocare il link personale in /calendar. Next/React, componenti Arc esistenti (Input, Button, Alert, ConfirmAction), messaggi italiani; AGENTS e DESIGN-GUIDELINES come convenzioni. Revisione secondo better-interface e i sei domini già caricati.
+
+| Dominio       | Evidenza                                                                                                                                                | Esito    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Accessibilità | CalendarFeedSettings, ConfirmAction, e2e/calendar-feed.spec.ts: annullamento inizialmente a fuoco, campo selezionabile, focus dopo revoca, axe due temi | Chiaro   |
+| Layout        | Screenshot 360/1440 e assenza overflow nei cinque viewport; controlli a capo; sezione usa stack invece della griglia dei form                           | Corretto |
+| Scrittura     | messages/it.json calendarFeed: copiare subito, conseguenze distinte di rotazione/revoca, recupero copia manuale/errori                                  | Chiaro   |
+| Tipografia    | h2, copy e Input Arc; URL intero selezionabile/copibile; nessun testo essenziale troncato senza accesso                                                 | Chiaro   |
+| Colori        | Alert stato e superfici Arc, axe chiaro/scuro, check:tokens                                                                                             | Chiaro   |
+| UI            | Un solo primario resta Nuovo evento; azioni abbonamento secondarie, conferme esplicite, stato successo in pagina; nessuna nuova animazione              | Chiaro   |
+
+Nessun finding aperto nel flusso verificato. Corrette prima della chiusura la label di conferma ereditata “Conferma archiviazione”, il focus dopo la rimozione del trigger revoca e la lettura a due colonne sul desktop. Test browser del flusso completo e screenshots ispezionati; le prove con screen reader reale e zoom 200% rimangono nella verifica M8.
+
+Verdetto: Approve entro il perimetro verificato.

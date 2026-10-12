@@ -3,7 +3,8 @@
   "name": "mdc-gestionale",
   "minify": true,
   "keep_names": false,
-  "main": ".open-next/worker.js",
+  "main": "custom-worker.mjs",
+  "triggers": { "crons": ["0 6 * * *"] },
   "compatibility_date": "2026-10-11",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
