@@ -226,6 +226,28 @@ test("brand reads orders sales documents calendar and private downloads", async 
     "Private portal customer",
   );
   await expect(page.getByText("Crea ordine", { exact: true })).toHaveCount(0);
+  for (const key of [
+    "number",
+    "brand_name",
+    "season_code",
+    "customer_display_name",
+    "customer_city",
+    "order_date",
+    "status",
+    "net_total_cents",
+  ]) {
+    const header = page
+      .locator(`thead th[data-key="_sort:${key}"]`)
+      .filter({ visible: true });
+    await header.getByRole("button").click();
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("sort"))
+      .toBe(key);
+    await expect(header).toHaveAttribute("aria-sort", /ascending|descending/);
+  }
+  await expect(
+    page.getByRole("link", { name: "Esporta ordini CSV", exact: true }),
+  ).toHaveAttribute("href", /sort=net_total_cents/);
   const csv = await page.request.get(
     `/api/portal/orders/export?brand_id=${brandId}`,
   );
@@ -262,6 +284,32 @@ test("brand reads orders sales documents calendar and private downloads", async 
   ]);
   await pdfDownload.saveAs(info.outputPath("portal-order.pdf"));
   await page.goto(`/portal/sales?brand_id=${brandId}`);
+  for (const key of [
+    "brand_name",
+    "season_code",
+    "customer_display_name",
+    "customer_city",
+    "net_cents",
+    "order_count",
+  ]) {
+    const header = page
+      .locator(`thead th[data-key="_sort:${key}"]`)
+      .filter({ visible: true });
+    await header.getByRole("button").click();
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("sort"))
+      .toBe(key);
+    await expect(header).toHaveAttribute("aria-sort", /ascending|descending/);
+    const query = new URL(page.url()).search;
+    expect(
+      (await page.request.get(`/api/portal/sales/export${query}`)).status(),
+    ).toBe(200);
+  }
+  expect(
+    (
+      await page.request.get(`/api/portal/sales/export?sort=private_notes`)
+    ).status(),
+  ).toBe(400);
   const salesCsv = await page.request.get(
     `/api/portal/sales/export?brand_id=${brandId}`,
   );

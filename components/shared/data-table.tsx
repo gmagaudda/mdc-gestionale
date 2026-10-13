@@ -1,10 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { listHref, type ListQuery } from "@/lib/queries/list";
+import { tableSortValue } from "@/lib/queries/table-sort";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
 import { Copy } from "lucide-react";
-import { SortableDataTable } from "@/components/arc/sortable-data-table/sortable-data-table";
+import { ArcDataTable } from "./arc-data-table";
 import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { Checkbox } from "@/components/arc/checkbox/checkbox";
 
@@ -18,6 +21,7 @@ export type ListColumn = {
   numeric?: boolean;
   width?: string | number;
   copyValue?: boolean;
+  sortKey?: string;
 };
 export function DataTable({
   rows,
@@ -25,42 +29,23 @@ export function DataTable({
   caption,
   emptyMessage,
   selection,
+  sorting,
 }: {
   rows: ListRow[];
   columns: ListColumn[];
   caption: string;
   emptyMessage: string;
   selection?: { keys: string[]; onChange: (keys: string[]) => void };
+  sorting?: {
+    base: string;
+    query: ListQuery;
+    filterParams: Record<string, string>;
+  };
 }) {
+  const router = useRouter();
   const t = useTranslations("common");
   const lists = useTranslations("lists");
   const [feedback, setFeedback] = useState("");
-  const desktop = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const table = desktop.current?.querySelector("table");
-    const scroller = table?.parentElement;
-    if (!table || !scroller) return;
-    // Add keyboard access around the vendor table without changing Arc source.
-    const update = () => {
-      const needsFocus =
-        scroller.scrollWidth > scroller.clientWidth &&
-        !scroller.querySelector("a[href], button, input, select, textarea");
-      if (needsFocus) {
-        scroller.tabIndex = 0;
-        scroller.setAttribute("role", "region");
-        scroller.setAttribute("aria-label", t("tableRegion", { caption }));
-      } else {
-        scroller.removeAttribute("tabindex");
-        scroller.removeAttribute("role");
-        scroller.removeAttribute("aria-label");
-      }
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(scroller);
-    observer.observe(table);
-    return () => observer.disconnect();
-  }, [rows, columns, caption, t]);
   const render = (column: ListColumn, row: ListRow) =>
     column.linkBase &&
     column.download &&
@@ -99,14 +84,14 @@ export function DataTable({
     ) : (
       <span className="wrap-value">{String(row[column.key] ?? "")}</span>
     );
-  const selectRow = (row: ListRow, mobile = false) => {
+  const selectRow = (row: ListRow) => {
     const label = lists("selectRow", {
       value: String(row[columns[0]?.key] ?? row.id),
     });
     return (
       <Checkbox
         checked={selection!.keys.includes(row.id)}
-        {...(mobile ? { label } : { "aria-label": label })}
+        aria-label={label}
         onCheckedChange={(checked) =>
           selection!.onChange(
             checked === true
@@ -123,47 +108,102 @@ export function DataTable({
     );
   return (
     <>
-      <div className="desktop-table" ref={desktop}>
-        <SortableDataTable
-          rows={rows}
-          rowKey="id"
-          caption={caption}
-          emptyMessage={emptyMessage}
-          columns={[
-            ...(selection
-              ? [
-                  {
-                    key: "_selection",
-                    label: lists("selection"),
-                    sortable: false,
-                    render: (_value: unknown, row: ListRow) => selectRow(row),
-                  },
-                ]
-              : []),
-            ...columns.map((column) => ({
-              ...column,
-              sortable: false,
-              render: (_value: unknown, row: ListRow) => render(column, row),
-            })),
-          ]}
-        />
-      </div>
+      <ArcDataTable
+        key={sorting ? JSON.stringify(sorting) : caption}
+        // The server already sorted the complete result. Ranks preserve its
+        // collation and null placement instead of sorting formatted page cells again.
+        rows={rows.map((row, index) => ({
+          ...row,
+          ...Object.fromEntries(
+            columns.map((column) => [
+              `_sort:${column.sortKey ?? column.key}`,
+              sorting
+                ? sorting.query.direction === "asc"
+                  ? index
+                  : -index
+                : tableSortValue(row[column.sortKey ?? column.key]),
+            ]),
+          ),
+        }))}
+        defaultSort={
+          sorting
+            ? {
+                key: `_sort:${sorting.query.sort}`,
+                direction: sorting.query.direction,
+              }
+            : undefined
+        }
+        onSortChange={(sort) => {
+          const key = sort.key.slice(6);
+          if (sorting)
+            router.push(
+              listHref(
+                sorting.base,
+                sorting.query,
+                { page: 1, sort: key, direction: sort.direction },
+                sorting.filterParams,
+              ),
+            );
+        }}
+        selectionControl={
+          selection ? (
+            <Checkbox
+              aria-label={lists("selectPage")}
+              checked={
+                selection.keys.length === rows.length
+                  ? true
+                  : selection.keys.length
+                    ? "indeterminate"
+                    : false
+              }
+              onCheckedChange={(checked) =>
+                selection.onChange(
+                  checked === true ? rows.map((row) => row.id) : [],
+                )
+              }
+            />
+          ) : undefined
+        }
+        rowKey="id"
+        caption={caption}
+        emptyMessage={emptyMessage}
+        columns={[
+          ...columns.map((column, index) => ({
+            label: column.label,
+            // Explicit widths keep Arc's fixed layout from squeezing header labels.
+            width:
+              column.width ??
+              `calc(${column.label.length + 4}ch + var(--space-4) * 2${selection && index === 0 ? " + var(--control-height-md) + var(--space-4)" : ""})`,
+            key: `_sort:${column.sortKey ?? column.key}`,
+            sortable: true,
+            numeric:
+              column.numeric ??
+              rows.some((row) => typeof row[column.key] === "number"),
+            render: (_value: unknown, row: ListRow) => (
+              <>
+                {index > 0 && (
+                  <span className="table-cell-label" aria-hidden="true">
+                    {column.label}:{" "}
+                  </span>
+                )}
+                {selection && index === 0 ? (
+                  <div className="table-leading-cell">
+                    <span className="table-selection-control">
+                      {selectRow(row)}
+                    </span>
+                    <div className="table-leading-value">
+                      {render(column, row)}
+                    </div>
+                  </div>
+                ) : (
+                  render(column, row)
+                )}
+              </>
+            ),
+          })),
+        ]}
+      />
       <p role="status">{feedback}</p>
-      <div className="mobile-cards" role="list" aria-label={caption}>
-        {rows.map((row) => (
-          <article className="data-card" role="listitem" key={row.id}>
-            {selection && selectRow(row, true)}
-            <dl>
-              {columns.map((column) => (
-                <div key={column.key}>
-                  <dt>{column.label}</dt>
-                  <dd>{render(column, row)}</dd>
-                </div>
-              ))}
-            </dl>
-          </article>
-        ))}
-      </div>
     </>
   );
 }

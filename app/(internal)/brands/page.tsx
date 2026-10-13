@@ -29,14 +29,12 @@ export default async function BrandsPage({
       <PageHeader
         title={t("title")}
         action={
-          <>
-            {" "}
-            {user.role === "admin" && (
-              <Link className="text-link" href="/brands/new">
-                {t("create")}
-              </Link>
-            )}
-          </>
+          result.error &&
+          user.role === "admin" && (
+            <Link className="text-link" href="/brands/new">
+              {t("create")}
+            </Link>
+          )
         }
       />
       {result.error ? (
@@ -44,11 +42,15 @@ export default async function BrandsPage({
       ) : (
         <ListView
           base="/brands"
+          createAction={
+            user.role === "admin"
+              ? { href: "/brands/new", label: t("create") }
+              : undefined
+          }
           query={query}
           rows={result.data ?? []}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns}
           title={t("title")}
           searchLabel={t("search")}
         />

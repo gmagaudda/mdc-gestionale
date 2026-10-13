@@ -8,6 +8,7 @@ import { PortalFilters } from "@/modules/portal/components/portal-filters";
 import { getPortalContext } from "@/modules/portal/context";
 import { getPortalOrders } from "@/modules/portal/queries";
 import { portalOrderFiltersSchema } from "@/modules/portal/schema";
+import { portalOrdersSortSchema } from "@/modules/portal/schema";
 export default async function Orders({
   searchParams,
 }: {
@@ -18,36 +19,58 @@ export default async function Orders({
     t = await getTranslations("orders"),
     p = await getTranslations("portal"),
     parsed = portalOrderFiltersSchema.safeParse(input),
-    query = parseListQuery(input, ["order_date"], "order_date", "desc");
+    query = parseListQuery(
+      input,
+      portalOrdersSortSchema.shape.sort.removeDefault().options,
+      "order_date",
+      "desc",
+    );
+  const filters = (
+    <PortalFilters
+      base="/portal/orders"
+      initial={c.filters}
+      brands={c.brands}
+      seasons={c.seasons}
+      status={parsed.success ? parsed.data.status : ""}
+    />
+  );
   return (
     <>
       <h1>{t("title")}</h1>
       <p>{p("ordersReadonly")}</p>
-      <PortalFilters
-        base="/portal/orders"
-        initial={c.filters}
-        brands={c.brands}
-        seasons={c.seasons}
-        status={parsed.success ? parsed.data.status : ""}
-      />
+
       {!parsed.success ? (
-        <Alert tone="danger" title={p("invalidFilters")} />
+        <>
+          {filters}
+          <Alert tone="danger" title={p("invalidFilters")} />
+        </>
       ) : (
         <AsyncReport
-          load={getPortalOrders(parsed.data, (query.page - 1) * query.size)}
+          load={getPortalOrders(
+            parsed.data,
+            (query.page - 1) * query.size,
+            query.size,
+            query,
+          )}
           label={p("loadingReport")}
           render={(report) =>
             !report.ok ? (
-              <Alert tone="danger" title={p("loadError")} />
+              <>
+                {filters}
+                <Alert tone="danger" title={p("loadError")} />
+              </>
             ) : (
               <>
-                <a
-                  className="text-link"
-                  href={`/api/portal/orders/export?${new URLSearchParams(Object.entries(parsed.data).filter(([, v]) => !!v))}`}
-                >
-                  {p("exportOrders")}
-                </a>
                 <ListView
+                  filters={filters}
+                  actions={
+                    <a
+                      className="text-link"
+                      href={`/api/portal/orders/export?${new URLSearchParams(Object.entries({ ...parsed.data, sort: query.sort, direction: query.direction }).filter(([, v]) => !!v))}`}
+                    >
+                      {p("exportOrders")}
+                    </a>
+                  }
                   base="/portal/orders"
                   query={query}
                   count={report.data.count}
@@ -73,13 +96,25 @@ export default async function Orders({
                       label: t("number"),
                       linkBase: "/portal/orders",
                     },
-                    { key: "brand", label: t("brand") },
-                    { key: "season", label: t("season") },
-                    { key: "customer", label: t("customer") },
-                    { key: "city", label: p("city") },
-                    { key: "date", label: t("order_date") },
+                    { key: "brand", sortKey: "brand_name", label: t("brand") },
+                    {
+                      key: "season",
+                      sortKey: "season_code",
+                      label: t("season"),
+                    },
+                    {
+                      key: "customer",
+                      sortKey: "customer_display_name",
+                      label: t("customer"),
+                    },
+                    { key: "city", sortKey: "customer_city", label: p("city") },
+                    {
+                      key: "date",
+                      sortKey: "order_date",
+                      label: t("order_date"),
+                    },
                     { key: "status", label: t("status") },
-                    { key: "net", label: t("net") },
+                    { key: "net", sortKey: "net_total_cents", label: t("net") },
                   ]}
                 />
               </>

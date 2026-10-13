@@ -2,6 +2,7 @@
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/arc/input/input";
 import { AnimatedNumber } from "@/components/shared/animated-number";
+import { ArcDataTable } from "@/components/shared/arc-data-table";
 import { Alert } from "@/components/arc/alert/alert";
 export type MatrixVariant = {
   id: string;
@@ -52,95 +53,87 @@ export function SizeColorMatrix({
     <div className="stack">
       <p>{t("matrixHint")}</p>
       <Alert open={error} tone="danger" title={t("quantityRange")} />
-      <div
-        className="matrix-scroll"
-        role="region"
-        tabIndex={0}
-        aria-label={t("matrix")}
-      >
-        <table
-          className="size-color-matrix"
-          style={{ width: `${12 + sizes.length * 10}rem` }}
-        >
-          <caption>{t("matrix")}</caption>
-          <colgroup>
-            <col className="matrix-label-column" />
-            {sizes.map((size) => (
-              <col key={size} />
-            ))}
-            <col className="matrix-label-column" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th scope="col">{t("color")}</th>
-              {sizes.map((size) => (
-                <th scope="col" key={size}>
-                  <bdi>{size}</bdi>
-                </th>
-              ))}
-              <th scope="col">{t("total")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {colors.map((color) => (
-              <tr key={color}>
-                <th scope="row">
-                  <bdi>{color}</bdi>
-                </th>
-                {sizes.map((size) => {
-                  const variant = lookup.get(`${color}\0${size}`);
-                  if (!variant) return <td key={size}>{t("unavailable")}</td>;
-                  const quantity = quantities[variant.id] ?? 0;
-                  return (
-                    <td key={size}>
-                      <Input
-                        id={`qty-${variant.id}`}
-                        label={t("quantityFor", { color, size })}
-                        type="number"
-                        inputMode="numeric"
-                        min={0}
-                        max={100000}
-                        step={1}
-                        value={quantity === 0 ? "" : quantity}
-                        disabled={disabled}
-                        error={
-                          error && !validQuantity(quantity)
-                            ? t("quantityRange")
-                            : undefined
-                        }
-                        onChange={(event) =>
-                          onChange(
-                            variant.id,
-                            event.target.value === ""
-                              ? 0
-                              : Number(event.target.value),
-                          )
-                        }
-                      />
-                    </td>
-                  );
-                })}
-                <td className="tabular-nums">
-                  <AnimatedNumber value={totals.rows[color]} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row">{t("total")}</th>
-              {sizes.map((size) => (
-                <td className="tabular-nums" key={size}>
-                  <AnimatedNumber value={totals.columns[size]} />
-                </td>
-              ))}
-              <td className="tabular-nums">
-                <AnimatedNumber value={totals.total} />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <ArcDataTable
+        rows={colors.map((color) => ({
+          id: color,
+          color,
+          total: totals.rows[color],
+          ...Object.fromEntries(
+            sizes.map((size) => [
+              `size:${size}`,
+              quantities[lookup.get(`${color}\0${size}`)?.id ?? ""] ?? 0,
+            ]),
+          ),
+        }))}
+        rowKey="id"
+        caption={t("matrix")}
+        columns={[
+          { key: "color", label: t("color"), width: 120 },
+          ...sizes.map((size) => ({
+            key: `size:${size}`,
+            label: size,
+            numeric: false,
+            width: 160,
+            render: (_value: unknown, row: { color: string }) => {
+              const color = row.color;
+              const variant = lookup.get(`${color}\0${size}`);
+              if (!variant) return <span>{t("unavailable")}</span>;
+              const quantity = quantities[variant.id] ?? 0;
+              return (
+                <Input
+                  id={`qty-${variant.id}`}
+                  label={t("quantityFor", { color, size })}
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={100000}
+                  step={1}
+                  value={quantity === 0 ? "" : quantity}
+                  disabled={disabled}
+                  error={
+                    error && !validQuantity(quantity)
+                      ? t("quantityRange")
+                      : undefined
+                  }
+                  onChange={(event) =>
+                    onChange(
+                      variant.id,
+                      event.target.value === ""
+                        ? 0
+                        : Number(event.target.value),
+                    )
+                  }
+                />
+              );
+            },
+          })),
+          {
+            key: "total",
+            label: t("total"),
+            numeric: true,
+            width: 100,
+            render: (_value, row) => (
+              <AnimatedNumber value={totals.rows[row.color]} />
+            ),
+          },
+        ]}
+      />
+      <dl className="details-grid">
+        {sizes.map((size) => (
+          <div key={size}>
+            <dt>{t("totalForSize", { size })}</dt>
+            <dd className="tabular-nums">
+              <AnimatedNumber value={totals.columns[size]} />
+            </dd>
+          </div>
+        ))}
+        <div>
+          <dt>{t("total")}</dt>
+          <dd className="tabular-nums">
+            <AnimatedNumber value={totals.total} />
+          </dd>
+        </div>
+      </dl>
       <p role="status">{t("pieces", { count: totals.total })}</p>
     </div>
   );

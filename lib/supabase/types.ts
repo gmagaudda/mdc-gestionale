@@ -2200,6 +2200,18 @@ export type Database = {
           },
         ];
       };
+      v_audit_list: {
+        Row: {
+          action: string | null;
+          actor_id: string | null;
+          actor_name: string | null;
+          created_at: string | null;
+          id: string | null;
+          table_name: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [];
+      };
       v_budget_vs_actual: {
         Row: {
           brand_id: string | null;
@@ -2740,10 +2752,12 @@ export type Database = {
       portal_orders_report: {
         Args: {
           p_brand_id?: string;
+          p_direction?: string;
           p_end?: string;
           p_limit?: number;
           p_offset?: number;
           p_season_id?: string;
+          p_sort?: string;
           p_start?: string;
           p_status?: Database["public"]["Enums"]["order_status"];
         };
@@ -2752,10 +2766,12 @@ export type Database = {
       portal_sales_report: {
         Args: {
           p_brand_id?: string;
+          p_direction?: string;
           p_end?: string;
           p_limit?: number;
           p_offset?: number;
           p_season_id?: string;
+          p_sort?: string;
           p_start?: string;
         };
         Returns: Json;

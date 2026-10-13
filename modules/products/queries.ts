@@ -4,7 +4,11 @@ import {
   applyColumnFilters,
 } from "@/lib/queries/column-filters";
 import { createClient } from "@/lib/supabase/server";
-import { escapeLike, type ListQuery } from "@/lib/queries/list";
+import {
+  escapeLike,
+  listOrderColumn,
+  type ListQuery,
+} from "@/lib/queries/list";
 export async function listProducts(query: ListQuery) {
   const db = await createClient();
   let request = db
@@ -14,7 +18,9 @@ export async function listProducts(query: ListQuery) {
       { count: "exact" },
     )
     .is("deleted_at", null)
-    .order(query.sort, { ascending: query.direction === "asc" })
+    .order(listOrderColumn(query.sort), {
+      ascending: query.direction === "asc",
+    })
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
   if (query.q) request = request.ilike("name", `%${escapeLike(query.q)}%`);

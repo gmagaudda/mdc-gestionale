@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Input } from "@/components/arc/input/input";
@@ -13,6 +14,8 @@ import { listExportEntitySchema } from "@/lib/exports/lists";
 import { parseColumnFilters } from "@/lib/queries/column-filters";
 import { ListColumnFilters } from "./list-column-filters";
 import { SelectableListTable } from "./selectable-list-table";
+import { ListCsvDownload } from "./list-csv-download";
+import { ErpIcon } from "./erp-icon";
 import { Alert } from "@/components/arc/alert/alert";
 
 export async function ListView({
@@ -23,10 +26,12 @@ export async function ListView({
   columns,
   title,
   searchLabel,
-  sortable = [],
   filterParams = {},
   emptyDescription,
   exportBase,
+  createAction,
+  filters,
+  actions,
 }: {
   base: string;
   query: ListQuery;
@@ -35,10 +40,12 @@ export async function ListView({
   columns: ListColumn[];
   title: string;
   searchLabel?: string;
-  sortable?: ListColumn[];
   filterParams?: Record<string, string>;
   emptyDescription?: string;
   exportBase?: string;
+  createAction?: { href: string; label: string };
+  filters?: ReactNode;
+  actions?: ReactNode;
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
@@ -63,60 +70,59 @@ export async function ListView({
   };
   return (
     <section className="stack list-controls" aria-label={title}>
-      {exportEntity.success && (
-        <ListColumnFilters
-          entity={exportEntity.data}
-          base={base}
-          query={query}
-          filterParams={filterParams}
-        />
-      )}
-      {searchLabel && (
-        <form action={base} className="list-search">
-          <input type="hidden" name="sort" value={query.sort} />
-          <input type="hidden" name="direction" value={query.direction} />
-          {Object.entries(hiddenFilters).map(([name, value]) => (
-            <input key={name} type="hidden" name={name} value={value} />
-          ))}
-          <Input
-            label={searchLabel}
-            name="q"
-            type="search"
-            defaultValue={query.q}
+      <div className="list-toolbar">
+        {filters && (
+          <details className="workspace-filters">
+            <summary>{t("domainFilters")}</summary>
+            <div className="list-filter-panel">{filters}</div>
+          </details>
+        )}
+        {exportEntity.success && (
+          <ListColumnFilters
+            entity={exportEntity.data}
+            base={base}
+            query={query}
+            filterParams={filterParams}
           />
-          <Button variant="secondary" size="lg" type="submit">
-            {t("search")}
-          </Button>
-        </form>
-      )}
-      {sortable.length > 0 && (
-        <nav className="list-sort" aria-label={t("sorting")}>
-          {sortable.map((column) => (
-            <Link
-              className="text-link"
-              key={column.key}
-              href={listHref(
-                base,
-                query,
-                {
-                  page: 1,
-                  sort: column.key,
-                  direction:
-                    query.sort === column.key && query.direction === "asc"
-                      ? "desc"
-                      : "asc",
-                },
-                filterParams,
-              )}
+        )}
+        {searchLabel && (
+          <form action={base} className="list-search">
+            <input type="hidden" name="sort" value={query.sort} />
+            <input type="hidden" name="direction" value={query.direction} />
+            {Object.entries(hiddenFilters).map(([name, value]) => (
+              <input key={name} type="hidden" name={name} value={value} />
+            ))}
+            <Input
+              label={searchLabel}
+              name="q"
+              type="search"
+              defaultValue={query.q}
+            />
+            <Button
+              variant="secondary"
+              size="lg"
+              type="submit"
+              aria-label={t("search")}
+              title={t("search")}
             >
-              {t("sortBy", {
-                field: column.label,
-                direction: query.sort === column.key ? t(query.direction) : "",
-              })}
-            </Link>
-          ))}
-        </nav>
-      )}
+              <ErpIcon name="search" />
+            </Button>
+          </form>
+        )}
+        {createAction && (
+          <Link className="list-add-link" href={createAction.href}>
+            <ErpIcon name="plus" />
+            <span className="list-button-copy">{createAction.label}</span>
+          </Link>
+        )}
+        {validColumns && exportHref && (
+          <ListCsvDownload
+            href={`${exportHref}?${new URLSearchParams(parameters)}`}
+            fileName={`${base.slice(1)}.csv`}
+          />
+        )}
+        {actions}
+      </div>
       {!validColumns ? (
         <Alert tone="danger" title={t("columnFilterInvalid")}>
           <Link
@@ -134,6 +140,7 @@ export async function ListView({
       ) : exportHref ? (
         <SelectableListTable
           key={JSON.stringify({ base, query, filterParams })}
+          sorting={{ base, query, filterParams }}
           rows={rows}
           columns={columns}
           caption={title}
@@ -159,6 +166,7 @@ export async function ListView({
         />
       ) : rows.length ? (
         <DataTable
+          sorting={{ base, query, filterParams }}
           rows={rows}
           columns={columns}
           caption={title}

@@ -17,7 +17,15 @@ export default async function BudgetsPage({
     t = await getTranslations("budgets"),
     query = parseListQuery(
       await searchParams,
-      ["period_start", "amount_cents", "created_at"],
+      [
+        "period_start",
+        "amount_cents",
+        "created_at",
+        "brand",
+        "season",
+        "customer",
+        "period_end",
+      ],
       "period_start",
     ),
     result = await listBudgets(query);
@@ -30,6 +38,7 @@ export default async function BudgetsPage({
       <PageHeader
         title={t("title")}
         action={
+          result.error &&
           user.role !== "staff" && (
             <Link className="text-link" href="/budgets/new">
               {t("create")}
@@ -42,6 +51,11 @@ export default async function BudgetsPage({
       ) : (
         <ListView
           base="/budgets"
+          createAction={
+            user.role !== "staff"
+              ? { href: "/budgets/new", label: t("create") }
+              : undefined
+          }
           query={query}
           title={t("title")}
           searchLabel={t("search")}
@@ -50,8 +64,13 @@ export default async function BudgetsPage({
             { key: "brand", label: t("brand"), linkBase: "/budgets" },
             { key: "season", label: t("season") },
             { key: "customer", label: t("customer") },
-            { key: "period", label: t("period") },
-            { key: "amount", label: t("amount") },
+            { key: "period", sortKey: "period_start", label: t("period") },
+            {
+              key: "amount",
+              sortKey: "amount_cents",
+              label: t("amount"),
+              numeric: true,
+            },
           ]}
           rows={(result.data ?? []).map((row) => ({
             id: row.id,

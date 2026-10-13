@@ -1,5 +1,5 @@
 import "server-only";
-import { escapeLike } from "@/lib/queries/list";
+import { escapeLike, listOrderColumn } from "@/lib/queries/list";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 export type MatrixProduct = Pick<
@@ -129,7 +129,9 @@ export async function listOrders(
       { count: "exact" },
     )
     .is("deleted_at", null)
-    .order(query.sort, { ascending: query.direction === "asc" })
+    .order(listOrderColumn(query.sort), {
+      ascending: query.direction === "asc",
+    })
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
   if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);

@@ -1,8 +1,7 @@
 "use client";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Input } from "@/components/arc/input/input";
-import { NativeSelectField } from "./native-select-field";
+import { Combobox } from "@/components/arc/combobox/combobox";
 import type { ActionResult } from "@/lib/errors";
 export type Choice = { value: string; label: string };
 export function SearchSelect({
@@ -25,62 +24,107 @@ export function SearchSelect({
   loadOptions?: (term: string) => Promise<ActionResult<Choice[]>>;
 }) {
   const t = useTranslations("common");
-  const [query, setQuery] = useState("");
   const [remote, setRemote] = useState(options);
+  const [chosen, setChosen] = useState<Choice>();
   const [loadError, setLoadError] = useState(false);
   const [pending, start] = useTransition();
   const request = useRef(0);
+  const root = useRef<HTMLDivElement>(null);
   const all = loadOptions ? remote : options;
   const selected =
     options.find((item) => item.value === value) ??
-    remote.find((item) => item.value === value);
-  const matches = all.filter((item) =>
-    item.label.toLocaleLowerCase("it").includes(query.toLocaleLowerCase("it")),
-  );
-  const shown = matches.slice(0, 50);
-  if (selected && !shown.some((item) => item.value === value))
-    shown.unshift(selected);
+    all.find((item) => item.value === value) ??
+    (chosen?.value === value ? chosen : undefined);
+  const shown =
+    selected && !all.some((item) => item.value === value)
+      ? [selected, ...all]
+      : all;
+  // Localize Arc's fixed accessible names without changing its source.
+  useEffect(() => {
+    const element = root.current;
+    if (!element) return;
+    const localize = () => {
+      element
+        .querySelector('button[aria-label="Clear selection"]')
+        ?.setAttribute("aria-label", t("clearChoice", { field: label }));
+      element.querySelectorAll('[role="option"]').forEach((option) => {
+        const name = option.textContent ?? "";
+        if (option.getAttribute("title") !== name)
+          option.setAttribute("title", name);
+      });
+      const list = element.querySelector('[role="listbox"]');
+      const listLabel = t("choiceOptions", { field: label });
+      if (list?.getAttribute("aria-label") !== listLabel)
+        list?.setAttribute("aria-label", listLabel);
+    };
+    localize();
+    const observer = new MutationObserver(localize);
+    observer.observe(element, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [label, t]);
+  function search(term: string) {
+    if (!loadOptions) return;
+    const ticket = ++request.current;
+    setLoadError(false);
+    start(async () => {
+      try {
+        const result = await loadOptions(term);
+        if (ticket !== request.current) return;
+        if (result.ok) setRemote(result.data);
+        else {
+          setRemote([]);
+          setLoadError(true);
+        }
+      } catch {
+        if (ticket === request.current) {
+          setRemote([]);
+          setLoadError(true);
+        }
+      }
+    });
+  }
   return (
-    <div className="stack search-select">
-      <Input
-        label={t("searchChoice", { field: label })}
-        type="search"
-        value={query}
-        maxLength={100}
-        disabled={disabled}
-        onChange={(event) => {
-          const term = event.target.value;
-          setQuery(term);
-          if (loadOptions) {
-            const ticket = ++request.current;
-            setLoadError(false);
-            start(async () => {
-              try {
-                const result = await loadOptions(term);
-                if (ticket === request.current) {
-                  if (result.ok) setRemote(result.data);
-                  else setLoadError(true);
-                }
-              } catch {
-                if (ticket === request.current) setLoadError(true);
-              }
-            });
-          }
-        }}
-      />
-      <NativeSelectField
+    <div ref={root} className="search-select" aria-busy={pending}>
+      <Combobox
         id={id}
         label={label}
-        placeholder={t("selectChoice")}
         value={value}
-        onValueChange={onValueChange}
         options={shown}
-        disabled={disabled || pending}
-        error={error}
-        description={pending ? t("loadingChoices") : undefined}
+        onValueChange={(next) => {
+          ++request.current;
+          setChosen(shown.find((item) => item.value === next));
+          onValueChange(next);
+        }}
+        placeholder={t("searchOrSelect")}
+        emptyMessage={pending ? t("loadingChoices") : t("noChoices")}
+        title={selected?.label}
+        maxLength={100}
+        disabled={disabled}
+        aria-invalid={Boolean(error)}
+        description={
+          error ||
+          (loadError
+            ? t("choiceError")
+            : pending
+              ? t("loadingChoices")
+              : undefined)
+        }
+        onInput={(event) => search(event.currentTarget.value)}
+        onFocus={() => search("")}
+        onBlur={(event) => {
+          if (event.currentTarget.getAttribute("aria-expanded") !== "true")
+            return;
+          event.currentTarget.dispatchEvent(
+            new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+          );
+        }}
       />
-      {matches.length > 50 && <p>{t("refineSearch")}</p>}
-      {loadError && <p role="alert">{t("choiceError")}</p>}
+      {disabled && selected && <p className="wrap-value">{selected.label}</p>}
+      {(error || loadError) && (
+        <span className="sr-only" role="alert">
+          {error || t("choiceError")}
+        </span>
+      )}
     </div>
   );
 }

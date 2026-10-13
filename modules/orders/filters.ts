@@ -25,7 +25,15 @@ export function orderListQuery(
 ) {
   return parseListQuery(
     input,
-    ["number", "order_date", "status", "gross_total_cents"],
+    [
+      "number",
+      "order_date",
+      "status",
+      "gross_total_cents",
+      "brand",
+      "customer",
+      "season",
+    ],
     "order_date",
     "desc",
   );

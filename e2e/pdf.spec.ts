@@ -1,3 +1,4 @@
+import { selectChoice } from "./helpers/navigation";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -453,9 +454,12 @@ test("manually sends a confirmation in log mode with durable history and recipie
       exact: true,
     }),
   ).toHaveAttribute("aria-invalid", "true");
-  await section
-    .getByRole("combobox", { name: "Destinatario della conferma", exact: true })
-    .selectOption(contact.data!.id);
+  await selectChoice(
+    page,
+    "Destinatario della conferma",
+    "Buyer conferma",
+    true,
+  );
   await admin()
     .from("customer_contacts")
     .update({ deleted_at: new Date().toISOString() })
@@ -479,12 +483,12 @@ test("manually sends a confirmation in log mode with durable history and recipie
     await expect(section.getByRole("listitem")).toContainText(
       "Registrata in modalità log",
     );
-    await section
-      .getByRole("combobox", {
-        name: "Destinatario della conferma",
-        exact: true,
-      })
-      .selectOption(contact.data!.id);
+    await selectChoice(
+      page,
+      "Destinatario della conferma",
+      "Buyer conferma",
+      true,
+    );
     await send.click();
     await expect(section.getByRole("status")).toContainText(
       "Nessuna email è stata inviata.",

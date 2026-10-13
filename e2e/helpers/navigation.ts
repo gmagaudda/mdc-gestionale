@@ -14,7 +14,7 @@ export async function navigateMenu(page: Page, label: string) {
     await group.locator("summary").click();
   await page.getByRole("link", { name: label, exact: true }).click();
 }
-// SearchSelect uses native options so long names remain selectable on touch.
+// Support native selects, Arc selects, and searchable Arc comboboxes.
 export async function selectChoice(
   page: Page,
   label: string,
@@ -30,7 +30,12 @@ export async function selectChoice(
     if (value === null) throw Error("Option missing");
     await control.selectOption(value);
   } else {
-    await control.click();
+    if (await control.evaluate((element) => element.tagName === "INPUT")) {
+      await control.focus();
+      const typed = await control.inputValue();
+      if (!typed || !option.includes(typed))
+        await control.fill(option.split(" · ")[0]);
+    } else await control.click();
     const item = partial
       ? page.getByRole("option").filter({ hasText: option })
       : page.getByRole("option", { name: option, exact: true });

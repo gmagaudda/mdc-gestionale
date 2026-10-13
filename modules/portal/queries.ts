@@ -1,4 +1,5 @@
 import "server-only";
+import type { ListQuery } from "@/lib/queries/list";
 import { createClient } from "@/lib/supabase/server";
 import type { DashboardFilters } from "@/modules/dashboard/schema";
 import { portalDashboardSchema } from "./schema";
@@ -26,6 +27,7 @@ export async function getPortalOrders(
   filters: z.infer<typeof portalOrderFiltersSchema>,
   offset = 0,
   limit = 25,
+  sorting?: Pick<ListQuery, "sort" | "direction">,
 ) {
   const { data, error } = await (
     await createClient()
@@ -37,6 +39,9 @@ export async function getPortalOrders(
     ...(filters.status ? { p_status: filters.status } : {}),
     p_offset: offset,
     p_limit: limit,
+    ...(sorting
+      ? { p_sort: sorting.sort, p_direction: sorting.direction }
+      : {}),
   });
   const parsed = portalOrdersSchema.safeParse(data);
   return error || !parsed.success
@@ -47,6 +52,7 @@ export async function getPortalSales(
   filters: DashboardFilters,
   offset = 0,
   limit = 25,
+  sorting?: Pick<ListQuery, "sort" | "direction">,
 ) {
   const { data, error } = await (
     await createClient()
@@ -57,6 +63,9 @@ export async function getPortalSales(
     ...(filters.to ? { p_end: filters.to } : {}),
     p_offset: offset,
     p_limit: limit,
+    ...(sorting
+      ? { p_sort: sorting.sort, p_direction: sorting.direction }
+      : {}),
   });
   const parsed = portalSalesSchema.safeParse(data);
   return error || !parsed.success

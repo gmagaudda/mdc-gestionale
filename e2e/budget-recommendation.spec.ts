@@ -137,9 +137,7 @@ test("suggests homologous seasons handles exceptions and preserves adjustment pr
     ["Stagione (facoltativa)", `SS28 · ${name}`],
     ["Cliente (facoltativo)", `${name} · Roma`],
   ]) {
-    await page
-      .getByRole("searchbox", { name: `Cerca ${label}`, exact: true })
-      .fill(name);
+    await page.getByRole("combobox", { name: label, exact: true }).fill(name);
     await expect(
       page.getByRole("combobox", { name: label, exact: true }),
     ).toBeEnabled();

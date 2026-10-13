@@ -26,6 +26,11 @@ const icons = {
   sales: "trending-up",
   menu: "menu-2",
   chevron: "chevron-down",
+  sidebarCollapse: "layout-sidebar-left-collapse",
+  sidebarExpand: "layout-sidebar-left-expand",
+  search: "search",
+  plus: "plus",
+  download: "download",
 };
 const attrs = {
   "stroke-linecap": "strokeLinecap",

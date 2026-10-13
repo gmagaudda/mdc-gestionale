@@ -69,3 +69,32 @@ export const portalSalesSchema = z
       .max(10000),
   })
   .strict();
+
+export const portalOrdersSortSchema = z.object({
+  sort: z
+    .enum([
+      "order_date",
+      "number",
+      "brand_name",
+      "season_code",
+      "customer_display_name",
+      "customer_city",
+      "status",
+      "net_total_cents",
+    ])
+    .default("order_date"),
+  direction: z.enum(["asc", "desc"]).default("desc"),
+});
+export const portalSalesSortSchema = z.object({
+  sort: z
+    .enum([
+      "net_cents",
+      "brand_name",
+      "season_code",
+      "customer_display_name",
+      "customer_city",
+      "order_count",
+    ])
+    .default("net_cents"),
+  direction: z.enum(["asc", "desc"]).default("desc"),
+});

@@ -42,7 +42,7 @@ export const listExports: Record<
   },
   seasons: {
     namespace: "catalog",
-    sort: ["code", "name"],
+    sort: ["code", "name", "brand"],
     columns: [
       { key: "code", label: "code" },
       { key: "name", label: "name" },
@@ -51,7 +51,7 @@ export const listExports: Record<
   },
   products: {
     namespace: "catalog",
-    sort: ["name", "sku_base", "wholesale_price_cents"],
+    sort: ["name", "sku_base", "wholesale_price_cents", "brand", "season"],
     columns: [
       { key: "name", label: "name" },
       { key: "sku_base", label: "sku_base" },
@@ -66,7 +66,15 @@ export const listExports: Record<
   },
   budgets: {
     namespace: "budgets",
-    sort: ["period_start", "amount_cents", "created_at"],
+    sort: [
+      "period_start",
+      "amount_cents",
+      "created_at",
+      "brand",
+      "season",
+      "customer",
+      "period_end",
+    ],
     columns: [
       { key: "brand", label: "brand" },
       { key: "season", label: "season" },
@@ -78,7 +86,14 @@ export const listExports: Record<
   },
   documents: {
     namespace: "documents",
-    sort: ["created_at", "name"],
+    sort: [
+      "created_at",
+      "name",
+      "brand",
+      "kind",
+      "shared_with_brand",
+      "size_bytes",
+    ],
     columns: [
       { key: "name", label: "name" },
       { key: "brand", label: "brand" },
@@ -89,7 +104,17 @@ export const listExports: Record<
   },
   invoices: {
     namespace: "invoices",
-    sort: ["due_date", "issue_date", "number"],
+    sort: [
+      "due_date",
+      "issue_date",
+      "number",
+      "brand",
+      "customer",
+      "status",
+      "gross_cents",
+      "paid_cents",
+      "balance_cents",
+    ],
     columns: [
       { key: "number", label: "number" },
       { key: "brand", label: "supplier" },

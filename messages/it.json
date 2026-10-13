@@ -57,7 +57,19 @@
     "role_admin": "Amministratore",
     "role_accounting": "Contabilità",
     "role_staff": "Staff showroom",
-    "role_brand": "Utente brand"
+    "role_brand": "Utente brand",
+    "searchOrSelect": "Cerca o seleziona",
+    "noChoices": "Nessun risultato. Prova un altro nome.",
+    "clearChoice": "Azzera {field}",
+    "choiceOptions": "Opzioni per {field}",
+    "sidebarCollapse": "Riduci la sidebar",
+    "sidebarExpand": "Espandi la sidebar",
+    "sidebarSearch": "Cerca tra le sezioni",
+    "sidebarSearchToggle": "Cerca nella sidebar",
+    "sidebarSearchClose": "Chiudi ricerca sidebar",
+    "sidebarSearchEmpty": "Nessuna sezione trovata. Prova un altro nome.",
+    "sidebarSearchCount": "{count, plural, =0 {Nessuna sezione trovata} one {# sezione trovata} other {# sezioni trovate}}",
+    "sidebarSearchClear": "Azzera ricerca sezioni"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -215,7 +227,9 @@
     "selectedRows": "<number>{count}</number> {count, plural, one {riga selezionata} other {righe selezionate}}",
     "selectionHint": "La selezione vale solo per questa pagina. Cambiando filtri, ordinamento o pagina viene azzerata.",
     "clearSelection": "Azzera selezione",
-    "exportSelected": "Esporta selezione CSV"
+    "exportSelected": "Esporta selezione CSV",
+    "sortAnnouncement": "Tabella ordinata per {field}, in ordine {direction}.",
+    "domainFilters": "Filtri"
   },
   "audit": {
     "title": "Registro modifiche",
@@ -527,7 +541,8 @@
     },
     "archive": "Archivia ordine",
     "archiveQuestion": "L’ordine verrà rimosso dall’elenco. Le righe e lo storico resteranno conservati.",
-    "defaultCommission": "Percentuale prevista dal brand"
+    "defaultCommission": "Percentuale prevista dal brand",
+    "totalForSize": "Totale taglia {size}"
   },
   "pdf": {
     "orderTitle": "Conferma ordine {number}",

@@ -139,13 +139,27 @@ test("saves a three-product matrix atomically with discounts and exact server to
       .eq("id", customerId)
       .single()
   ).data!.legal_name;
-  await page
-    .getByRole("searchbox", { name: "Cerca Brand", exact: true })
-    .fill(brand);
+  await page.getByRole("combobox", { name: "Brand", exact: true }).fill(brand);
   await selectChoice(page, "Brand", brand);
-  await selectChoice(page, "Stagione", "FW26-EDITOR: Autunno prova");
+  await expect(
+    page.getByRole("searchbox", { name: /Cerca (Brand|Stagione|Cliente)/ }),
+  ).toHaveCount(0);
+  const season = page.getByRole("combobox", { name: "Stagione", exact: true });
+  await season.focus();
+  await season.fill("FW26-EDITOR");
+  await season.press("ArrowDown");
+  await season.press("Enter");
+  await expect(season).toHaveAttribute("aria-expanded", "false");
+  await season.fill("Nessuna stagione corrispondente");
+  await expect(
+    page
+      .getByRole("status", { name: "" })
+      .filter({ hasText: "Nessun risultato" }),
+  ).toBeVisible();
+  await season.press("Escape");
+  await expect(season).toHaveValue("FW26-EDITOR: Autunno prova");
   await page
-    .getByRole("searchbox", { name: "Cerca Cliente", exact: true })
+    .getByRole("combobox", { name: "Cliente", exact: true })
     .fill(customer);
   await expect(page.getByLabel("Cliente", { exact: true })).toBeEnabled();
   await selectChoice(page, "Cliente", `${customer} · Milano`);
@@ -171,6 +185,40 @@ test("saves a three-product matrix atomically with discounts and exact server to
   await product(productNames[2])
     .getByLabel("Nero, M", { exact: true })
     .fill("4");
+  const matrix = product(productNames[0]).getByRole("table", {
+    name: "Quantità per taglia e colore",
+    exact: true,
+  });
+  await expect(matrix).toBeVisible();
+  const sortColor = matrix.getByRole("button", {
+    name: "Ordina per Colore crescente",
+    exact: true,
+  });
+  await sortColor.focus();
+  await sortColor.press("Enter");
+  await expect(
+    matrix.getByRole("columnheader", { name: /Colore/ }),
+  ).toHaveAttribute("aria-sort", "ascending");
+  await matrix
+    .getByRole("button", { name: "Ordina per Totale crescente", exact: true })
+    .click();
+  await expect(matrix.locator("tbody tr").first()).toContainText("Nero");
+  await expect(
+    product(productNames[0]).getByLabel("Blu, M", { exact: true }),
+  ).toHaveValue("3");
+  const savedViewport = page.viewportSize()!;
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.evaluate(() => (document.documentElement.style.fontSize = "200%"));
+  await product(productNames[0]).getByLabel("Blu, M", { exact: true }).focus();
+  await page.screenshot({
+    path: testInfo.outputPath("matrix-stress.png"),
+    fullPage: true,
+  });
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
+    .toBeLessThanOrEqual(320);
+  await page.evaluate(() => (document.documentElement.style.fontSize = ""));
+  await page.setViewportSize(savedViewport);
   await page.getByLabel("Sconto ordine (%)", { exact: true }).fill("10");
   await product(productNames[0])
     .getByText("Prezzi e sconti per variante", { exact: true })
@@ -221,7 +269,7 @@ test("saves a three-product matrix atomically with discounts and exact server to
   const saved = await admin()
     .from("orders")
     .select(
-      "net_total_cents,vat_total_cents,gross_total_cents,order_lines(*),order_private(*)",
+      "number,net_total_cents,vat_total_cents,gross_total_cents,order_lines(*),order_private(*)",
     )
     .eq("id", orderId)
     .single();
@@ -260,4 +308,28 @@ test("saves a three-product matrix atomically with discounts and exact server to
   await expect(page.getByLabel("Note interne", { exact: true })).toHaveValue(
     "Nota riservata di prova",
   );
+  const number = saved.data!.number;
+  await page.goto(
+    `/orders?${new URLSearchParams({ q: number, cf_number: number, status: "draft", season_id: seasonId, sort: "season", direction: "desc" })}`,
+  );
+  const toolbar = page.getByRole("main").locator(".list-toolbar");
+  await toolbar
+    .locator("summary")
+    .filter({ hasText: /^Filtri$/ })
+    .click();
+  await toolbar
+    .getByRole("button", { name: "Applica filtri", exact: true })
+    .click();
+  await expect(page).toHaveURL(/sort=season/);
+  await expect(page).toHaveURL(/direction=desc/);
+  expect(new URL(page.url()).searchParams.get("cf_number")).toBe(number);
+  await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  expect(new URL(page.url()).searchParams.get("season_id")).toBe(seasonId);
+  await expect(
+    page.getByRole("table").getByRole("link", { name: number, exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath("orders-list-toolbar.png"),
+    fullPage: true,
+  });
 });

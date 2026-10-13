@@ -50,7 +50,7 @@ export function OrderConfirmation({
             if (!contactId) {
               setError("recipientError");
               event.currentTarget
-                .querySelector<HTMLSelectElement>("select")
+                .querySelector<HTMLInputElement>('[role="combobox"]')
                 ?.focus();
               return;
             }

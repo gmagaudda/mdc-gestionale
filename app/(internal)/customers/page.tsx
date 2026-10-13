@@ -30,14 +30,12 @@ export default async function CustomersPage({
       <PageHeader
         title={t("title")}
         action={
-          <>
-            {" "}
-            {user.role !== "accounting" && (
-              <Link className="text-link" href="/customers/new">
-                {t("create")}
-              </Link>
-            )}
-          </>
+          result.error &&
+          user.role !== "accounting" && (
+            <Link className="text-link" href="/customers/new">
+              {t("create")}
+            </Link>
+          )
         }
       />
       {result.error ? (
@@ -45,11 +43,15 @@ export default async function CustomersPage({
       ) : (
         <ListView
           base="/customers"
+          createAction={
+            user.role !== "accounting"
+              ? { href: "/customers/new", label: t("create") }
+              : undefined
+          }
           query={query}
           rows={result.data ?? []}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns}
           title={t("title")}
           searchLabel={t("search")}
         />

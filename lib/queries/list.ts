@@ -65,3 +65,14 @@ export function columnFilterParams(input?: Record<string, unknown>) {
       .map(([key, value]) => [`cf_${key}`, value as string]),
   );
 }
+
+// PostgREST orders parent records by their to-one related display value.
+export function listOrderColumn(key: string) {
+  return key === "brand"
+    ? "brands(name)"
+    : key === "season"
+      ? "seasons(code)"
+      : key === "customer"
+        ? "customers(legal_name)"
+        : key;
+}

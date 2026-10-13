@@ -15,7 +15,7 @@ export default async function Documents({
     p = await getTranslations("portal"),
     q = parseListQuery(
       await searchParams,
-      ["created_at"],
+      ["created_at", "name", "brand_name", "kind", "size_bytes"],
       "created_at",
       "desc",
     );
@@ -25,7 +25,7 @@ export default async function Documents({
       .select("id,name,kind,brand_name,size_bytes,created_at", {
         count: "exact",
       })
-      .order("created_at", { ascending: false })
+      .order(q.sort, { ascending: q.direction === "asc" })
       .order("id")
       .range((q.page - 1) * q.size, q.page * q.size - 1),
   );
@@ -61,9 +61,14 @@ export default async function Documents({
                   linkBase: "/api/documents",
                   download: true,
                 },
-                { key: "brand", label: t("brand") },
+                { key: "brand", sortKey: "brand_name", label: t("brand") },
                 { key: "kind", label: t("kind") },
-                { key: "size", label: t("size") },
+                {
+                  key: "size",
+                  sortKey: "size_bytes",
+                  numeric: true,
+                  label: t("size"),
+                },
               ]}
             />
           )

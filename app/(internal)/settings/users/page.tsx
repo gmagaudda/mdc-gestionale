@@ -16,7 +16,7 @@ export default async function UsersPage({
   const t = await getTranslations("users");
   const query = parseListQuery(
     await searchParams,
-    ["email", "full_name", "role"],
+    ["email", "full_name", "role", "is_active"],
     "full_name",
   );
   const client = await createClient();
@@ -33,21 +33,24 @@ export default async function UsersPage({
     { key: "full_name", label: t("full_name"), linkBase: "/settings/users" },
     { key: "email", label: t("email") },
     { key: "role", label: t("role") },
-    { key: "status", label: t("status") },
+    { key: "status", sortKey: "is_active", label: t("status") },
   ];
   return (
     <>
       <header className="stack">
         <h1>{t("title")}</h1>
-        <Link className="text-link" href="/settings/users/new">
-          {t("invite")}
-        </Link>
+        {result.error && (
+          <Link className="text-link" href="/settings/users/new">
+            {t("invite")}
+          </Link>
+        )}
       </header>
       {result.error ? (
         <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/settings/users"
+          createAction={{ href: "/settings/users/new", label: t("invite") }}
           query={query}
           rows={(result.data ?? []).map((row) => ({
             ...row,
@@ -58,7 +61,6 @@ export default async function UsersPage({
           }))}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns.slice(0, 3)}
           title={t("title")}
           searchLabel={t("search")}
         />

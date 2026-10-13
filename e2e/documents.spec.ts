@@ -114,7 +114,7 @@ test("uploads validates downloads shares and archives a private document", async
     .getByRole("textbox", { name: "Nome", exact: true })
     .fill("Catalogo campionario prova");
   await page
-    .getByRole("searchbox", { name: "Cerca Brand", exact: true })
+    .getByRole("combobox", { name: "Brand", exact: true })
     .fill(brandName);
   await selectChoice(page, "Brand", brandName);
   const file = page.getByLabel("File", { exact: true });

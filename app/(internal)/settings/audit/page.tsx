@@ -17,16 +17,19 @@ export default async function AuditPage({
   const t = await getTranslations("audit");
   const query = parseListQuery(
     await searchParams,
-    ["created_at", "action", "table_name"],
+    ["created_at", "action", "table_name", "actor_name"],
     "created_at",
     "desc",
   );
   const client = await createClient();
   const offset = (query.page - 1) * query.size;
   let request = client
-    .from("audit_log")
-    .select("id,created_at,action,table_name,actor_id", { count: "exact" })
+    .from("v_audit_list")
+    .select("id,created_at,action,table_name,actor_id,actor_name", {
+      count: "exact",
+    })
     .order(query.sort, { ascending: query.direction === "asc" })
+    .order("id")
     .range(offset, offset + query.size - 1);
   const resourceNames = [
     "profiles",
@@ -59,30 +62,11 @@ export default async function AuditPage({
     request = request.eq("table_name", resource ?? query.q);
   }
   const result = await request;
-  const actorIds = [
-    ...new Set(
-      (result.data ?? []).flatMap((row) =>
-        row.actor_id ? [row.actor_id] : [],
-      ),
-    ),
-  ];
-  const actors = actorIds.length
-    ? await client
-        .from("profiles")
-        .select("id,full_name,email")
-        .in("id", actorIds)
-    : { data: [] };
-  const actorNames = new Map(
-    (actors.data ?? []).map((actor) => [
-      actor.id,
-      actor.full_name || actor.email,
-    ]),
-  );
   const columns = [
     { key: "created_at", label: t("date"), linkBase: "/settings/audit" },
     { key: "action", label: t("action") },
     { key: "table_name", label: t("resource") },
-    { key: "actor_id", label: t("actor") },
+    { key: "actor_id", sortKey: "actor_name", label: t("actor") },
   ];
   return (
     <>
@@ -102,6 +86,7 @@ export default async function AuditPage({
           query={query}
           rows={(result.data ?? []).map((row) => ({
             ...row,
+            id: row.id!,
             action: t.has(`actions.${row.action}`)
               ? t(`actions.${row.action}`)
               : row.action,
@@ -112,14 +97,13 @@ export default async function AuditPage({
               dateStyle: "short",
               timeStyle: "medium",
               timeZone: "Europe/Rome",
-            }).format(new Date(row.created_at)),
+            }).format(new Date(row.created_at!)),
             actor_id: row.actor_id
-              ? (actorNames.get(row.actor_id) ?? row.actor_id)
+              ? row.actor_name || row.actor_id
               : t("system"),
           }))}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns.slice(0, 3)}
           title={t("title")}
           searchLabel={t("search")}
         />

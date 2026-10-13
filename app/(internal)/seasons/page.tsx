@@ -14,7 +14,11 @@ export default async function SeasonsPage({
 }) {
   const user = await requireRole(internalRoles);
   const t = await getTranslations("catalog");
-  const query = parseListQuery(await searchParams, ["code", "name"], "code");
+  const query = parseListQuery(
+    await searchParams,
+    ["code", "name", "brand"],
+    "code",
+  );
   const result = await listSeasons(query);
   const columns = [
     { key: "code", label: t("code"), linkBase: "/seasons" },
@@ -26,6 +30,7 @@ export default async function SeasonsPage({
       <PageHeader
         title={t("seasons")}
         action={
+          result.error &&
           user.role !== "accounting" && (
             <Link className="text-link" href="/seasons/new">
               {t("createSeason")}
@@ -38,6 +43,11 @@ export default async function SeasonsPage({
       ) : (
         <ListView
           base="/seasons"
+          createAction={
+            user.role !== "accounting"
+              ? { href: "/seasons/new", label: t("createSeason") }
+              : undefined
+          }
           query={query}
           rows={(result.data ?? []).map((row) => ({
             id: row.id,
@@ -47,7 +57,6 @@ export default async function SeasonsPage({
           }))}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns.slice(0, 2)}
           title={t("seasons")}
           searchLabel={t("search")}
         />

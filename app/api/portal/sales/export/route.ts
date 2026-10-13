@@ -6,6 +6,7 @@ import { getPortalSales } from "@/modules/portal/queries";
 import { portalFiltersSchema } from "@/modules/portal/schema";
 import { exportCsv } from "@/lib/csv";
 import { centsToDecimal } from "@/lib/money";
+import { portalSalesSortSchema } from "@/modules/portal/schema";
 const headers = {
   "Cache-Control": "private, no-store",
   "X-Content-Type-Options": "nosniff",
@@ -18,7 +19,10 @@ export async function GET(request: Request) {
     filters = portalFiltersSchema.safeParse(
       Object.fromEntries(new URL(request.url).searchParams),
     );
-  if (!filters.success)
+  const sorting = portalSalesSortSchema.safeParse(
+    Object.fromEntries(new URL(request.url).searchParams),
+  );
+  if (!filters.success || !sorting.success)
     return new Response(p("invalidFilters"), { status: 400, headers });
   if (filters.data.brand_id) {
     try {
@@ -42,7 +46,7 @@ export async function GET(request: Request) {
     if (season.error) return new Response(null, { status: 503, headers });
     if (!season.data) return new Response(null, { status: 404, headers });
   }
-  const report = await getPortalSales(filters.data, 0, 10000);
+  const report = await getPortalSales(filters.data, 0, 10000, sorting.data);
   if (!report.ok) return new Response(p("loadError"), { status: 503, headers });
   if (report.data.count > 10000)
     return new Response(p("exportTooLarge"), { status: 413, headers });

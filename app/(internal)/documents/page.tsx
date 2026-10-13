@@ -16,7 +16,14 @@ export default async function DocumentsPage({
     t = await getTranslations("documents");
   const query = parseListQuery(
       await searchParams,
-      ["name", "created_at"],
+      [
+        "created_at",
+        "name",
+        "brand",
+        "kind",
+        "shared_with_brand",
+        "size_bytes",
+      ],
       "created_at",
     ),
     result = await listDocuments(query);
@@ -24,14 +31,15 @@ export default async function DocumentsPage({
     { key: "name", label: t("name"), linkBase: "/documents" },
     { key: "brand", label: t("brand") },
     { key: "kind", label: t("kind") },
-    { key: "shared", label: t("visibility") },
-    { key: "size", label: t("fileSize") },
+    { key: "shared", sortKey: "shared_with_brand", label: t("visibility") },
+    { key: "size", sortKey: "size_bytes", numeric: true, label: t("fileSize") },
   ];
   return (
     <>
       <PageHeader
         title={t("title")}
         action={
+          result.error &&
           user.role !== "accounting" && (
             <Link className="text-link" href="/documents/new">
               {t("upload")}
@@ -44,6 +52,11 @@ export default async function DocumentsPage({
       ) : (
         <ListView
           base="/documents"
+          createAction={
+            user.role !== "accounting"
+              ? { href: "/documents/new", label: t("upload") }
+              : undefined
+          }
           query={query}
           columns={columns}
           rows={(result.data ?? []).map((row) => ({

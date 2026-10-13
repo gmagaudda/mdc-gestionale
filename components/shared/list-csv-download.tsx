@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
+import { ErpIcon } from "./erp-icon";
 import { Alert } from "@/components/arc/alert/alert";
 export function ListCsvDownload({
   href,
@@ -52,6 +53,7 @@ export function ListCsvDownload({
           }
         }}
       >
+        <ErpIcon name="download" />
         <span className="list-button-copy">{label ?? t("exportCsv")}</span>
       </Button>
       <p role="status" className={pending || ready ? undefined : "sr-only"}>

@@ -47,6 +47,12 @@ export function ResponsiveDialog({
           aria-describedby={description ? undefined : props["aria-describedby"]}
           onEscapeKeyDown={(event) => {
             if (busy) event.preventDefault();
+            // Let an open combobox dismiss its own menu before this dialog.
+            if (
+              event.target instanceof HTMLElement &&
+              event.target.closest('[role="combobox"][aria-expanded="true"]')
+            )
+              event.preventDefault();
             props.onEscapeKeyDown?.(event);
           }}
           onPointerDownOutside={(event) => {

@@ -1,6 +1,6 @@
 begin;
 set local request.jwt.claims='{"aal":"aal2"}';
-select plan(12);
+select plan(20);
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000601','reports-staff@example.test'),('00000000-0000-4000-8000-000000000609','reports-brand@example.test');
 update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000601';
 insert into public.brands(id,name,can_see_customer_names) values('00000000-0000-4000-8000-000000000602','Report A',false),('00000000-0000-4000-8000-000000000603','Report B',true);
@@ -37,4 +37,12 @@ select ok(not exists(select 1 from information_schema.columns where table_schema
 select throws_ok($$select public.portal_orders_report('00000000-0000-4000-8000-000000000603')$$,'P0002',null,'foreign order scope refused');
 select throws_ok($$select public.portal_sales_report('00000000-0000-4000-8000-000000000603')$$,'P0002',null,'foreign sales scope refused');
 select ok((select bool_and(reloptions @> array['security_invoker=true']) from pg_class where relname in('portal_events','portal_documents')),'portal views security invoker');
+select is(public.portal_orders_report(p_sort=>'net_total_cents',p_direction=>'asc')->'rows'->0->>'net_total_cents','1000','order amount sorts before pagination');
+select is(public.portal_orders_report(p_sort=>'net_total_cents',p_direction=>'desc',p_limit=>1)->'rows'->0->>'net_total_cents','4000','descending order chooses largest across complete result');
+select is(public.portal_orders_report(p_sort=>'net_total_cents',p_direction=>'desc',p_offset=>1,p_limit=>1)->'rows'->0->>'net_total_cents','3000','offset follows complete sorted order');
+select is(public.portal_sales_report(p_sort=>'net_cents',p_direction=>'asc')->>'sold_cents','3000','sorting preserves sales aggregate');
+select lives_ok($$select public.portal_sales_report(p_sort=>'customer_display_name')$$,'visible customer display sorts without private names');
+select throws_ok($$select public.portal_orders_report(p_sort=>'customer_id')$$,'22023',null,'private portal sort key rejected');
+select throws_ok($$select public.portal_orders_report(p_sort=>'number; select 1')$$,'22023',null,'portal sort injection rejected');
+select throws_ok($$select public.portal_sales_report(p_direction=>'desc; select 1')$$,'22023',null,'portal direction injection rejected');
 select * from finish();rollback;

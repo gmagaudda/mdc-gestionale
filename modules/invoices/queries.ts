@@ -4,7 +4,11 @@ import {
   applyColumnFilters,
 } from "@/lib/queries/column-filters";
 import { createClient } from "@/lib/supabase/server";
-import { escapeLike, type ListQuery } from "@/lib/queries/list";
+import {
+  escapeLike,
+  listOrderColumn,
+  type ListQuery,
+} from "@/lib/queries/list";
 import type { ExternalStatus } from "@/lib/invoicing/types";
 export async function listInvoices(
   query: ListQuery,
@@ -14,7 +18,9 @@ export async function listInvoices(
   let request = (await createClient())
     .from("v_invoice_balances")
     .select("*,brands(name),customers(legal_name)", { count: "exact" })
-    .order(query.sort, { ascending: query.direction === "asc" })
+    .order(listOrderColumn(query.sort), {
+      ascending: query.direction === "asc",
+    })
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
   if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);

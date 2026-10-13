@@ -142,6 +142,57 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
   expect(
     await catalog.evaluate((node) => getComputedStyle(node).outlineStyle),
   ).not.toBe("none");
+  if (!mobile) {
+    const expandedWidth = (await nav.boundingBox())!.width;
+    await nav
+      .getByRole("button", { name: "Riduci la sidebar", exact: true })
+      .click();
+    await expect(nav).toHaveAttribute("data-collapsed", "true");
+    expect((await nav.boundingBox())!.width).toBeLessThan(expandedWidth);
+    await expect(
+      nav.getByRole("link", { name: "Fatture", exact: true }),
+    ).toBeVisible();
+    await nav.getByRole("link", { name: "Ordini", exact: true }).focus();
+    await noOverflow(page);
+    await axe(page);
+    await page.screenshot({ path: info.outputPath("sidebar-collapsed.png") });
+    await nav
+      .getByRole("button", { name: "Cerca nella sidebar", exact: true })
+      .click();
+    await expect(nav).not.toHaveAttribute("data-collapsed", "true");
+  }
+  const sidebarSearch = nav.getByRole("searchbox", {
+    name: "Cerca tra le sezioni",
+    exact: true,
+  });
+  await sidebarSearch.fill("fatt");
+  await expect(
+    nav.getByRole("link", { name: "Fatture", exact: true }),
+  ).toBeVisible();
+  await expect(
+    nav.getByRole("link", { name: "Clienti", exact: true }),
+  ).toHaveCount(0);
+  await sidebarSearch.fill("Amministrazione");
+  await expect(
+    nav.getByRole("link", { name: "Budget", exact: true }),
+  ).toBeVisible();
+  await sidebarSearch.fill("zzzz-no-sezione");
+  await expect(
+    nav.getByText("Nessuna sezione trovata. Prova un altro nome.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await sidebarSearch.press("Escape");
+  await expect(sidebarSearch).toHaveValue("");
+  await noOverflow(page);
+  await axe(page);
+  if (!mobile) {
+    await sidebarSearch.press("Escape");
+    await expect(sidebarSearch).toHaveCount(0);
+    await expect(
+      nav.getByRole("button", { name: "Cerca nella sidebar", exact: true }),
+    ).toBeFocused();
+  }
   const smallTargets = await nav.locator("a, summary").evaluateAll((nodes) =>
     nodes
       .filter((n) => n.getClientRects().length > 0)

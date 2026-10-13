@@ -55,6 +55,7 @@ export default async function OrdersPage({
       <PageHeader
         title={t("title")}
         action={
+          result.error &&
           user.role !== "accounting" && (
             <Link className="text-link" href="/orders/new">
               {t("create")}
@@ -62,28 +63,31 @@ export default async function OrdersPage({
           )
         }
       />
-      <OrderFilters
-        key={JSON.stringify(filters) + query.q}
-        initial={filters}
-        q={query.q}
-        {...choices}
-      />
       {result.error ? (
         <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/orders"
+          createAction={
+            user.role !== "accounting"
+              ? { href: "/orders/new", label: t("create") }
+              : undefined
+          }
+          searchLabel={t("searchNumber")}
+          filters={
+            <OrderFilters
+              key={JSON.stringify(filters) + query.q}
+              initial={filters}
+              query={query}
+              {...choices}
+            />
+          }
           exportBase="/api/orders/export"
           query={query}
           filterParams={params}
           title={t("title")}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns.filter((column) =>
-            ["number", "order_date", "status", "gross_total_cents"].includes(
-              column.key,
-            ),
-          )}
           rows={(result.data ?? []).map((row) => ({
             id: row.id,
             number: row.number,

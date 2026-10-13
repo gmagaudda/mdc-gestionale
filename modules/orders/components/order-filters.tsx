@@ -9,15 +9,16 @@ import { Button } from "@/components/arc/button/button";
 import { orderStatuses } from "../schema";
 import type { OrderFilters as Filters } from "../filters";
 import { searchOrderCustomers } from "../actions";
+import { columnFilterParams, type ListQuery } from "@/lib/queries/list";
 export function OrderFilters({
   initial,
-  q,
+  query,
   brands,
   seasons,
   customers,
 }: {
   initial: Filters;
-  q: string;
+  query: ListQuery;
   brands: { id: string; name: string }[];
   seasons: { id: string; brand_id: string; code: string; name: string }[];
   customers: { id: string; legal_name: string; city: string }[];
@@ -27,12 +28,14 @@ export function OrderFilters({
   return (
     <form action="/orders" className="stack">
       <div className="form-grid">
-        <Input
-          label={t("searchNumber")}
-          name="q"
-          type="search"
-          defaultValue={q}
-        />
+        {Object.entries({
+          ...columnFilterParams(query.columnFilters),
+          q: query.q,
+          sort: query.sort,
+          direction: query.direction,
+        }).map(([name, value]) => (
+          <input key={name} type="hidden" name={name} value={value} />
+        ))}
         <SelectField
           label={t("status")}
           value={filters.status || "all"}

@@ -91,9 +91,7 @@ async function fill(page: Page, start: string, end: string) {
     ["Stagione (facoltativa)", name, `BUDGET · ${name}`],
     ["Cliente (facoltativo)", name, name],
   ]) {
-    await page
-      .getByRole("searchbox", { name: `Cerca ${label}`, exact: true })
-      .fill(search);
+    await page.getByRole("combobox", { name: label, exact: true }).fill(search);
     await expect(
       page.getByRole("combobox", { name: label, exact: true }),
     ).toBeEnabled();

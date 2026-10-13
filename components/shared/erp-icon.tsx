@@ -320,6 +320,76 @@ const shapes = {
       />
     </>
   ),
+  sidebarCollapse: (
+    <>
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      >
+        <path
+          fill="none"
+          d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm5-2v16"
+        />
+        <path fill="none" d="m15 10l-2 2l2 2" />
+      </g>
+    </>
+  ),
+  sidebarExpand: (
+    <>
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      >
+        <path
+          fill="none"
+          d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm5-2v16"
+        />
+        <path fill="none" d="m14 10l2 2l-2 2" />
+      </g>
+    </>
+  ),
+  search: (
+    <>
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0m18 11l-6-6"
+      />
+    </>
+  ),
+  plus: (
+    <>
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M12 5v14m-7-7h14"
+      />
+    </>
+  ),
+  download: (
+    <>
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5m-5-7v12"
+      />
+    </>
+  ),
 } as const;
 export type ErpIconName = keyof typeof shapes;
 export function ErpIcon({

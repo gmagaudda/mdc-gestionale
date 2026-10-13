@@ -89,12 +89,22 @@ test("creates edits moves filters and archives events with accessible mobile con
     dialog.getByRole("combobox", { name: "Brand", exact: true }),
   ).toBeFocused();
   await dialog
-    .getByRole("searchbox", { name: "Cerca Brand", exact: true })
+    .getByRole("combobox", { name: "Brand", exact: true })
     .fill(brandName);
+  await expect(
+    page.getByRole("option", { name: brandName, exact: true }),
+  ).toBeVisible();
   await dialog
     .getByRole("combobox", { name: "Brand", exact: true })
-    .selectOption({ label: brandName });
+    .press("Escape");
+  await expect(dialog).toBeVisible();
+  await expect(page.getByRole("listbox")).toHaveCount(0);
+  await dialog
+    .getByRole("combobox", { name: "Brand", exact: true })
+    .fill(brandName);
+  await page.getByRole("option", { name: brandName, exact: true }).click();
   await dialog.getByLabel("Luogo", { exact: true }).fill("Showroom Milano");
+  await expect(dialog.getByRole("listbox")).toHaveCount(0);
   expect(
     (
       await new AxeBuilder({ page })

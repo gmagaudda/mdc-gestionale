@@ -2,7 +2,7 @@
 
 Le icone della shell provengono dalla famiglia outline Tabler, recuperata con la skill [Better Icons](https://github.com/better-auth/better-icons). La CLI pubblicata è bloccata a 1.0.4. Nessuna installazione globale o modifica ai server MCP dell’utente.
 
-`components/shared/erp-icon.tsx` contiene solo le 22 icone utilizzate, come SVG React locali: nessuna richiesta a Iconify durante l’uso del gestionale. Colore ereditato tramite `currentColor`, icone decorative escluse dall’albero accessibile e accompagnate da testo.
+`components/shared/erp-icon.tsx` contiene solo le 27 icone utilizzate, come SVG React locali: nessuna richiesta a Iconify durante l’uso del gestionale. Colore ereditato tramite `currentColor`, icone decorative escluse dall’albero accessibile e accompagnate da testo.
 
 Per cercare un’icona:
 

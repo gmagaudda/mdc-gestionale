@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import Papa from "papaparse";
 import AxeBuilder from "@axe-core/playwright";
+import { listExports } from "@/lib/exports/lists";
 import { readFileSync } from "node:fs";
 const password = "Csv-local-fixture-42";
 let email: string,
@@ -123,6 +124,18 @@ test("column filters and page selection stay aligned with CSV and reset on navig
     await page.evaluate(() => localStorage.removeItem("theme"));
     await page.goto(`/customers?q=${prefix}&sort=legal_name&direction=desc`);
     const main = page.getByRole("main");
+    const toolbar = main.locator(".list-toolbar");
+    await expect(toolbar.getByRole("searchbox")).toBeVisible();
+    await expect(
+      toolbar.getByRole("link", { name: "Nuovo cliente", exact: true }),
+    ).toBeVisible();
+    await expect(
+      toolbar.getByRole("button", { name: "Esporta CSV", exact: true }),
+    ).toBeVisible();
+    await page.screenshot({
+      path: info.outputPath(`list-toolbar-${theme}.png`),
+      fullPage: true,
+    });
     const summary = main
       .locator("summary")
       .filter({ hasText: "Filtri per colonna" });
@@ -133,7 +146,20 @@ test("column filters and page selection stay aligned with CSV and reset on navig
       .getByRole("button", { name: "Applica filtri per colonna", exact: true })
       .click();
     await expect(page).toHaveURL(/cf_city=Roma/);
+    await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+    await expect(page).toHaveURL(/cf_city=Roma/);
+    await expect(page).toHaveURL(/direction=desc/);
     await expect(main.getByText("31 elementi", { exact: true })).toBeVisible();
+    await expect(
+      main.getByRole("table", { name: "Clienti", exact: true }),
+    ).toBeVisible();
+    await expect(main.locator("table")).toHaveCount(1);
+    await expect(
+      main.getByRole("button", {
+        name: "Ordina per Città crescente",
+        exact: true,
+      }),
+    ).toBeVisible();
     const select = main.getByRole("checkbox", {
       name: `Seleziona ${prefix} 30`,
       exact: true,
@@ -147,6 +173,23 @@ test("column filters and page selection stay aligned with CSV and reset on navig
       exact: true,
     });
     await expect(selectPage).toHaveAttribute("aria-checked", "mixed");
+    expect(
+      await selectPage.evaluate(
+        (node) =>
+          node.closest("th") ===
+          node.closest("table")?.querySelector("thead th"),
+      ),
+    ).toBe(true);
+    await expect(
+      main.getByRole("columnheader", { name: "Seleziona", exact: true }),
+    ).toHaveCount(0);
+    expect(
+      await select.evaluate(
+        (node) =>
+          node.closest("td") === node.closest("tr")?.querySelector("td"),
+      ),
+    ).toBe(true);
+
     const downloading = page.waitForEvent("download");
     await main
       .getByRole("button", { name: "Esporta selezione CSV", exact: true })
@@ -191,8 +234,8 @@ test("column filters and page selection stay aligned with CSV and reset on navig
       fullPage: true,
     });
     await main
-      .getByRole("link", {
-        name: "Ordina per Ragione sociale decrescente",
+      .getByRole("button", {
+        name: "Ordina per Ragione sociale crescente",
         exact: true,
       })
       .click();
@@ -419,7 +462,7 @@ test("filtered CSV exports include all pages, exact cents and safe cells with ro
   await expect(button).toBeVisible();
   expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
+    await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
     await page.evaluate(() => localStorage.removeItem("theme"));
     await page.reload();
     const downloading = page.waitForEvent("download");
@@ -428,6 +471,21 @@ test("filtered CSV exports include all pages, exact cents and safe cells with ro
     await expect(
       page.getByText("CSV pronto. Download avviato.", { exact: true }),
     ).toBeVisible();
+    // Measure the settled label, after Arc restores it from loading.
+    await expect
+      .poll(() =>
+        button.locator(".list-button-copy").evaluate((label) => {
+          let node: Element | null = label;
+          const control = label.closest("button");
+          while (node) {
+            if (getComputedStyle(node).opacity !== "1") return false;
+            if (node === control) return true;
+            node = node.parentElement;
+          }
+          return false;
+        }),
+      )
+      .toBe(true);
     expect(
       (
         await new AxeBuilder({ page })
@@ -458,4 +516,60 @@ test("filtered CSV exports include all pages, exact cents and safe cells with ro
     .update({ role: "accounting" })
     .eq("id", userId);
   expect((await page.request.get(url)).status()).toBe(200);
+});
+
+test("every list column sorts on the server and its CSV follows the same sort", async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Esci", exact: true }),
+  ).toBeVisible();
+  for (const entity of [
+    "brands",
+    "customers",
+    "seasons",
+    "products",
+    "budgets",
+    "invoices",
+  ] as const) {
+    await page.goto(`/${entity}?q=${prefix}`);
+    const table = page.getByRole("main").getByRole("table");
+    await expect(table).toBeVisible();
+    const keys = await table
+      .locator("thead th[data-key]")
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute("data-key")!.slice(6)),
+      );
+    for (const key of keys) {
+      const header = table.locator(`thead th[data-key="_sort:${key}"]`);
+      await header.getByRole("button").click();
+      await expect(page).toHaveURL(new RegExp(`sort=${key}(?:&|$)`));
+      await expect(header).toHaveAttribute("aria-sort", /ascending|descending/);
+      const query = new URL(page.url()).searchParams;
+      const response = await page.request.get(
+        `/api/lists/${entity}/export?${query}`,
+      );
+      expect(
+        response.status(),
+        `${entity}.${key}: ${await response.text()}`,
+      ).toBe(200);
+      await expect(page.getByRole("main").getByRole("alert")).toHaveCount(0);
+    }
+  }
+  for (const [entity, config] of Object.entries(listExports)) {
+    for (const key of config.sort) {
+      const response = await page.request.get(
+        `/api/lists/${entity}/export?q=${prefix}&sort=${key}&direction=desc`,
+      );
+      expect(
+        response.status(),
+        `${entity}.${key}: ${await response.text()}`,
+      ).toBe(200);
+    }
+  }
 });

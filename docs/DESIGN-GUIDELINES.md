@@ -24,7 +24,7 @@ Fonte: [Lessons of Design](https://lessons.design), Fabricio Teixeira. Letta con
 2. **Semplicità:** eliminare ridondanze e mostrare i dettagli al momento opportuno. Azione principale unica, filtri espandibili e prezzi per variante sotto una disclosure.
 3. **Contesto delle decisioni:** spiegare il beneficio e le conseguenze di una scelta. Conferme di annullamento, fatturazione e aggiornamento descrivono l’effetto sui dati.
 4. **Coerenza:** controlli e parole familiari riducono il lavoro necessario per imparare. Token, form, stati e formati italiani condivisi tra area interna e portale.
-5. **Variazioni intenzionali:** adattare un sistema quando il compito richiede una soluzione diversa. Tabelle come card su telefono e controlli nativi per liste con identificativi lunghi.
+5. **Variazioni intenzionali:** adattare un sistema quando il compito richiede una soluzione diversa. SortableDataTable Arc anche su telefono, con selezione nella prima colonna; Combobox Arc per unificare ricerca e scelta. I select nativi restano per le scelte brevi dei flussi di importazione e delle impostazioni.
 6. **Miglioramento continuo:** portare le decisioni fino all’esperienza effettivamente utilizzabile. Testare i flussi completi, correggere i difetti e conservare la motivazione della soluzione.
 7. **Qualità delle relazioni:** il valore del lavoro comprende l’effetto sulle persone. Messaggi rispettosi, errori recuperabili, accessibilità e documentazione comprensibile per ciascun ruolo.
 

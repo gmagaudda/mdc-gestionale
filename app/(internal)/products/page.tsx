@@ -17,7 +17,7 @@ export default async function ProductsPage({
   const t = await getTranslations("catalog");
   const query = parseListQuery(
     await searchParams,
-    ["name", "sku_base", "wholesale_price_cents"],
+    ["name", "sku_base", "wholesale_price_cents", "brand", "season"],
     "name",
   );
   const result = await listProducts(query);
@@ -33,6 +33,7 @@ export default async function ProductsPage({
       <PageHeader
         title={t("products")}
         action={
+          result.error &&
           user.role !== "accounting" && (
             <Link className="text-link" href="/products/new">
               {t("createProduct")}
@@ -45,6 +46,11 @@ export default async function ProductsPage({
       ) : (
         <ListView
           base="/products"
+          createAction={
+            user.role !== "accounting"
+              ? { href: "/products/new", label: t("createProduct") }
+              : undefined
+          }
           query={query}
           rows={(result.data ?? []).map((row) => ({
             id: row.id,
@@ -56,9 +62,6 @@ export default async function ProductsPage({
           }))}
           count={result.count ?? 0}
           columns={columns}
-          sortable={columns.filter((column) =>
-            ["name", "sku_base", "wholesale_price_cents"].includes(column.key),
-          )}
           title={t("products")}
           searchLabel={t("search")}
         />

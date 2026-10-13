@@ -50,6 +50,7 @@ create temporary table isolation_matrix(relation text primary key,own_where text
 insert into isolation_matrix(relation,own_where,foreign_where,own_count,write_column) values
 ('public.profiles','id=''00000000-0000-4000-8000-000000000704''','id=''00000000-0000-4000-8000-000000000705''',1,'full_name'),
 ('public.audit_log','actor_id=''00000000-0000-4000-8000-000000000703''','record_id=''00000000-0000-4000-8000-000000000702''',0,'action'),
+('public.v_audit_list','actor_id=''00000000-0000-4000-8000-000000000703''','actor_id=''00000000-0000-4000-8000-000000000703''',0,'action'),
 ('public.brands','id=''00000000-0000-4000-8000-000000000701''','id=''00000000-0000-4000-8000-000000000702''',1,'name'),
 ('public.brand_private','id=''00000000-0000-4000-8000-000000000701''','id=''00000000-0000-4000-8000-000000000702''',0,'notes'),
 ('public.brand_users','brand_id=''00000000-0000-4000-8000-000000000701''','brand_id=''00000000-0000-4000-8000-000000000702''',1,'user_id'),
