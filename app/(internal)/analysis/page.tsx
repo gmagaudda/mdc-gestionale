@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { TablePagination } from "@/components/shared/table-pagination";
+import { paginationItems } from "@/lib/queries/pagination";
+import { SeasonalMetricCards } from "@/modules/imports/components/seasonal-metric-cards";
 import { getTranslations } from "next-intl/server";
 import { getSessionUser } from "@/lib/auth";
 import { notFound } from "next/navigation";
@@ -101,6 +104,7 @@ export default async function Analysis({
           <p className="wrap-value">
             {t("sourceFile", { name: result.data.file_name })}
           </p>
+          <SeasonalMetricCards totals={result.data.totals} />
           <PerformanceFiltersForm initial={parsed.data} report={result.data}>
             <Link className="list-add-link" href="/imports/new">
               {t("new")}
@@ -126,24 +130,23 @@ export default async function Analysis({
             dimension={parsed.data.dimension}
           />
           {result.data.group_count > 100 && (
-            <nav className="report-actions" aria-label={t("pages")}>
-              {parsed.data.page > 1 && (
-                <Link
-                  className="text-link"
-                  href={`/analysis?${new URLSearchParams({ ...Object.fromEntries(Object.entries(parsed.data).map(([k, v]) => [k, String(v)])), page: String(parsed.data.page - 1) })}`}
-                >
-                  {t("previous")}
-                </Link>
+            <TablePagination
+              page={parsed.data.page}
+              pageCount={Math.ceil(result.data.group_count / 100)}
+              hrefs={Object.fromEntries(
+                [
+                  ...paginationItems(
+                    parsed.data.page,
+                    Math.ceil(result.data.group_count / 100),
+                  ).filter((item): item is number => typeof item === "number"),
+                  parsed.data.page - 1,
+                  parsed.data.page + 1,
+                ].map((page) => [
+                  page,
+                  `/analysis?${new URLSearchParams({ ...Object.fromEntries(Object.entries(parsed.data).map(([k, v]) => [k, String(v)])), page: String(page) })}`,
+                ]),
               )}
-              {parsed.data.page * 100 < result.data.group_count && (
-                <Link
-                  className="text-link"
-                  href={`/analysis?${new URLSearchParams({ ...Object.fromEntries(Object.entries(parsed.data).map(([k, v]) => [k, String(v)])), page: String(parsed.data.page + 1) })}`}
-                >
-                  {t("next")}
-                </Link>
-              )}
-            </nav>
+            />
           )}
         </>
       )}

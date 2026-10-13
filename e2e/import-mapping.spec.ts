@@ -53,9 +53,7 @@ async function login(page: Page) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
 }
 test("three sheets, profile persistence, deliberate errors and bounded staging", async ({
   page,

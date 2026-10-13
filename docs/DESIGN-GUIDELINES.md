@@ -34,4 +34,10 @@ Per indicazione dell’umano, i valori numerici che cambiano in tempo reale usan
 
 ## Shell del gestionale
 
-Ispirazione dai tre ERP indicati dall’umano: [VANTUS](https://dribbble.com/shots/26719780-ERP-Dashboard-Redesign-VANTUS-Manufacturing-Scheduling), [Catalyst](https://dribbble.com/shots/27613285-Catalyst-Certificate-Creation-for-Laboratory-ERP), [Sales Automation](https://dribbble.com/shots/26370765-ERP-Sales-Automation-Dashboard-Recent-Activity-Feed-Order-List). Sidebar persistente con gruppi nativi espandibili, icone e sottomenu; profilo in basso, percorso Arc nell’intestazione. Dialog responsive su telefono. Etichette e destinazioni rispettano il ruolo. Panoramica con metriche visibili e filtri espandibili, aperti quando un filtro è applicato. [Icone Better Icons](UI-ICONS.md).
+Ispirazione dai tre ERP indicati dall’umano: [VANTUS](https://dribbble.com/shots/26719780-ERP-Dashboard-Redesign-VANTUS-Manufacturing-Scheduling), [Catalyst](https://dribbble.com/shots/27613285-Catalyst-Certificate-Creation-for-Laboratory-ERP), [Sales Automation](https://dribbble.com/shots/26370765-ERP-Sales-Automation-Dashboard-Recent-Activity-Feed-Order-List). Sidebar persistente con gruppi nativi espandibili, icone e sottomenu; menu utente Arc nel fondo della sidebar, senza barra superiore. Il pulsante Menu apre la navigazione su telefono. Etichette e destinazioni rispettano il ruolo. Panoramica con metriche visibili e filtri espandibili, aperti quando un filtro è applicato. [Icone Better Icons](UI-ICONS.md).
+
+## Riepiloghi delle tabelle
+
+Tre card prima della toolbar nelle liste, con periodi indipendenti e confronto annuo in testo neutro. MetricCard Arc per contatori semplici; gli importi e i numeri che richiedono formato italiano usano superfici applicative con centesimi esatti. Gli importi animati usano NumberFlow quando lo spazio consente di mostrarli interamente; negli spazi stretti rimane il valore completo formattato, con ritorno a capo. Gli interni Arc restano immutati.
+
+I selettori 7/30/90 giorni sono verticali a destra; se il testo ingrandito supera lo spazio disponibile passano sotto, allineati a destra. Nell’analisi storica i selettori sono stagioni omologhe, secondo la scelta umana. Il paginatore usa collegamenti reali nelle liste e Button Arc nelle anteprime, con numeri, puntini e accento salvia sulla pagina attuale.

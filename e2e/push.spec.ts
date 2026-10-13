@@ -239,7 +239,7 @@ for (const denied of [false, true])
     expect(JSON.stringify(audit.data)).not.toContain(fixture.keys.auth);
     for (const scheme of ["Chiaro", "Scuro"]) {
       await page
-        .getByRole("dialog")
+        .getByRole("dialog", { name: "Notifiche", exact: true })
         .getByRole("button", { name: "Chiudi", exact: true })
         .click();
       await setAppearance(page, scheme);

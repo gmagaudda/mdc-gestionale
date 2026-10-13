@@ -126,9 +126,7 @@ test("subscribes rotates and revokes a private feed and processes local reminder
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {

@@ -171,9 +171,7 @@ test("generates print PDFs and enforces brand isolation and customer privacy", a
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
     await completeAdminMfa(page);
-    await expect(
-      page.getByRole("button", { name: /^Menu utente di / }),
-    ).toBeVisible();
+    await expect(page.locator(".app-layout")).toBeVisible();
     await expect(page).toHaveURL(/dashboard$/);
   };
   expect(
@@ -273,9 +271,7 @@ test("brand summary download preserves date filters, privacy and recoverable err
     await page.getByLabel("Email", { exact: true }).fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
-    await expect(
-      page.getByRole("button", { name: /^Menu utente di / }),
-    ).toBeVisible();
+    await expect(page.locator(".app-layout")).toBeVisible();
   };
   const save = async (path: string, name: string) => {
     const response = await page.request.get(path);

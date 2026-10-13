@@ -116,9 +116,7 @@ test("column filters and page selection stay aligned with CSV and reset on navig
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   for (const theme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
     await page.evaluate(() => localStorage.removeItem("theme"));
@@ -412,9 +410,7 @@ test("general table search matches an off-page city and exported rows", async ({
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   await page.goto(`/customers?cf_legal_name=${prefix}&direction=desc`);
   const main = page.getByRole("main"),
     toolbar = main.locator(".list-toolbar");
@@ -461,9 +457,7 @@ test("filtered CSV exports include all pages, exact cents and safe cells with ro
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   const response = await page.request.get(url);
   expect(response.status(), await response.text()).toBe(200);
   expect(response.headers()["cache-control"]).toBe("private, no-store");
@@ -585,9 +579,7 @@ test("every list column sorts on the server and its CSV follows the same sort", 
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   for (const entity of [
     "brands",
     "customers",

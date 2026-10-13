@@ -1,4 +1,5 @@
 "use client";
+import { TablePagination } from "@/components/shared/table-pagination";
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -391,30 +392,11 @@ export function OperationalImport({
               { key: "messages", label: t("rowMessages") },
             ]}
           />
-          <div className="list-footer">
-            <Button
-              variant="secondary"
-              size="lg"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              {t("previous")}
-            </Button>
-            <p role="status">
-              {t("pageStatus", {
-                page,
-                pages: Math.max(1, Math.ceil(filtered.length / 100)),
-              })}
-            </p>
-            <Button
-              variant="secondary"
-              size="lg"
-              disabled={page * 100 >= filtered.length}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("next")}
-            </Button>
-          </div>
+          <TablePagination
+            page={page}
+            pageCount={Math.max(1, Math.ceil(filtered.length / 100))}
+            onPageChange={setPage}
+          />
           <div className="report-actions">
             <Button
               variant="secondary"

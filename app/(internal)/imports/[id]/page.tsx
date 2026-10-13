@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { TablePagination } from "@/components/shared/table-pagination";
+import { paginationItems } from "@/lib/queries/pagination";
 import { BudgetComparison } from "@/modules/imports/components/budget-comparison";
 import { finalReportSchema } from "@/modules/imports/final-report";
 import { notFound } from "next/navigation";
@@ -236,30 +238,20 @@ export default async function ImportBatchPage({
                 />
               ))
             )}
-            <div className="list-footer">
-              {page > 1 && (
-                <Link
-                  className="text-link"
-                  href={`/imports/${id}?page=${page - 1}`}
-                >
-                  {t("previous")}
-                </Link>
+            <TablePagination
+              page={page}
+              pageCount={Math.max(1, Math.ceil(report.data.total / 50))}
+              hrefs={Object.fromEntries(
+                [
+                  ...paginationItems(
+                    page,
+                    Math.max(1, Math.ceil(report.data.total / 50)),
+                  ).filter((item): item is number => typeof item === "number"),
+                  page - 1,
+                  page + 1,
+                ].map((target) => [target, `/imports/${id}?page=${target}`]),
               )}
-              <p>
-                {t("pageStatus", {
-                  page,
-                  pages: Math.max(1, Math.ceil(report.data.total / 50)),
-                })}
-              </p>
-              {page * 50 < report.data.total && (
-                <Link
-                  className="text-link"
-                  href={`/imports/${id}?page=${page + 1}`}
-                >
-                  {t("next")}
-                </Link>
-              )}
-            </div>
+            />
           </section>
         </>
       )}

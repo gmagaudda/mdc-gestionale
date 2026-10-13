@@ -82,9 +82,7 @@ async function login(page: Page, email: string) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
 }
 async function fill(page: Page, start: string, end: string) {
   for (const [label, search, result] of [

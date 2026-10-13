@@ -84,7 +84,7 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
     page.getByRole("button", { name: "Esci", exact: true }),
   ).toHaveCount(0);
   for (const theme of ["Chiaro", "Scuro"]) {
-    await setAppearance(page, theme);
+    await setAppearance(page, theme, true);
     await expect(trigger).toBeFocused();
     await trigger.press("ArrowDown");
     await expect(
@@ -134,7 +134,9 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
     await expect(page.getByRole("menu")).toHaveCount(0);
   }
   await openAccountSettings(page, "Aspetto");
-  await expect(page.getByRole("dialog")).toContainText("Sistema");
+  await expect(
+    page.getByRole("dialog", { name: "Aspetto", exact: true }),
+  ).toContainText("Sistema");
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
   // Stress the account controls on a list, outside the dashboard metric region.

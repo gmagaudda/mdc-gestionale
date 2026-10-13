@@ -159,9 +159,7 @@ test("reports exact seed totals filters and accessible charts", async ({
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => {

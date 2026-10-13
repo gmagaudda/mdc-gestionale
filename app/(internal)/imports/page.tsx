@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TableMetrics } from "@/components/shared/table-metrics";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getSessionUser } from "@/lib/auth";
@@ -54,6 +55,7 @@ export default async function Imports() {
         <LoadError title={t("loadError")} />
       ) : (
         <>
+          <TableMetrics base="/imports" />
           <DataTable
             caption={t("history")}
             rows={batches.data.map((b) => ({

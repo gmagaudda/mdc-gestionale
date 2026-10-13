@@ -1,4 +1,8 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
+import { TableMetrics } from "./table-metrics";
+import { Skeleton } from "@/components/arc/skeleton/skeleton";
+import { TablePagination } from "./table-pagination";
+import { paginationItems } from "@/lib/queries/pagination";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/arc/empty-state/empty-state";
@@ -30,6 +34,7 @@ export async function ListView({
   createAction,
   filters,
   actions,
+  showMetrics = true,
 }: {
   base: string;
   query: ListQuery;
@@ -43,6 +48,7 @@ export async function ListView({
   createAction?: { href: string; label: string };
   filters?: ReactNode;
   actions?: ReactNode;
+  showMetrics?: boolean;
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
@@ -67,6 +73,19 @@ export async function ListView({
   };
   return (
     <section className="stack list-controls" aria-label={title}>
+      {validColumns && showMetrics && (
+        <Suspense
+          fallback={
+            <div className="table-metrics">
+              {[0, 1, 2].map((key) => (
+                <Skeleton key={key} label={t("loadingMetrics")} lines={3} />
+              ))}
+            </div>
+          }
+        >
+          <TableMetrics base={base} query={query} filterParams={filterParams} />
+        </Suspense>
+      )}
       <ListToolbar
         base={base}
         query={query.q}
@@ -165,37 +184,22 @@ export async function ListView({
       {validColumns && (
         <div className="list-footer">
           <p role="status">{t("count", { count })}</p>
-          <nav className="list-sort" aria-label={t("pagination")}>
-            {query.page > 1 && (
-              <Link
-                className="text-link"
-                href={listHref(
-                  base,
-                  query,
-                  { page: query.page - 1 },
-                  filterParams,
-                )}
-              >
-                {t("previous")}
-              </Link>
+          <TablePagination
+            page={query.page}
+            pageCount={pages}
+            hrefs={Object.fromEntries(
+              [
+                ...paginationItems(query.page, pages).filter(
+                  (item): item is number => typeof item === "number",
+                ),
+                query.page - 1,
+                query.page + 1,
+              ].map((page) => [
+                page,
+                listHref(base, query, { page }, filterParams),
+              ]),
             )}
-            <span className="tabular-nums">
-              {t("page", { page: query.page, pages })}
-            </span>
-            {query.page < pages && (
-              <Link
-                className="text-link"
-                href={listHref(
-                  base,
-                  query,
-                  { page: query.page + 1 },
-                  filterParams,
-                )}
-              >
-                {t("next")}
-              </Link>
-            )}
-          </nav>
+          />
         </div>
       )}
     </section>

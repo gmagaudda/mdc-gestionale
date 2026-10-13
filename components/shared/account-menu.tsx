@@ -12,11 +12,17 @@ import { ThemeControls } from "./theme-controls";
 import { ResponsiveDialog } from "./responsive-dialog";
 import { ErpIcon } from "./erp-icon";
 
+export type AccountUser = { role: Role; full_name: string; email: string };
+
 export function AccountMenu({
   user,
   publicKey,
+  collapsed = false,
+  onSurfaceChange,
 }: {
-  user: { role: Role; full_name: string; email: string };
+  user: AccountUser;
+  collapsed?: boolean;
+  onSurfaceChange?: (active: boolean) => void;
   publicKey: string | null;
 }) {
   const t = useTranslations("common");
@@ -29,6 +35,10 @@ export function AccountMenu({
   >(null);
   const [error, setError] = useState(false);
   const name = user.full_name || user.email;
+
+  useEffect(() => {
+    onSurfaceChange?.(open || panel !== null);
+  }, [open, panel, onSurfaceChange]);
 
   // Arc has fixed English labels. Localize this instance's portal without
   // modifying vendor source or styling its internals.
@@ -85,7 +95,8 @@ export function AccountMenu({
         ref={trigger}
         className="account-menu-trigger"
         user={{ name, email: user.email }}
-        showName
+        showName={!collapsed}
+        align="start"
         showTheme={false}
         open={open}
         onOpenChange={setOpen}

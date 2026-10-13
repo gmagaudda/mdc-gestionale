@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Avatar } from "@/components/arc/avatar/avatar";
-import {
-  AppNavigation,
-  MobileNavigation,
-  WorkspacePath,
-} from "./app-navigation";
-import { AccountMenu } from "./account-menu";
+import { AppNavigation, MobileNavigation } from "./app-navigation";
 import { PwaStatus } from "@/components/pwa/pwa-status";
 import { pushConfig } from "@/lib/pwa/push-config";
 import { type Role } from "@/lib/auth/roles";
@@ -18,38 +12,20 @@ export async function SessionShell({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("common");
-  const identity = (
-    <div className="identity">
-      <Avatar name={user.full_name || user.email} />
-      <div className="identity-copy">
-        <span>{user.full_name || user.email}</span>
-        <span className="identity-role">{t(`role_${user.role}`)}</span>
-      </div>
-    </div>
-  );
+  const publicKey =
+    process.env.NODE_ENV === "production"
+      ? (pushConfig()?.publicKey ?? null)
+      : null;
   return (
     <>
       <Link href="#content" className="skip-link">
         {t("skip")}
       </Link>
       <div className="app-layout">
-        <AppNavigation role={user.role} footer={identity} />
+        <AppNavigation user={user} publicKey={publicKey} />
         <div className="app-body">
-          <header className="session-header">
-            <MobileNavigation role={user.role} footer={identity} />
-            <WorkspacePath role={user.role} />
-            <div className="session-actions">
-              <AccountMenu
-                user={user}
-                publicKey={
-                  process.env.NODE_ENV === "production"
-                    ? (pushConfig()?.publicKey ?? null)
-                    : null
-                }
-              />
-            </div>
-          </header>
           <main id="content" tabIndex={-1} className="page-container stack">
+            <MobileNavigation user={user} publicKey={publicKey} />
             <PwaStatus />
             {children}
           </main>

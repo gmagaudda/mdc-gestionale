@@ -310,17 +310,29 @@ test("saves a three-product matrix atomically with discounts and exact server to
     `/orders?${new URLSearchParams({ q: number, cf_number: number, status: "draft", season_id: seasonId, sort: "season", direction: "desc" })}`,
   );
   const toolbar = page.getByRole("main").locator(".list-toolbar");
+  await toolbar.getByRole("searchbox").press("Escape");
   await toolbar
-    .locator("summary")
-    .filter({ hasText: /^Filtri$/ })
+    .getByRole("button", { name: "Stato: Bozza", exact: true })
     .click();
+  const statusPicker = page
+    .getByRole("dialog", { name: "Stato", exact: true })
+    .getByRole("combobox");
+  await statusPicker.fill("Confermato");
+  await statusPicker.press("ArrowDown");
+  await statusPicker.press("Enter");
+  await expect(page).toHaveURL(/status=confirmed/);
   await toolbar
-    .getByRole("button", { name: "Applica filtri", exact: true })
+    .getByRole("button", { name: "Stato: Confermato", exact: true })
     .click();
+  await statusPicker.fill("Bozza");
+  await statusPicker.press("ArrowDown");
+  await statusPicker.press("Enter");
+  await expect(page).toHaveURL(/status=draft/);
   await expect(page).toHaveURL(/sort=season/);
   await expect(page).toHaveURL(/direction=desc/);
   expect(new URL(page.url()).searchParams.get("cf_number")).toBe(number);
   await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  await toolbar.getByRole("searchbox").press("Enter");
   expect(new URL(page.url()).searchParams.get("season_id")).toBe(seasonId);
   await expect(
     page.getByRole("table").getByRole("link", { name: number, exact: true }),

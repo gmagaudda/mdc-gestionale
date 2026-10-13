@@ -4,7 +4,7 @@
 
 Accedi con email e password. Il recupero invia un link da aprire nello stesso browser. Gli amministratori configurano un’app di autenticazione al primo accesso e inseriscono il codice a sei cifre ad ogni nuova sessione. Conserva privatamente la chiave di configurazione. Se perdi l’app, contatta il responsabile: il recupero password non elimina il secondo fattore.
 
-Il menu utente, aperto dall’avatar in alto a destra, contiene Aspetto, Installa app, Notifiche ed Esci. Ogni impostazione apre il proprio pannello; le notifiche sono disponibili agli utenti interni. I salvataggi richiedono connessione. Salva le bozze prima di chiudere il tab o aggiornare l’app.
+Il menu utente, aperto dall’avatar nel fondo della sidebar, contiene Aspetto, Installa app, Notifiche ed Esci. Ogni impostazione apre il proprio pannello; le notifiche sono disponibili agli utenti interni. I salvataggi richiedono connessione. Salva le bozze prima di chiudere il tab o aggiornare l’app.
 
 ## Admin
 
@@ -53,3 +53,13 @@ In **Budget → Crea budget**, seleziona brand, cliente e stagione e usa **Calco
 Lo storico Excel è utilizzato solo da lotti completati. Celle vuote, stagioni aperte e conflitti fra fonti non diventano automaticamente zero. Puoi configurare pesi, crescita, profilo e fonte storica. Un cambiamento dopo l’accettazione richiede una nuova conferma oppure **Continua con budget manuale**. L’origine rimane consultabile nel dettaglio.
 
 Regole, formula ed esempi: [Budget suggerito per stagione](BUDGET-RECOMMENDATIONS.md).
+
+## Metriche delle liste
+
+Tra titolo e filtri trovi tre card di riepilogo. I pulsanti 7, 30 e 90 giorni, sulla destra, cambiano il periodo della singola card. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
+
+Ordini e provvigioni usano la data ordine; le fatture usano la data fattura. Anagrafiche, catalogo, budget, documenti, utenti e importazioni usano la data di creazione. La nota sotto le card indica la base del calcolo. I saldi delle fatture sono quelli attuali delle fatture emesse nel periodo.
+
+Il confronto usa lo stesso intervallo di calendario dell’anno precedente. Una base nulla o negativa non produce una percentuale fuorviante; il valore precedente resta visibile. I riepiloghi storici di Analisi hanno selettori di stagione: SS27 si confronta con SS26, mentre FW26 non ha un confronto FW25 quando quella stagione manca nel file. Le celle vuote restano dati non disponibili.
+
+La paginazione usa pulsanti numerati, pagina attuale verde e puntini per le pagine intermedie. Ricerca, filtri e ordinamento restano applicati cambiando pagina.

@@ -1,3 +1,4 @@
+import { TableMetrics } from "@/components/shared/table-metrics";
 import { LoadError } from "@/components/shared/load-error";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
@@ -70,6 +71,11 @@ export default async function CommissionsPage({
         <LoadError title={t("loadError")} />
       ) : (
         <>
+          <TableMetrics
+            base="/commissions"
+            query={query}
+            filterParams={filters}
+          />
           <section className="stack" aria-label={t("summary")}>
             <h2>{t("summary")}</h2>
             <dl className="report-metrics">
@@ -122,6 +128,7 @@ export default async function CommissionsPage({
             )}
             <h2>{t("orders")}</h2>
             <ListView
+              showMetrics={false}
               filters={
                 <DashboardFiltersForm
                   base="/commissions"

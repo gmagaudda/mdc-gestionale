@@ -128,9 +128,7 @@ test("suggests homologous seasons handles exceptions and preserves adjustment pr
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/budgets/new");
   for (const [label, result] of [

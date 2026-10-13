@@ -234,7 +234,10 @@
     "tableSearch": "Cerca nella tabella",
     "tableSearchHint": "Cerca in tutti i dati",
     "searchEnter": "Premi Invio per cercare. Esc chiude la ricerca.",
-    "allValues": "Tutti"
+    "allValues": "Tutti",
+    "currentPage": "Pagina {page}, attuale",
+    "goToPage": "Vai a pagina {page}",
+    "loadingMetrics": "Caricamento del riepilogo della tabella"
   },
   "audit": {
     "title": "Registro modifiche",
@@ -1491,5 +1494,70 @@
     "seasonReasonValue": "{season}: {reason}",
     "reviewTitle": "Verifica i dati",
     "olderHistory": "Altre stagioni senza dati"
+  },
+  "tableMetrics": {
+    "summary": "Riepilogo della tabella",
+    "lastDays": "Ultimi {days} giorni",
+    "days": "{days} giorni",
+    "periodFor": "Periodo per {label}",
+    "yearChange": "{change}% rispetto allo stesso periodo dell’anno precedente",
+    "noBaseline": "Anno precedente non confrontabile",
+    "previousValue": "Anno precedente: {value}",
+    "filteredHint": "I contatori includono tutti i risultati filtrati, anche nelle altre pagine.",
+    "loadError": "Impossibile caricare le metriche",
+    "basis": {
+      "orderDate": "Periodo basato sulla data ordine.",
+      "issueDate": "Periodo basato sulla data fattura. I saldi indicano quanto resta da incassare oggi.",
+      "createdAt": "Periodo basato sulla data di creazione dei record."
+    },
+    "labels": {
+      "orders": "Ordini",
+      "gross": "Totale con IVA",
+      "averageOrder": "Ordine medio con IVA",
+      "customers": "Clienti",
+      "cities": "Città",
+      "tradeNames": "Nomi commerciali",
+      "brands": "Brand",
+      "legalNames": "Ragioni sociali",
+      "externalCodes": "Codici esterni",
+      "seasons": "Stagioni",
+      "brandsCovered": "Brand rappresentati",
+      "campaigns": "Campagne definite",
+      "products": "Prodotti",
+      "averagePrice": "Prezzo medio",
+      "budgets": "Budget",
+      "budgetTotal": "Budget totale",
+      "averageBudget": "Budget medio",
+      "documents": "Documenti",
+      "fileBytes": "Dimensione in byte",
+      "sharedDocuments": "Documenti condivisi",
+      "invoices": "Fatture",
+      "invoiced": "Totale fatturato",
+      "outstanding": "Saldo da incassare",
+      "net": "Totale netto",
+      "commissions": "Provvigioni",
+      "users": "Utenti",
+      "activeUsers": "Utenti attivi",
+      "roles": "Ruoli",
+      "events": "Attività",
+      "actors": "Autori",
+      "resources": "Risorse",
+      "imports": "Importazioni",
+      "completedImports": "Completate",
+      "failedImports": "Non riuscite",
+      "documentKinds": "Tipi di documento",
+      "averageNetOrder": "Ordine medio netto"
+    },
+    "seasonal": {
+      "orders": "Ordini della stagione",
+      "budget": "Budget della stagione",
+      "difference": "Scostamento dal budget",
+      "missing": "Importo non disponibile",
+      "noComparison": "Stagione omologa precedente non disponibile",
+      "change": "{change}% rispetto a {season}",
+      "budgetHint": "Valori storici della stagione selezionata",
+      "periodFor": "Stagione per {label}",
+      "hint": "Le stagioni non hanno date precise. Il confronto usa stagioni omologhe (SS con SS, FW con FW) e tutti i risultati filtrati."
+    }
   }
 }

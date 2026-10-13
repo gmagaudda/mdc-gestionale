@@ -57,9 +57,7 @@ test("20,000 physical rows are validated and staged within one minute", async ({
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   await page.goto("/imports/operational");
   const csv = [
     "Codice negozio;Ragione sociale;Città;Paese",

@@ -93,9 +93,7 @@ test("uploads validates downloads shares and archives a private document", async
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (message) => {
     if (

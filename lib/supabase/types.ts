@@ -2919,6 +2919,15 @@ export type Database = {
         Args: { p_column: string; p_entity: string; p_q?: string };
         Returns: Json;
       };
+      table_metrics: {
+        Args: {
+          p_columns?: Json;
+          p_entity: string;
+          p_filters?: Json;
+          p_q?: string;
+        };
+        Returns: Json;
+      };
       table_search:
         | {
             Args: { "": Database["public"]["Tables"]["brands"]["Row"] };

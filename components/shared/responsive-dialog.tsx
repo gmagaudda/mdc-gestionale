@@ -17,6 +17,8 @@ export function ResponsiveDialog({
   description,
   children,
   busy = false,
+  modal = true,
+  className,
   ...props
 }: {
   open: boolean;
@@ -26,6 +28,7 @@ export function ResponsiveDialog({
   description?: string;
   children: ReactNode;
   busy?: boolean;
+  modal?: boolean;
 } & Omit<
   ComponentPropsWithoutRef<typeof Primitive.Content>,
   "title" | "children"
@@ -33,6 +36,7 @@ export function ResponsiveDialog({
   const t = useTranslations("common");
   return (
     <Dialog
+      modal={modal}
       open={open}
       onOpenChange={(value) => {
         if (!busy) onOpenChange(value);
@@ -43,7 +47,9 @@ export function ResponsiveDialog({
         <Primitive.Overlay className="dialog-overlay" />
         <Primitive.Content
           {...props}
-          className="responsive-dialog stack"
+          className={["responsive-dialog stack", className]
+            .filter(Boolean)
+            .join(" ")}
           aria-describedby={description ? undefined : props["aria-describedby"]}
           onEscapeKeyDown={(event) => {
             if (busy) event.preventDefault();

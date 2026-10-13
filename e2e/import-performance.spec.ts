@@ -55,9 +55,7 @@ async function login(page: Page) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
-  await expect(
-    page.getByRole("button", { name: /^Menu utente di / }),
-  ).toBeVisible();
+  await expect(page.locator(".app-layout")).toBeVisible();
 }
 async function choose(page: Page) {
   await page.goto("/imports/new");
@@ -129,6 +127,31 @@ test("historical preview, persistence, filters, duplicates and rollback", async 
     .click();
   await expect(page).toHaveURL(/\/analysis\?batch=[a-f0-9-]+&imported=1$/);
   const batchId = new URL(page.url()).searchParams.get("batch")!;
+  await expect(page.locator(".table-metric")).toHaveCount(3);
+  const seasonal = page.locator(".table-metric").filter({
+    has: page.locator(
+      '.metric-periods[aria-label="Stagione per Ordini della stagione"]',
+    ),
+  });
+  await expect(seasonal.locator(".metric-comparison")).toContainText(
+    "+158,4% rispetto a SS26",
+  );
+  await seasonal.getByRole("button", { name: "FW26", exact: true }).click();
+  await expect(seasonal.locator(".metric-comparison .sr-only")).toContainText(
+    "190,50",
+  );
+  await expect(
+    page
+      .locator(
+        '.metric-periods[aria-label="Stagione per Budget della stagione"]',
+      )
+      .getByRole("button", { name: "SS27", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await seasonal.getByRole("button", { name: "SS26", exact: true }).click();
+  await expect(seasonal.locator(".metric-comparison .sr-only")).toContainText(
+    "120,25",
+  );
+
   await expect(
     page.getByRole("status").filter({ hasText: "Importazione completata" }),
   ).toBeVisible();

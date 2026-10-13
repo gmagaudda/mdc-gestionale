@@ -1,4 +1,5 @@
 "use client";
+import { TablePagination } from "@/components/shared/table-pagination";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -321,32 +322,11 @@ export function PerformanceImport() {
             dimension="brand"
           />
           {groups.length > 100 && (
-            <nav className="report-actions" aria-label={t("pages")}>
-              <p role="status">
-                {t("pageStatus", {
-                  page: previewPage,
-                  pages: Math.ceil(groups.length / 100),
-                })}
-              </p>
-              {previewPage > 1 && (
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => setPreviewPage((p) => p - 1)}
-                >
-                  {t("previous")}
-                </Button>
-              )}
-              {previewPage * 100 < groups.length && (
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => setPreviewPage((p) => p + 1)}
-                >
-                  {t("next")}
-                </Button>
-              )}
-            </nav>
+            <TablePagination
+              page={previewPage}
+              pageCount={Math.ceil(groups.length / 100)}
+              onPageChange={setPreviewPage}
+            />
           )}
           <section className="stack" aria-label={t("controls")}>
             <h2>{t("controls")}</h2>

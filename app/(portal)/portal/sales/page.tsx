@@ -1,3 +1,4 @@
+import { TableMetrics } from "@/components/shared/table-metrics";
 import { LoadError } from "@/components/shared/load-error";
 import { AsyncReport } from "@/components/shared/async-report";
 import { getTranslations } from "next-intl/server";
@@ -58,6 +59,11 @@ export default async function Sales({
               </>
             ) : (
               <>
+                <TableMetrics
+                  base="/portal/sales"
+                  query={q}
+                  filterParams={c.filters}
+                />
                 {summaryBrand && (
                   <BrandSummaryDownload
                     href={`/api/pdf/brand-summary/${summaryBrand}?${new URLSearchParams(Object.entries(c.filters).filter(([key, value]) => key !== "brand_id" && !!value))}`}
@@ -68,6 +74,7 @@ export default async function Sales({
                   <AnimatedMoney cents={BigInt(report.data.sold_cents)} />
                 </p>
                 <ListView
+                  showMetrics={false}
                   filters={filters}
                   actions={
                     <ListCsvDownload
