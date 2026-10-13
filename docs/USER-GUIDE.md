@@ -18,6 +18,8 @@ Importazioni → Importazione operativa carica negozi, ordini o budget con colon
 
 Gestisci negozi, catalogo, ordini, appuntamenti e documenti. Un ordine si modifica come bozza; controlla quantità, sconti e totale prima di confermarlo e avanzarne lo stato. Dal dettaglio scarica la conferma PDF; dalla lista ordini esporta il CSV con i filtri correnti. Dalla stagione scarica il catalogo. Leggi dashboard, budget, provvigioni e fatture.
 
+Nel dettaglio di un ordine confermato usa «Invia conferma», scegli un contatto del cliente e controlla l’esito. Se mancano destinatari, aggiungi un contatto con email dal cliente. In locale la modalità log registra l’operazione senza inviare email. Lo storico resta visibile dopo il ricaricamento; la stessa conferma completata non viene inviata di nuovo allo stesso contatto.
+
 Per condividere un documento o evento con un brand, abilita esplicitamente la visibilità. Controlla il contenuto del file: viene condiviso integralmente. Il calendario offre un abbonamento iCal personale, revocabile; conserva privatamente il suo link.
 
 ## Amministrazione

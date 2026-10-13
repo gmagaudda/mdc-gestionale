@@ -15,6 +15,9 @@ import { PageHeader } from "@/components/shared/page-header";
 import { DataTable } from "@/components/shared/data-table";
 import { Alert } from "@/components/arc/alert/alert";
 import { Badge } from "@/components/arc/badge/badge";
+import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { OrderConfirmation } from "@/modules/orders/components/order-confirmation";
 export default async function OrderPage({
   params,
 }: {
@@ -37,6 +40,33 @@ export default async function OrderPage({
       timeZone: "Europe/Rome",
     }).format(new Date(`${value}T12:00:00Z`));
   const privateData = order.order_private[0];
+  const canEmail =
+    user.role !== "accounting" &&
+    !["draft", "cancelled"].includes(order.status);
+  const db = await createClient();
+  const emailData = canEmail
+    ? await Promise.all([
+        db
+          .from("customer_contacts")
+          .select("id,name,email")
+          .eq("customer_id", order.customer_id)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(501),
+        db.rpc("order_confirmation_history", { p_order_id: id }),
+      ])
+    : null;
+  const emailHistory = z
+    .array(
+      z.strictObject({
+        id: z.uuid(),
+        contact: z.string(),
+        state: z.enum(["pending", "sent", "logged", "failed"]),
+        created_at: z.iso.datetime({ offset: true }),
+        completed_at: z.iso.datetime({ offset: true }).nullable(),
+      }),
+    )
+    .safeParse(emailData?.[1].data);
   const invoice = await getOrderInvoice(id);
   const billing = await getTranslations("invoices");
   const today = new Intl.DateTimeFormat("en-CA", {
@@ -177,6 +207,25 @@ export default async function OrderPage({
         </p>
       </section>
       <OrderActions id={id} status={order.status} role={user.role} />
+      {canEmail && (
+        <OrderConfirmation
+          orderId={id}
+          customerId={order.customer_id}
+          contacts={(emailData?.[0].data ?? [])
+            .filter((contact) => z.email().safeParse(contact.email).success)
+            .map((contact) => ({
+              value: contact.id,
+              label: `${contact.name} · ${contact.email}`,
+            }))}
+          history={emailHistory.success ? emailHistory.data : []}
+          loadError={Boolean(
+            emailData?.[0].error ||
+            emailData?.[1].error ||
+            (emailData?.[0].data?.length ?? 0) > 500 ||
+            !emailHistory.success,
+          )}
+        />
+      )}
       {invoice.error ? (
         <Alert tone="danger" title={billing("loadError")} />
       ) : invoice.data ? (

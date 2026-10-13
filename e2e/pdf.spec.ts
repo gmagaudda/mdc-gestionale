@@ -134,7 +134,7 @@ test.afterAll(async () => {
     const file = `/tmp/mdc-pdf-${brandId}.sql`;
     writeFileSync(
       file,
-      `do $$begin delete from public.order_lines where brand_id in (${ids});delete from public.order_status_history where brand_id in (${ids});delete from public.order_private where brand_id in (${ids});delete from public.orders where brand_id in (${ids});end $$;`,
+      `do $$begin delete from app.order_confirmations where order_id in (select id from public.orders where brand_id in (${ids}));delete from public.customer_contacts where customer_id='${customerId}';delete from public.order_lines where brand_id in (${ids});delete from public.order_status_history where brand_id in (${ids});delete from public.order_private where brand_id in (${ids});delete from public.orders where brand_id in (${ids});end $$;`,
     );
     try {
       execFileSync(
@@ -380,4 +380,144 @@ test("brand summary download preserves date filters, privacy and recoverable err
     .update({ can_see_customer_names: true })
     .eq("id", brandId);
   await save(url, "brand-summary-shared.pdf");
+});
+
+test("manually sends a confirmation in log mode with durable history and recipient validation", async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await admin().from("profiles").update({ role: "staff" }).eq("id", userId);
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false } },
+  );
+  await db.auth.signInWithPassword({ email, password });
+  const current = await db
+    .from("orders")
+    .select("status")
+    .eq("id", orderId)
+    .single();
+  if (current.data?.status === "draft")
+    expect(
+      (
+        await db.rpc("change_order_status", {
+          p_id: orderId,
+          p_status: "confirmed",
+          p_note: "",
+        })
+      ).error,
+    ).toBeNull();
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(page).toHaveURL("/dashboard");
+  await page.goto(`/orders/${orderId}`);
+  const section = page.getByRole("region", {
+    name: "Conferma via email",
+    exact: true,
+  });
+  await expect(
+    section.getByText(
+      "Il cliente non ha contatti attivi con un indirizzo email valido.",
+    ),
+  ).toBeVisible();
+  const contact = await admin()
+    .from("customer_contacts")
+    .insert({
+      customer_id: customerId,
+      name: "Buyer conferma",
+      email: "buyer-confirmation@example.test",
+    })
+    .select("id")
+    .single();
+  expect(contact.error).toBeNull();
+  await page.reload();
+  const send = section.getByRole("button", {
+    name: "Invia conferma",
+    exact: true,
+  });
+  await send.click();
+  await expect(
+    section.getByRole("combobox", {
+      name: "Destinatario della conferma",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-invalid", "true");
+  await section
+    .getByRole("combobox", { name: "Destinatario della conferma", exact: true })
+    .selectOption(contact.data!.id);
+  await admin()
+    .from("customer_contacts")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", contact.data!.id);
+  await send.focus();
+  await send.press("Enter");
+  await expect(section.getByRole("alert")).toBeVisible();
+  await admin()
+    .from("customer_contacts")
+    .update({ deleted_at: null })
+    .eq("id", contact.data!.id);
+  await send.click();
+  await expect(section.getByRole("status")).toHaveText(
+    "Conferma registrata in modalità log. Nessuna email è stata inviata.",
+  );
+  await expect(section.getByRole("listitem")).toHaveCount(1);
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.evaluate(() => localStorage.removeItem("theme"));
+    await page.reload();
+    await expect(section.getByRole("listitem")).toContainText(
+      "Registrata in modalità log",
+    );
+    await section
+      .getByRole("combobox", {
+        name: "Destinatario della conferma",
+        exact: true,
+      })
+      .selectOption(contact.data!.id);
+    await send.click();
+    await expect(section.getByRole("status")).toContainText(
+      "Nessuna email è stata inviata.",
+    );
+    await expect(section.getByRole("listitem")).toHaveCount(1);
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(page.viewportSize()!.width);
+    const box = await send.boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    await page.screenshot({
+      path: `output/pdf/order-email-${theme}-${page.viewportSize()!.width}.png`,
+      fullPage: true,
+    });
+  }
+  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await admin()
+    .from("profiles")
+    .update({ role: "accounting" })
+    .eq("id", userId);
+  expect(
+    (
+      await db.rpc("prepare_order_confirmation", {
+        p_order_id: orderId,
+        p_contact_id: contact.data!.id,
+      })
+    ).error?.code,
+  ).toBe("42501");
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(page).toHaveURL("/dashboard");
+  await page.goto(`/orders/${orderId}`);
+  await expect(section).toHaveCount(0);
 });

@@ -2647,6 +2647,10 @@ export type Database = {
         };
         Returns: boolean;
       };
+      finish_order_confirmation: {
+        Args: { p_id: string; p_lease: string; p_state: string };
+        Returns: undefined;
+      };
       finish_push_reminder: {
         Args: {
           p_expired?: boolean;
@@ -2696,6 +2700,10 @@ export type Database = {
         };
         Returns: Json;
       };
+      order_confirmation_history: {
+        Args: { p_order_id: string };
+        Returns: Json;
+      };
       performance_report: {
         Args: { p_dimension?: string; p_filters?: Json; p_id: string };
         Returns: Json;
@@ -2730,6 +2738,10 @@ export type Database = {
           p_season_id?: string;
           p_start?: string;
         };
+        Returns: Json;
+      };
+      prepare_order_confirmation: {
+        Args: { p_contact_id: string; p_mode?: string; p_order_id: string };
         Returns: Json;
       };
       read_ical_feed: { Args: { p_hash: string }; Returns: Json };

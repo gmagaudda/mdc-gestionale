@@ -1328,5 +1328,32 @@
     "noOperationalImports": "Nessun lotto operativo completato. Apri Importazioni per caricare un file.",
     "resumeNotice": "Questo file ha già un lotto incompleto creato da te. Il salvataggio riprende quel lotto con la mappatura scelta.",
     "matchCreated": "Nuovo dato creato nel gestionale"
+  },
+  "orderEmail": {
+    "heading": "Conferma via email",
+    "description": "Scegli un contatto del cliente e invia i dati commerciali dell’ordine. Per gli stessi dati commerciali e lo stesso contatto, una conferma completata non viene inviata di nuovo.",
+    "recipient": "Destinatario della conferma",
+    "send": "Invia conferma",
+    "sending": "Invio della conferma in corso…",
+    "sent": "Conferma inviata. Se era già stata inviata, non è stata inviata di nuovo.",
+    "logged": "Conferma registrata in modalità log. Nessuna email è stata inviata.",
+    "sendError": "Non è stato possibile inviare la conferma. Puoi riprovare.",
+    "uncertain": "L’email è stata elaborata, ma non è stato possibile registrarne l’esito. Attendi dieci minuti prima di riprovare.",
+    "recipientError": "Scegli un contatto attivo con email valida. Verifica anche che l’ordine sia ancora confermato.",
+    "busy": "Un invio è già in corso. Attendi il completamento prima di riprovare.",
+    "limitError": "Limite di invio raggiunto o ordine troppo grande. Contatta l’amministrazione.",
+    "loadError": "Non è stato possibile caricare destinatari e invii. Ricarica la pagina.",
+    "noContacts": "Il cliente non ha contatti attivi con un indirizzo email valido.",
+    "manageContacts": "Gestisci i contatti del cliente",
+    "history": "Ultimi invii",
+    "states": {
+      "pending": "Invio in attesa di esito",
+      "sent": "Inviata",
+      "logged": "Registrata in modalità log",
+      "failed": "Invio non riuscito"
+    },
+    "subject": "Conferma ordine",
+    "totals": "Totali dell’ordine",
+    "footer": "MDC Gestionale. Questa conferma contiene le condizioni commerciali dell’ordine."
   }
 }
