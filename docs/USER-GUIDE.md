@@ -16,7 +16,7 @@ Importazioni → Importazione operativa carica negozi, ordini o budget con colon
 
 ## Staff
 
-Gestisci negozi, catalogo, ordini, appuntamenti e documenti. Un ordine si modifica come bozza; controlla quantità, sconti e totale prima di confermarlo e avanzarne lo stato. Dal dettaglio scarica conferma PDF e CSV; dalla stagione scarica il catalogo. Leggi dashboard, budget, provvigioni e fatture.
+Gestisci negozi, catalogo, ordini, appuntamenti e documenti. Un ordine si modifica come bozza; controlla quantità, sconti e totale prima di confermarlo e avanzarne lo stato. Dal dettaglio scarica la conferma PDF; dalla lista ordini esporta il CSV con i filtri correnti. Dalla stagione scarica il catalogo. Leggi dashboard, budget, provvigioni e fatture.
 
 Per condividere un documento o evento con un brand, abilita esplicitamente la visibilità. Controlla il contenuto del file: viene condiviso integralmente. Il calendario offre un abbonamento iCal personale, revocabile; conserva privatamente il suo link.
 
@@ -29,6 +29,12 @@ Da un ordine consegnato genera la fattura, verifica dati fiscali e scadenza. In 
 ## Brand
 
 Consulta dashboard, ordini, vendite, calendario e documenti dei soli brand associati. Le informazioni sono in lettura; senza associazioni chiedi all’amministratore. La visibilità dei nomi dei negozi dipende dalla configurazione del brand e si applica anche agli export. Il portale non mostra provvigioni, note interne o fatture.
+
+## Export
+
+Le liste principali hanno «Esporta CSV»: il file comprende tutte le pagine con ricerca, ordinamento e filtri correnti. Il limite è 10.000 righe; oltre il limite restringi i filtri. Importi in formato italiano, separatore punto e virgola. Le provvigioni offrono anche Excel.
+
+Dal dettaglio brand o dalla panoramica filtrata per brand scarica il riepilogo vendite PDF. Nel portale Vendite trovi CSV e riepilogo PDF quando è selezionato un brand (oppure ne hai uno solo). Stagione e date ordine vengono rispettate; oltre 1.000 gruppi restringi i filtri per il PDF. I nomi/città restano riservati se il brand non ha il permesso di vederli. Questi export riguardano ordini operativi; i dati storici Excel hanno export separati in Analisi.
 
 ## Come leggere i confronti
 

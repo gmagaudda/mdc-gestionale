@@ -204,6 +204,9 @@ test.beforeAll(async () => {
 test("brand reads orders sales documents calendar and private downloads", async ({
   page,
 }, info) => {
+  // This flow covers several routes, three downloads and both themes. Allow
+  // the development server's first PDF compilation without racing its output.
+  test.setTimeout(60000);
   await page.goto("/login");
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
@@ -259,6 +262,26 @@ test("brand reads orders sales documents calendar and private downloads", async 
   ]);
   await pdfDownload.saveAs(info.outputPath("portal-order.pdf"));
   await page.goto(`/portal/sales?brand_id=${brandId}`);
+  const salesCsv = await page.request.get(
+    `/api/portal/sales/export?brand_id=${brandId}`,
+  );
+  expect(salesCsv.status()).toBe(200);
+  const salesText = await salesCsv.text();
+  expect(salesText).toContain("30,00");
+  expect(salesText).toContain("Cliente riservato");
+  expect(salesText).not.toContain("Private portal customer");
+  expect(
+    (
+      await page.request.get(
+        `/api/portal/sales/export?brand_id=${foreignBrandId}`,
+      )
+    ).status(),
+  ).toBe(404);
+  const [salesDownload] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: "Esporta CSV", exact: true }).click(),
+  ]);
+  expect(salesDownload.suggestedFilename()).toBe("vendite-brand.csv");
   await expect(page.locator("#content")).toContainText("30,00");
   await expect(page.locator("#content")).toContainText("Cliente riservato");
   await expect(page.locator("#content")).not.toContainText(

@@ -2584,6 +2584,17 @@ export type Database = {
         Args: { p_id: string; p_revision: string; p_rows: string[] };
         Returns: number;
       };
+      export_business_list: {
+        Args: {
+          p_direction?: string;
+          p_entity: string;
+          p_overdue?: boolean;
+          p_q?: string;
+          p_sort?: string;
+          p_status?: string;
+        };
+        Returns: Json;
+      };
       fail_fic_webhook: {
         Args: { p_id: string; p_lease: string };
         Returns: undefined;

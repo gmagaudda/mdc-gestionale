@@ -240,6 +240,10 @@ Richiesta umana successiva a M9: prendere ispirazione dai tre esempi ERP Dribbbl
 
 Menu organizzato per attività e ruolo, disclosure native espandibili, contesto della pagina nell’intestazione, identità in fondo al menu. I blocchi sidebar Arc sono Pro: la composizione usa la navigazione nativa e i componenti gratuiti già disponibili, più breadcrumb gratuito dal registry. Nessuna ricostruzione di sorgenti Pro. Better Icons usato tramite la CLI della skill, versione pubblicata 1.0.4; solo SVG Tabler outline locali, con generatore e licenza. Le icone PWA neutre esistenti conservano la loro identità.
 
-## 2026-10-13: riepilogo PDF brand
+## 2026-10-13: riepilogo PDF brand e CSV delle liste
 
 Completato il riepilogo vendite PDF previsto in M6: una snapshot SQL con sessione/RLS, brand obbligatorio, stagione e date ordine facoltative. Esclude bozze e annullati; i nomi/città nel portale seguono la stessa mascheratura delle vendite. Nessuna nota, provvigione o identificativo cliente nel modello. Limite esplicito di 1.000 gruppi, risposta 413 senza troncamento. Importi aggregati testuali e BigInt, inclusi valori oltre la precisione degli interi JavaScript. Quattro colonne A4 (stagione, cliente, ordini, netto), con IVA/lordo nei totali iniziali e intestazioni ripetute. Le prove visive includono prima, terza e quinta pagina di 100 gruppi sintetici.
+
+Le liste brand/clienti/stagioni/prodotti/budget/documenti/fatture hanno CSV filtrati e ordinati, fino a 10.000 righe complete. La RPC usa una whitelist di query/colonne, parametri SQL, sort validati e sessione/RLS. Il portale vende soltanto dati autorizzati e mascherati; le provvigioni aggiungono CSV all’Excel esistente. UTF-8 BOM, punto e virgola, importi italiani esatti e protezione da formule. Percorsi Storage, URL firmati e campi privati esclusi. Superare il limite richiede filtri più stretti, senza export parziale.
+
+Button/Select gratuiti Arc cercati e documentati via MCP. Download client con Button secondary/lg, caricamento, esito inline e Alert recuperabile; URL Blob revocati. SearchSelect esistente compone Input Arc e select nativa per contatti lunghi/cercabili, senza modificare gli interni vendor. Niente nuove dipendenze.

@@ -10,6 +10,7 @@ import { PortalFilters } from "@/modules/portal/components/portal-filters";
 import { getPortalContext } from "@/modules/portal/context";
 import { getPortalSales } from "@/modules/portal/queries";
 import { BrandSummaryDownload } from "@/components/shared/brand-summary-download";
+import { ListCsvDownload } from "@/components/shared/list-csv-download";
 export default async function Sales({
   searchParams,
 }: {
@@ -42,6 +43,10 @@ export default async function Sales({
               <LoadError title={t("loadError")} />
             ) : (
               <>
+                <ListCsvDownload
+                  href={`/api/portal/sales/export?${new URLSearchParams(Object.entries(c.filters).filter(([, value]) => !!value))}`}
+                  fileName="vendite-brand.csv"
+                />
                 {summaryBrand && (
                   <BrandSummaryDownload
                     href={`/api/pdf/brand-summary/${summaryBrand}?${new URLSearchParams(Object.entries(c.filters).filter(([key, value]) => key !== "brand_id" && !!value))}`}

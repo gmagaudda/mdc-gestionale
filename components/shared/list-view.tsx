@@ -5,6 +5,8 @@ import { Button } from "@/components/arc/button/button";
 import { EmptyState } from "./empty-state";
 import { DataTable, type ListRow, type ListColumn } from "./data-table";
 import { listHref, type ListQuery } from "@/lib/queries/list";
+import { listExportEntitySchema } from "@/lib/exports/lists";
+import { ListCsvDownload } from "./list-csv-download";
 
 export async function ListView({
   base,
@@ -31,8 +33,15 @@ export async function ListView({
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
+  const exportEntity = listExportEntitySchema.safeParse(base.slice(1));
   return (
     <section className="stack" aria-label={title}>
+      {exportEntity.success && (
+        <ListCsvDownload
+          href={`/api/lists/${exportEntity.data}/export?${new URLSearchParams({ ...filterParams, q: query.q, sort: query.sort, direction: query.direction })}`}
+          fileName={`${exportEntity.data}.csv`}
+        />
+      )}
       {searchLabel && (
         <form action={base} className="list-search">
           <input type="hidden" name="sort" value={query.sort} />

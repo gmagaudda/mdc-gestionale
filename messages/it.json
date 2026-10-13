@@ -196,7 +196,13 @@
     "saveError": "Salvataggio non riuscito. Riprova.",
     "loadError": "Impossibile caricare i dati. Riprova.",
     "retry": "Riprova",
-    "errorTitle": "Dati non disponibili"
+    "errorTitle": "Dati non disponibili",
+    "exportCsv": "Esporta CSV",
+    "exporting": "Preparazione del CSV…",
+    "exportReady": "CSV pronto. Download avviato.",
+    "exportError": "Impossibile esportare i dati. Controlla la connessione e riprova.",
+    "exportTooLarge": "L’esportazione supera 10.000 righe. Restringi i filtri e riprova.",
+    "exportInvalid": "Filtri di esportazione non validi. Reimposta i filtri e riprova."
   },
   "audit": {
     "title": "Registro modifiche",
