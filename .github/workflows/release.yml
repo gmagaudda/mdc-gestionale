@@ -1,0 +1,52 @@
+name: Release
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Ambiente da pubblicare
+        type: choice
+        options: [staging, production]
+        default: staging
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ inputs.target || 'staging' }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: vars.DEPLOY_ENABLED == 'true'
+    uses: ./.github/workflows/ci.yml
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target || 'staging' }}
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      WORKER_SECRETS_JSON: ${{ secrets.WORKER_SECRETS_JSON }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
+      APP_URL: ${{ vars.APP_URL }}
+      RELEASE_ENV: ${{ inputs.target || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.25.0, run_install: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: "24", cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Validate release configuration
+        run: node scripts/release-config.mjs "$RUNNER_TEMP/worker-secrets.json"
+      - run: pnpm build:cf
+      - name: Apply schema without seeds
+        run: pnpm exec supabase db push --db-url "$SUPABASE_DB_URL" --yes
+      - name: Configure secrets and publish
+        run: |
+          pnpm exec wrangler secret bulk "$RUNNER_TEMP/worker-secrets.json" --env "$RELEASE_ENV"
+          pnpm exec wrangler deploy --env "$RELEASE_ENV"
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/worker-secrets.json"

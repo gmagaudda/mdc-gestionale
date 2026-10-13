@@ -1,4 +1,5 @@
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 set local statement_timeout='60s';
 select no_plan();
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000960','import-capacity@example.test');

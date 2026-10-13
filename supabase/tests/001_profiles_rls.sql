@@ -1,4 +1,5 @@
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 create extension if not exists pgtap with schema extensions;
 select plan(5);
 

@@ -1,5 +1,8 @@
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 select plan(22);
+insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000614','commission-guard@example.test');
+update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000000614';
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000601','reports-staff@example.test'),('00000000-0000-4000-8000-000000000609','reports-brand@example.test');
 update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000601';
 insert into public.brands(id,name,can_see_customer_names) values('00000000-0000-4000-8000-000000000602','Report A',false),('00000000-0000-4000-8000-000000000603','Report B',true);

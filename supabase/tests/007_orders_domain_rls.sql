@@ -1,4 +1,5 @@
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 select plan(37);
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000101','orders-staff@example.test'),('00000000-0000-4000-8000-000000000102','orders-brand@example.test'),('00000000-0000-4000-8000-000000000103','orders-accounting@example.test');
 update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000101';

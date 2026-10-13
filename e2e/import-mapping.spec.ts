@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -50,6 +51,7 @@ async function login(page: Page) {
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(
     page.getByRole("button", { name: "Esci", exact: true }),
   ).toBeVisible();

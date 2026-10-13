@@ -1,4 +1,5 @@
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 select plan(9);
 insert into auth.users(id,email) values
 ('00000000-0000-4000-8000-000000000051','customers-brand@example.test'),

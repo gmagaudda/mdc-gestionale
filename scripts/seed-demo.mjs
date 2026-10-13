@@ -228,21 +228,19 @@ if (signIn.error) {
         .toInstant()
         .toString();
     check(
-      await staffSession
-        .from("events")
-        .insert({
-          id: demoEventId,
-          title: "Presentazione campionario demo",
-          type: "appointment",
-          brand_id: brandId,
-          customer_id: customerId,
-          assigned_to: signIn.data.user.id,
-          starts_at: instant(`${today}T09:00`),
-          ends_at: instant(`${today}T10:00`),
-          location: "Showroom dimostrativo",
-          description: "Appuntamento sintetico per le prove locali.",
-          visible_to_brand: true,
-        }),
+      await staffSession.from("events").insert({
+        id: demoEventId,
+        title: "Presentazione campionario demo",
+        type: "appointment",
+        brand_id: brandId,
+        customer_id: customerId,
+        assigned_to: signIn.data.user.id,
+        starts_at: instant(`${today}T09:00`),
+        ends_at: instant(`${today}T10:00`),
+        location: "Showroom dimostrativo",
+        description: "Appuntamento sintetico per le prove locali.",
+        visible_to_brand: true,
+      }),
     );
   }
   await staffSession.auth.signOut();

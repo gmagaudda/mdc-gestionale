@@ -16,6 +16,10 @@ export const getSessionUser = cache(async () => {
     .eq("id", data.user.id)
     .single();
   if (profileError || !profile?.is_active) return null;
+  if (profile.role === "admin") {
+    const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (level.error || level.data.currentLevel !== "aal2") return null;
+  }
   return profile;
 });
 

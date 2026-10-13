@@ -1,3 +1,4 @@
+import { logOperation } from "@/lib/observability/log";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { tomorrowInRome, cronAuthorized } from "@/lib/calendar/reminders";
 import { renderAppointmentReminder } from "@/lib/email/appointment-reminder";
@@ -8,6 +9,7 @@ export async function POST(request: Request) {
   if (!(await cronAuthorized(request, process.env.CRON_SECRET)))
     return new Response(null, { status: 401, headers });
   const counters = { sent: 0, logged: 0, failed: 0 };
+  const started = performance.now();
   try {
     const period = tomorrowInRome(new Date());
     const db = createAdminClient();
@@ -42,7 +44,11 @@ export async function POST(request: Request) {
         throw Error("Reminder batch limit reached; retry required");
     }
     const push = await sendPushReminders(period);
-    console.info("[reminders]", JSON.stringify({ ...counters, push }));
+    logOperation("reminders.finished", counters.failed ? "retry" : "ok", {
+      ...counters,
+      duration_ms: performance.now() - started,
+    });
+    logOperation("push.finished", push.failed ? "retry" : "ok", push);
     return Response.json(
       { ...counters, push },
       {
@@ -51,6 +57,9 @@ export async function POST(request: Request) {
       },
     );
   } catch {
+    logOperation("reminders.finished", "error", {
+      duration_ms: performance.now() - started,
+    });
     return Response.json(
       { error: "REMINDERS_UNAVAILABLE" },
       { status: 503, headers },

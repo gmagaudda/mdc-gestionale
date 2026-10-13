@@ -1,6 +1,7 @@
-# Gestionale showroom moda
+# MDC Gestionale
 
 Avanzamento e verifiche ancora aperte: [docs/PROGRESS.md](docs/PROGRESS.md).
+Guida per ruolo: [docs/USER-GUIDE.md](docs/USER-GUIDE.md). Importazione e analisi Excel: [docs/IMPORT.md](docs/IMPORT.md).
 
 Preview di questa sessione: `http://localhost:3100/login` (`pnpm dev --port 3100`). Credenziali locali in `.env.local`, escluso da Git.
 
@@ -17,19 +18,22 @@ Applicazione per anagrafiche, catalogo, ordini, calendario, budget e portale bra
 
 ```bash
 pnpm install
+pnpm exec supabase start
+pnpm exec supabase migration up --local
 cp .env.example .env.local
-pnpm dev
+chmod 600 .env.local
 ```
 
-Avvia Supabase e genera i tipi prima di lavorare sul database:
+Compila `.env.local` con URL, chiave anon e service role del Supabase **locale** (`supabase status` li mostra all’operatore). Imposta `APP_URL=http://localhost:3100`, `EMAIL_MODE=log`, `INVOICING_PROVIDER=mock` e segreti casuali distinti di almeno 32 caratteri per `CRON_SECRET`, `RATE_LIMIT_SECRET`, `INVOICING_WEBHOOK_SECRET`. Mantieni questi valori privati. Poi:
 
 ```bash
-pnpm exec supabase start
-pnpm exec supabase db reset
 pnpm types
+pnpm exec playwright install chromium
+pnpm seed:demo
+pnpm dev --port 3100
 ```
 
-Su Apple Silicon, `supabase/config.toml` abilita il runtime nativo in assenza di Docker. Apri <http://localhost:3000>. Le variabili Supabase sono necessarie quando si attivano le funzioni di autenticazione e database.
+Su Apple Silicon, `supabase/config.toml` abilita il runtime nativo in assenza di Docker. Apri <http://localhost:3100/login>. `migration up` conserva i dati esistenti; `db reset` li elimina e va usato solo su istanze di prova da ricreare. Per Workers locale copia le stesse variabili in `.dev.vars` (ignorato, permessi 0600). Le chiavi push si generano con `pnpm push:keys`, come descritto sotto.
 
 Per provare l'app con dati sintetici, dopo aver configurato `.env.local` esegui `pnpm seed:demo`. Lo script accetta soltanto Supabase locale e crea quattro account: `admin@showroom.test`, `staff@showroom.test`, `accounting@showroom.test`, `brand@showroom.test`. La password iniziale è `Local-demo-only-42` (personalizzabile con `SEED_DEMO_PASSWORD`). Aggiunge un brand e un cliente demo; rieseguendolo conserva dati e password già presenti. Non usarlo per ambienti ospitati.
 
@@ -44,7 +48,7 @@ pnpm supabase:test
 pnpm test:orders:concurrency
 ```
 
-Le ultime due verifiche richiedono rispettivamente i browser Playwright e Supabase locale. Non inserire segreti nei file tracciati.
+Gli e2e richiedono Chromium Playwright, `.env.local` configurato e Supabase locale. I test DB richiedono Supabase. Non inserire segreti nei file tracciati. Dopo `pnpm build:cf`, esegui anche `pnpm check:client-secrets`.
 
 `test:orders:concurrency` usa soltanto Supabase locale: crea 20 ordini simultanei con sessione staff, verifica numeri consecutivi senza duplicati e rimuove le proprie fixture. Richiede `.env.local` con le chiavi locali. Il contatore dell'anno sintetico 2099 conserva i progressivi usati dal test.
 
@@ -72,7 +76,7 @@ Gli admin gestiscono utenti da `/settings/users`, brand da `/brands` e modifiche
 
 Stagioni in `/seasons` e prodotti in `/products`: admin/staff creano e modificano il catalogo; amministrazione legge. Prima crea una stagione del brand, poi un prodotto con taglie e colori separati da virgole. Il salvataggio genera tutte le combinazioni in una transazione e conserva le varianti archiviate per lo storico. Prezzi in EUR e centesimi interi; SKU variante copiabile dal dettaglio.
 
-Con `EMAIL_MODE=log`, i link di invito compaiono nel terminale locale e non viene inviata alcuna email. Questa modalità è per sviluppo; configurare e verificare Resend prima dell’uso reale. Le fixture e2e usano soltanto Supabase locale e account sintetici, poi rimuovono gli account creati.
+Con `EMAIL_MODE=log` viene registrato soltanto il conteggio, senza destinatario o link di invito; nessuna email è inviata. Per entrare in locale usa gli account demo o il recupero tramite Mailpit. Con `EMAIL_MODE=resend`, `RESEND_API_KEY` ed `EMAIL_FROM` configurati, inviti e promemoria usano Resend. La consegna reale richiede un dominio verificato e una prova dell’operatore. Le fixture e2e usano soltanto Supabase locale e account sintetici, poi rimuovono gli account creati.
 
 ### PDF e numeri live
 
@@ -165,3 +169,52 @@ E2E_BASE_URL=http://localhost:8790 E2E_PWA_PRODUCTION=1 pnpm e2e e2e/pwa.spec.ts
 ```
 
 Usa solo il database Supabase locale. Il test di aggiornamento modifica temporaneamente l’asset generato `.open-next/assets/sw.js` e lo ripristina; non eseguire questa prova contro ambienti remoti.
+
+## Sicurezza e amministrazione MFA
+
+Gli admin richiedono TOTP (`aal2`) sia nelle route/azioni server sia nelle RLS del database e dello Storage. A `aal1` è leggibile soltanto il profilo necessario alla configurazione; le funzioni business sono negate. Staff, amministrazione e brand conservano il proprio perimetro. Abilita TOTP anche nel progetto Supabase ospitato prima di applicare la migrazione 037.
+
+Il recupero MFA è una procedura dell’operatore: verifica l’identità tramite un canale indipendente, usa gli strumenti Auth amministrativi Supabase per rimuovere il fattore perso, revoca le sessioni, registra l’intervento in un registro protetto e fai configurare subito il nuovo fattore. Non modificare le policy per aggirare MFA; tieni almeno due amministratori operativi. La password recuperata non revoca automaticamente i fattori.
+
+Rate limit persistenti: login 10 tentativi/email in 15 minuti e 500/IP; recupero 3/email/ora e 100/IP; MFA 10 operazioni/account/minuto; iCal 60/token e 100/IP/minuto; webhook 300/IP/minuto. Le identità sono HMAC, mai email/IP in chiaro. L’IP è affidabile soltanto dal contesto Cloudflare; in locale si usa un contenitore condiviso. Le API restituiscono 429 con `Retry-After`; in caso di indisponibilità del limite falliscono chiuse. Nessun contatore in memoria del singolo Worker.
+
+CSP di base, protezione framing, nosniff, referrer e permissions policy sono attive. HTTPS abilita HSTS e upgrade delle richieste. La CSP consente ancora script/stili inline necessari al rendering corrente: non è una CSP stretta con nonce. Le chiavi private sono server-only; `pnpm check:client-secrets` controlla gli asset generati con i valori configurati, senza stamparli.
+
+## Log e backup
+
+I processi registrano JSON con evento, timestamp, esito, durata e contatori ammessi. Non registrano destinatari, link di invito, token, file o payload fiscali. Errori del provider restano messaggi applicativi generici; audit business e journal delle integrazioni rimangono nel database protetto. Workers Observability è abilitato; definisci retention e accessi nell’account prima del rilascio. Sentry è opzionale e non è configurato.
+
+### Backup ospitato
+
+Definisci RPO/RTO e verifica disponibilità/retention dei backup nel piano Supabase scelto. Conserva esportazioni cifrate, fuori dall’account principale e con accesso ristretto. I [backup Supabase](https://supabase.com/docs/guides/platform/backups) contengono il database e i metadati Storage, **non i byte dei file**. Esegui quindi una copia separata dei bucket privati tramite API Storage autorizzate, conservando percorso, dimensione e checksum. Rispetta la retention degli originali di importazione anche nelle copie.
+
+Per una migrazione/ripristino ospitato usa la [procedura CLI ufficiale](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore), con dump separati di ruoli, schema e dati secondo le istruzioni della versione in uso. Un dump integrale locale non va importato alla cieca tra versioni/piattaforme: include schemi interni e ownership, come spiegato nella [guida di ripristino Supabase](https://supabase.com/docs/guides/self-hosting/restore-from-platform). Prima della prova conserva separatamente configurazione Auth (redirect/template/MFA), segreti e chiavi necessarie a Vault/TOTP, provider, crons e dominio. Il repository non è un backup dei segreti.
+
+Ripristina prima in un progetto UE isolato: schema/dati/ruoli, poi file privati tramite API, poi segreti/configurazione. Controlla checksum, conteggi e somme in centesimi, accesso Auth/MFA, isolamento dei brand, download privati e un flusso completo. Attiva email/fatturazione solo dopo aver verificato i dati. Non cancellare il progetto originale finché la verifica non è conclusa. La prova hosted e la consegna reale sono gate dell’operatore ancora aperti.
+
+### Prova locale riproducibile
+
+`scripts/verify-local-restore.mjs` accetta esclusivamente un secondo stack nativo, `project_id=mdc-migration-check-*`, con porte diverse da quelle del progetto. Prepara una directory temporanea con copia di `supabase/`, cambia porte e inspector e avviala salvando l’output JSON **privatamente** (0600). Il file deve contenere l’oggetto `env` prodotto dal runtime nativo. Poi:
+
+```sh
+node scripts/verify-local-restore.mjs \
+  --workdir /percorso/temporaneo/mdc-migration-check-prova \
+  --pg-bin /percorso/runtime/postgres/bin \
+  --credentials-json /percorso/privato/start.json
+```
+
+Lo script crea solo fixture proprie, salva un archivio `pg_dump -Fc`, ripristina in un database temporaneo dello stesso cluster/runtime con i ruoli esistenti, verifica snapshot, profili e RLS. Copia e ripristina separatamente un file privato e ne confronta SHA-256. Elimina clone, backup temporanei e fixture, lasciando intatto il database principale. Prova eseguita il 12 ottobre 2026 con PostgreSQL 17.11 e tutte le migrazioni applicate. Non verifica i servizi HTTP Auth/Storage puntati al clone né la portabilità hosted: questi richiedono una prova dedicata.
+
+## Ambienti e rilascio futuro
+
+`wrangler.jsonc` definisce `staging` e `production` con binding asset espliciti. Staging usa mock e log email, produzione Fatture in Cloud e Resend. Il test locale usa la configurazione root e `.dev.vars`. Nessun rilascio è stato eseguito e non è presente un remote GitHub.
+
+Quando si decide di pubblicare:
+
+1. Crea due progetti Supabase distinti in UE; configura Auth/redirect/MFA, bucket, email e backup. Il dominio va scelto e configurato su Cloudflare con HTTPS prima della build.
+2. Crea gli ambienti GitHub `staging`/`production`; su produzione imposta approvazione manuale, branch protetto e accesso ai segreti limitato. Configura per ambiente le variabili `APP_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY` e i segreti `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `SUPABASE_DB_URL`, `WORKER_SECRETS_JSON`.
+3. `WORKER_SECRETS_JSON` è un oggetto privato con `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, `RATE_LIMIT_SECRET`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` e, in produzione, `RESEND_API_KEY`, `EMAIL_FROM`, `FIC_ACCESS_TOKEN`, `FIC_COMPANIES_JSON`, `FIC_APPLICATION_ID` (eventuali OAuth server-only). La pipeline aggiunge i valori pubblici anche ai binding runtime, li scrive temporaneamente in un file 0600 e usa `wrangler secret bulk`. Non inserire override di provider/modalità email nei segreti. Il token Cloudflare deve avere il solo perimetro necessario al Worker.
+4. Abilita la variabile repository `DEPLOY_ENABLED=true` **solo dopo** la configurazione e i gate manuali. `release.yml` verifica CI, applica migrazioni senza seed, quindi pubblica staging sui merge in `master`. La produzione richiede `workflow_dispatch` con target `production`, più approvazione dell’ambiente. Ricostruisce la revisione selezionata con i valori pubblici dell’ambiente; verifica il commit da promuovere.
+5. I seed automatici di rilascio sono disabilitati. `seed:demo` rifiuta ambienti ospitati; eventuali fixture di staging vanno caricate dall’operatore soltanto sul progetto staging. Non eseguire seed/reset in produzione. Se cambia lo schema, prevedi migrazioni compatibili: tornare al Worker precedente non annulla i dati/migrazioni.
+
+I binding/vars Wrangler degli ambienti non sono ereditati automaticamente: [documentazione Cloudflare](https://developers.cloudflare.com/workers/wrangler/environments/). La pipeline e i segreti hosted non sono stati eseguiti/verificati; dominio, account e gate di promozione restano da configurare al momento del rilascio.

@@ -17,6 +17,7 @@
     "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "check:tokens": "node scripts/check-tokens.mjs",
+    "check:client-secrets": "node scripts/check-client-secrets.mjs",
     "seed:demo": "node scripts/seed-demo.mjs",
     "test:orders:concurrency": "node scripts/test-order-concurrency.mjs",
     "icons": "node scripts/icons.mjs",

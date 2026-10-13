@@ -1,4 +1,5 @@
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 select plan(13);
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000901','invoice-staff@example.test'),('00000000-0000-4000-8000-000000000902','invoice-accounting@example.test');
 update public.profiles set role=case when id='00000000-0000-4000-8000-000000000901' then 'staff'::public.app_role else 'accounting'::public.app_role end where id in('00000000-0000-4000-8000-000000000901','00000000-0000-4000-8000-000000000902');

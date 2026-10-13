@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -178,6 +179,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/dashboard$/);
   await page.goto(
     `/orders?brand_id=${brandId}&customer_id=${customerId}&season_id=${seasonId}&from=2026-10-01&to=2026-10-31`,
@@ -311,6 +313,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await page.getByLabel("Email", { exact: true }).fill(accountEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/dashboard$/);
   await page.goto(`/orders/${orderId}`);
   await expect(
@@ -349,6 +352,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await page.getByLabel("Email", { exact: true }).fill(accountEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/portal\/dashboard$/);
   expect(
     (await page.request.get(`/api/orders/export?brand_id=${brandId}`)).status(),

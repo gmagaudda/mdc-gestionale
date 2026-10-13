@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_call:
 
 jobs:
   verify:
@@ -15,14 +16,23 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec supabase start --yes
       - run: pnpm exec supabase db reset --yes
+      - name: Configure isolated local credentials
+        run: |
+          pnpm exec supabase status --output json > "$RUNNER_TEMP/supabase-local.json"
+          chmod 600 "$RUNNER_TEMP/supabase-local.json"
+          node scripts/ci-local-env.mjs "$RUNNER_TEMP/supabase-local.json"
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm supabase:test
+      - run: pnpm check:tokens
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e --project=desktop
       - run: pnpm build
       - run: pnpm build:cf
+      - run: pnpm check:client-secrets

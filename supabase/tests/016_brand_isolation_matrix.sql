@@ -1,6 +1,9 @@
 -- Fixture-only transactions. Every probe rolls back, even if a policy regresses.
 begin;
+set local request.jwt.claims='{"aal":"aal2"}';
 select no_plan();
+insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000799','isolation-guard@example.test');
+update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000000799';
 create function pg_temp.fixture_id(n integer) returns uuid language sql immutable as $$select ('00000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid$$;
 insert into auth.users(id,email) values(pg_temp.fixture_id(703),'isolation-staff@example.test'),(pg_temp.fixture_id(704),'isolation-a@example.test'),(pg_temp.fixture_id(705),'isolation-b@example.test');
 update public.profiles set role='staff' where id=pg_temp.fixture_id(703);

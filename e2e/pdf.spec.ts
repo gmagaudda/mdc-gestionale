@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { PDFDocument } from "pdf-lib";
@@ -167,6 +168,7 @@ test("generates print PDFs and enforces brand isolation and customer privacy", a
     await page.getByLabel("Email", { exact: true }).fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
+    await completeAdminMfa(page);
     await expect(
       page.getByRole("button", { name: "Esci", exact: true }),
     ).toBeVisible();

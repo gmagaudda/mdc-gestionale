@@ -1,4 +1,5 @@
-begin;select no_plan();
+begin;
+set local request.jwt.claims='{"aal":"aal2"}';select no_plan();
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000001021','updates-owner@example.test');update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000001021';
 insert into public.brands(id,name) values('00000000-0000-4000-8000-000000001022','Brand aggiornamento sintetico');insert into public.seasons(id,brand_id,code,name) values('00000000-0000-4000-8000-000000001023','00000000-0000-4000-8000-000000001022','SS27','SS27');
 insert into public.customers(id,legal_name,external_code,city,notes) values('00000000-0000-4000-8000-000000001024','Negozio precedente','UPD-C','Milano','Nota precedente');

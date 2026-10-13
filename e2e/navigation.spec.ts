@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -55,6 +56,7 @@ test("navigation search pagination keyboard modal and themes remain accessible",
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   const menu = page.getByRole("button", { name: "Menu", exact: true });
   if (await menu.isVisible()) {

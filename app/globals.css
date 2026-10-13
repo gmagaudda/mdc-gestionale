@@ -560,3 +560,8 @@ summary {
   position: relative;
   display: inline-block;
 }
+
+.mfa-qr {
+  max-inline-size: 100%;
+  block-size: auto;
+}

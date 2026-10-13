@@ -15,8 +15,10 @@ const privateRoots = new Set([
   "invoices",
   "documents",
   "imports",
+  "analysis",
   "settings",
   "portal",
+  "mfa",
 ]);
 
 export function isProtectedPath(pathname: string) {
@@ -69,6 +71,27 @@ export async function updateSession(request: NextRequest) {
   const { data, error } = await supabase.auth.getClaims();
   if (error || !data?.claims?.sub) {
     return redirectToLogin(request, response);
+  }
+  if (request.nextUrl.pathname !== "/mfa" && data.claims.aal !== "aal2") {
+    const profile = await supabase
+      .from("profiles")
+      .select("role,is_active")
+      .eq("id", data.claims.sub)
+      .maybeSingle();
+    if (profile.data?.is_active && profile.data.role === "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/mfa";
+      url.search = "";
+      url.searchParams.set(
+        "next",
+        request.nextUrl.pathname + request.nextUrl.search,
+      );
+      const guarded = NextResponse.redirect(url);
+      for (const cookie of response.cookies.getAll())
+        guarded.cookies.set(cookie);
+      guarded.headers.set("Cache-Control", "private, no-store");
+      return guarded;
+    }
   }
   return response;
 }

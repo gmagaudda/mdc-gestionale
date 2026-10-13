@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { selectChoice } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -90,6 +91,7 @@ test("uploads validates downloads shares and archives a private document", async
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(
     page.getByRole("button", { name: "Esci", exact: true }),
   ).toBeVisible();
@@ -105,9 +107,11 @@ test("uploads validates downloads shares and archives a private document", async
   await page
     .getByRole("button", { name: "Carica documento", exact: true })
     .click();
-  await expect(page.getByLabel("Nome", { exact: true })).toBeFocused();
+  await expect(
+    page.getByRole("textbox", { name: "Nome", exact: true }),
+  ).toBeFocused();
   await page
-    .getByLabel("Nome", { exact: true })
+    .getByRole("textbox", { name: "Nome", exact: true })
     .fill("Catalogo campionario prova");
   await page
     .getByRole("searchbox", { name: "Cerca Brand", exact: true })

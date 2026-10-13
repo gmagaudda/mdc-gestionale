@@ -78,3 +78,26 @@ Le simulazioni Chromium e i test workerd non attestano queste verifiche. Per iPh
 Migrazioni 026–035: configurazioni revisionate, matching con pg_trgm, staging con conteggi completi, commit/rollback e report. RPC commerciali con sessione utente, ruolo e proprietà del lotto verificati nel database. `app.import_changes` contiene prima/dopo ed è priva di grant client; la RLS di `import_*` limita accounting ai budget. Audit e dati business sono nella medesima transazione. I report finali conservano i totali in `stats`, con viste invoker e RPC di lettura protette. SQL numeric e testi interi preservano aggregati oltre i limiti di number.
 
 Il parser browser usa solo risultati di formule salvati. I blocchi di righe grezze sono rivalidati dal server e limitati in byte. Una revisione impedisce mescolamenti fra finestre e mappature. Il job retention è l’unica nuova operazione con service role: rimuove Storage, poi registra la rimozione tramite una RPC con grant service_role. Nessuna scrittura commerciale passa dal client privilegiato.
+
+## Hardening e checklist M9
+
+`app.current_role()` restituisce NULL per admin con JWT non `aal2`; `app.mfa_satisfied()` impone lo stesso requisito come policy restrittiva su tutte le tabelle business e Storage. Le policy originali stabiliscono comunque il ruolo/perimetro. Il profilo personale resta leggibile per configurare/verificare TOTP. API e azioni ripetono la verifica dell’utente Supabase e del livello di autenticazione, anche per operazioni che usano un client amministrativo ristretto. La cancellazione di un upload documenti pending usa un controllo ownership ristretto security definer per evitare il ciclo fra policy documenti e Storage.
+
+`consume_rate_limit` è una RPC service-role-only: atomicità `ON CONFLICT`, soglie fisse SQL, finestre e pulizia limitata. Identità HMAC con chiave privata, nessuna email/IP in chiaro e nessun grant diretto alla tabella `app.rate_limits`. Accetta IP soltanto dal contesto Cloudflare, ignorando `X-Forwarded-For`; il contenitore locale condiviso limita le prove sullo stesso processo. Un errore infrastrutturale blocca la richiesta.
+
+| Controllo                                                   | Stato / evidenza                                                                              |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Input server Zod, centesimi interi, transazioni con audit   | Implementato; suite dominio/import SQL e unit                                                 |
+| MFA obbligatoria admin su server, RPC, RLS, Storage         | Migrazione 037, unit auth, 033_admin_mfa.sql, e2e MFA su cinque viewport                      |
+| Nessun bypass tramite membership/policy personale           | Policy restrittive e matrice inventario/isolamento; profilo personale eccezione esplicita     |
+| Rate limiting persistente, 429 e Retry-After                | 032_rate_limits.sql ed e2e/security.spec.ts                                                   |
+| CSP di base e header framing/nosniff/referrer/permissions   | next.config.ts, unit security headers; inline consentito, eval solo in sviluppo               |
+| Chiavi private escluse dal client                           | server-only, lint contro import amministrativi UI, scanner degli asset con valori configurati |
+| Accessi runtime con sessione e RLS                          | Matrice obbligatoria per ogni relazione pubblica; service role limitato a job/API autorizzate |
+| File privati, download temporanei, originali con scadenza   | Storage RLS, URL firmati e retention via API                                                  |
+| Telemetria priva di email/token/payload                     | Schema chiuso contatori in lib/observability, test della rimozione campi extra                |
+| Backup database e file verificato in isolamento             | Script restore locale, checksum SHA-256; procedura README                                     |
+| HTTPS, progetti UE, dominio, segreti hosted, review deploy  | Da configurare e verificare al rilascio; nessun deploy autorizzato/eseguito                   |
+| Recupero MFA operatore, restore hosted, consegna Resend/FIC | Procedure documentate; prove reali ancora aperte                                              |
+
+CSP di base non equivale a una CSP stretta con nonce. Lo scanner verifica solo i segreti configurati negli asset della build corrente, non dimostra l’assenza di qualsiasi credenziale mai esistita. I log operativi hanno una whitelist di contatori; audit e snapshot business possono contenere dati personali e hanno accesso database protetto. Backup hosted e chiavi di cifratura richiedono una procedura distinta dal clone dello stesso runtime PostgreSQL.

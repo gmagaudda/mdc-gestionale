@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { writeFileSync } from "node:fs";
 import { selectChoice } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
@@ -119,6 +120,7 @@ test("saves a three-product matrix atomically with discounts and exact server to
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await page.goto("/orders/new");
   await page.getByRole("button", { name: "Salva bozza", exact: true }).click();
@@ -137,10 +139,14 @@ test("saves a three-product matrix atomically with discounts and exact server to
       .eq("id", customerId)
       .single()
   ).data!.legal_name;
-  await page.getByLabel("Cerca Brand", { exact: true }).fill(brand);
+  await page
+    .getByRole("searchbox", { name: "Cerca Brand", exact: true })
+    .fill(brand);
   await selectChoice(page, "Brand", brand);
   await selectChoice(page, "Stagione", "FW26-EDITOR: Autunno prova");
-  await page.getByLabel("Cerca Cliente", { exact: true }).fill(customer);
+  await page
+    .getByRole("searchbox", { name: "Cerca Cliente", exact: true })
+    .fill(customer);
   await expect(page.getByLabel("Cliente", { exact: true })).toBeEnabled();
   await selectChoice(page, "Cliente", `${customer} · Milano`);
   for (const name of productNames) {

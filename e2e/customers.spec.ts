@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { navigateMenu } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -48,6 +49,7 @@ test("staff validates creates edits and archives a customer", async ({
   await page.getByLabel("Email", { exact: true }).fill(staffEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await navigateMenu(page, "Clienti");
   await page.getByRole("link", { name: "Nuovo cliente" }).click();
@@ -120,6 +122,7 @@ test("accounting reads customers and cannot create them", async ({ page }) => {
   await page.getByLabel("Email", { exact: true }).fill(accountingEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await page.goto("/customers");
   await expect(

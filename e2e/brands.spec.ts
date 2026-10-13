@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { navigateMenu } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -54,6 +55,7 @@ test("admin creates edits adds contacts and archives a brand", async ({
   await page.getByLabel("Email", { exact: true }).fill(adminEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await navigateMenu(page, "Brand");
   await page.getByRole("link", { name: "Nuovo brand" }).click();
@@ -111,6 +113,7 @@ test("staff reads brands but cannot access administrative forms or audit", async
   await page.getByLabel("Email", { exact: true }).fill(staffEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await page.goto("/brands");
   await expect(

@@ -17,4 +17,26 @@
   "observability": {
     "enabled": true,
   },
+  "env": {
+    "staging": {
+      "name": "mdc-gestionale-staging",
+      "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+      "vars": {
+        "INVOICING_PROVIDER": "mock",
+        "EMAIL_MODE": "log",
+        "IMPORT_RETENTION_DAYS": "90",
+      },
+      "triggers": { "crons": ["0 6 * * *", "*/5 * * * *"] },
+    },
+    "production": {
+      "name": "mdc-gestionale-production",
+      "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+      "vars": {
+        "INVOICING_PROVIDER": "fic",
+        "EMAIL_MODE": "resend",
+        "IMPORT_RETENTION_DAYS": "90",
+      },
+      "triggers": { "crons": ["0 6 * * *", "*/5 * * * *"] },
+    },
+  },
 }

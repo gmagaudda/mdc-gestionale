@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -54,6 +55,7 @@ test("staff creates a season and fifteen variants with exact prices and archives
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await navigateMenu(page, "Stagioni");
   await page.getByRole("link", { name: "Nuova stagione", exact: true }).click();

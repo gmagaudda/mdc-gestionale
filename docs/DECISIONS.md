@@ -219,3 +219,17 @@ Profili distinti per foglio, formati italiani o inglesi e percentuali punti/rapp
 Totali ordine operativi richiedono data, descrizione e IVA esplicite e sconti zero, con riga sintetica quantità 1. Il file RECAP senza date resta storico. Aggiornamenti ordine ammessi solo in bozza; snapshot dei valori delle righe ripristinati anche se il catalogo è cambiato. I report finali sono snapshot, mentre le viste dei budget operativi restano letture correnti. Venduto precedente significa intera stagione confermata; ordinato del lotto è limitato al periodo del budget.
 
 Una transazione serializza lotti e normali modifiche commerciali. Rollback rifiutato per modifiche successive, fatture o nuovi riferimenti esterni; archivia le creazioni, ripristina gli aggiornamenti. Originali privati con scadenza predefinita 90 giorni, download firmato 60 secondi, pulizia via Storage API e rimozione celle raw. Normalizzati, audit e snapshot conservati per tracciabilità. Cron massimo 100 originali, tentativi successivi su errore o lavoro residuo.
+
+## 2026-10-13: hardening, osservabilità e rilascio locale (M9)
+
+TOTP obbligatorio per admin, basato sulle API [Supabase MFA](https://supabase.com/docs/guides/auth/auth-mfa/totp), disponibile senza introdurre un provider esterno. La guardia server è accompagnata dalle policy restrittive SQL: un client che chiama direttamente Supabase non può usare dati business a `aal1`. Il profilo personale resta accessibile per enrollment; niente bypass di recupero nell’app. Una funzione ristretta per cancellare documenti pending evita la ricorsione delle policy Storage/documenti. Test SQL ora indipendenti dalla presenza dei dati demo.
+
+Rate limiting centralizzato PostgreSQL anziché memoria del Worker, con HMAC privato delle identità e IP validato solo in contesto Cloudflare. In locale il contenitore IP è condiviso; il limite email/account resta indipendente. Soglie e finestre sono definite solo in SQL. `app.import_key`, funzione immutabile usata nell’indice clienti, deve essere eseguibile anche da service role; il grant non autorizza RPC business e non legge dati.
+
+CSP di base compatibile con Next/next-themes, Arc e parser worker: inline ammesso, eval soltanto in sviluppo, connessioni limitate a origine dell’app e Supabase, framing/object disabilitati. Una CSP con nonce richiederebbe una revisione del rendering e del comportamento offline e non è dichiarata implementata.
+
+Log JSON con whitelist, senza email/link/token. Gli inviti in modalità log non espongono più il link; gli account demo/recupero Mailpit coprono lo sviluppo locale. Resend reale configurabile per inviti e promemoria; nessuna consegna reale nei test. Sentry rimane opzionale e disattivato.
+
+Prova di ripristino separa archivio PostgreSQL e byte Storage, poiché i [backup database Supabase](https://supabase.com/docs/guides/platform/backups) non includono i file. Clone dello stesso runtime nativo verificato; migrazione hosted fra piattaforme/versioni resta distinta, con chiavi/configurazione da preservare esternamente. Nessun reset del database principale.
+
+Ambienti Wrangler con binding asset ripetuti secondo le [regole Cloudflare](https://developers.cloudflare.com/workers/wrangler/environments/). Rilascio GitHub disattivato fino a DEPLOY_ENABLED, staging automatico dopo CI, produzione manuale con gate dell’ambiente. Migrazioni senza seed. Il checkout non ha remote e l’umano ha scelto di provare localmente: credenziali, dominio e prova della pipeline hosted rimangono gate esterni.

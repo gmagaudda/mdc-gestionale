@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { execFileSync } from "node:child_process";
@@ -163,6 +164,7 @@ test("filters commissions and downloads an exact safe workbook", async ({
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(
     page.getByRole("button", { name: "Esci", exact: true }),
   ).toBeVisible();

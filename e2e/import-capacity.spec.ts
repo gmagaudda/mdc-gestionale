@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 const db = () =>
@@ -55,6 +56,7 @@ test("20,000 physical rows are validated and staged within one minute", async ({
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(
     page.getByRole("button", { name: "Esci", exact: true }),
   ).toBeVisible();

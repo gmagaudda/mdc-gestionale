@@ -1,3 +1,5 @@
+import { limitPublicRequest } from "@/lib/security/rate-limit";
+import { logOperation } from "@/lib/observability/log";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { after } from "next/server";
 import { ficWebhookOptions, invoicingProviderName } from "@/lib/invoicing";
@@ -13,6 +15,8 @@ const headers = {
   "X-Content-Type-Options": "nosniff",
 };
 export async function POST(request: Request) {
+  const limited = await limitPublicRequest(request, "webhook_ip");
+  if (limited) return limited;
   try {
     const provider = invoicingProviderName();
     if (provider === "fic") {
@@ -49,12 +53,13 @@ export async function POST(request: Request) {
         after(async () => {
           try {
             const result = await processFicWebhooks(db);
-            console.info("[invoicing]", JSON.stringify(result));
-          } catch {
-            console.info(
-              "[invoicing]",
-              JSON.stringify({ retryRequired: true }),
+            logOperation(
+              "invoicing.finished",
+              result.failed ? "retry" : "ok",
+              result,
             );
+          } catch {
+            logOperation("invoicing.finished", "error");
           }
         });
       return Response.json({ received: true }, { status: 202, headers });

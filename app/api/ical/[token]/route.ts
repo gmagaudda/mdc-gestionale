@@ -1,3 +1,4 @@
+import { limitPublicRequest } from "@/lib/security/rate-limit";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { calendarFeed, feedEventSchema } from "@/lib/calendar/ical";
@@ -8,10 +9,12 @@ const headers = {
   "Referrer-Policy": "no-referrer",
 };
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ token: string }> },
 ) {
   const { token } = await params;
+  const limited = await limitPublicRequest(request, "feed_ip", token);
+  if (limited) return limited;
   if (!icalTokenPattern.test(token))
     return new Response(null, { status: 404, headers });
   try {

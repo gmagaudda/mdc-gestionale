@@ -2548,6 +2548,10 @@ export type Database = {
             };
             Returns: undefined;
           };
+      consume_rate_limit: {
+        Args: { p_key_hash: string; p_scope: string };
+        Returns: Json;
+      };
       dashboard_report: {
         Args: {
           p_brand_id?: string;

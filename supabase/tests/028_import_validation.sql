@@ -1,4 +1,5 @@
-begin;select no_plan();
+begin;
+set local request.jwt.claims='{"aal":"aal2"}';select no_plan();
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000991','finish-owner@example.test');update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000000991';
 set local role authenticated;set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000991';
 select public.start_import_batch('00000000-0000-4000-8000-000000000990','mixed','finish.csv',repeat('9',64),100);insert into storage.objects(bucket_id,name,metadata) values('imports','00000000-0000-4000-8000-000000000990.csv','{"size":100}');

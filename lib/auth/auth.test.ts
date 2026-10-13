@@ -1,13 +1,16 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const { getUser, single, rpc } = vi.hoisted(() => ({
-  getUser: vi.fn(),
-  single: vi.fn(),
-  rpc: vi.fn(),
-}));
+const { getUser, single, rpc, getAuthenticatorAssuranceLevel } = vi.hoisted(
+  () => ({
+    getUser: vi.fn(),
+    single: vi.fn(),
+    rpc: vi.fn(),
+    getAuthenticatorAssuranceLevel: vi.fn(),
+  }),
+);
 vi.mock("@/lib/supabase/config", () => ({ hasSupabaseConfig: () => true }));
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({
-    auth: { getUser },
+    auth: { getUser, mfa: { getAuthenticatorAssuranceLevel } },
     rpc,
     from: () => ({ select: () => ({ eq: () => ({ single }) }) }),
   }),
@@ -16,6 +19,26 @@ import { getSessionUser, requireRole, requireBrandAccess } from "./index";
 beforeEach(() => {
   vi.resetAllMocks();
   getUser.mockResolvedValue({ data: { user: { id: "one" } }, error: null });
+  getAuthenticatorAssuranceLevel.mockResolvedValue({
+    data: { currentLevel: "aal2" },
+    error: null,
+  });
+});
+it("denies admin sessions at aal1 and when MFA cannot be verified", async () => {
+  single.mockResolvedValue({
+    data: { id: "one", role: "admin", is_active: true },
+    error: null,
+  });
+  getAuthenticatorAssuranceLevel.mockResolvedValueOnce({
+    data: { currentLevel: "aal1" },
+    error: null,
+  });
+  expect(await getSessionUser()).toBeNull();
+  getAuthenticatorAssuranceLevel.mockResolvedValueOnce({
+    data: null,
+    error: {},
+  });
+  expect(await getSessionUser()).toBeNull();
 });
 it("rejects absent, invalid and inactive identities", async () => {
   getUser.mockResolvedValueOnce({ data: { user: null }, error: null });

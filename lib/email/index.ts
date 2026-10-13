@@ -1,19 +1,13 @@
 import "server-only";
 import { getTranslations } from "next-intl/server";
 import { Resend } from "resend";
+import { logOperation } from "@/lib/observability/log";
 export async function deliverEmail(
   message: { to: string; subject: string; text: string; html?: string },
   idempotencyKey: string,
 ): Promise<"sent" | "logged"> {
   if (process.env.EMAIL_MODE === "log") {
-    console.info(
-      "[email:log]",
-      JSON.stringify({
-        kind: "appointment-reminder",
-        idempotencyKey,
-        rendered: !!message.html,
-      }),
-    );
+    logOperation("email.logged", "ok", { logged: 1 });
     return "logged";
   }
   if (
@@ -37,9 +31,17 @@ export async function sendInviteEmail(email: string, url: string) {
     text: t("inviteBody", { url }),
   };
   if (process.env.EMAIL_MODE === "log") {
-    console.info("[email:log]", JSON.stringify(message));
+    logOperation("email.logged", "ok", { logged: 1 });
     return;
   }
-  // Real delivery is enabled after the hosted mail provider is configured.
-  throw Error("EMAIL_UNAVAILABLE");
+  await deliverEmail(message, `invite-${await invitationDigest(url)}`);
+}
+async function invitationDigest(url: string) {
+  const bytes = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(url),
+  );
+  return Array.from(new Uint8Array(bytes), (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
 }

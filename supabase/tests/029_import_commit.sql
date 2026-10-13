@@ -1,4 +1,5 @@
-begin;select no_plan();
+begin;
+set local request.jwt.claims='{"aal":"aal2"}';select no_plan();
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000001001','commit-owner@example.test');update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000001001';
 insert into public.brands(id,name) values('00000000-0000-4000-8000-000000001002','Brand commit sintetico');insert into public.seasons(id,brand_id,code,name) values('00000000-0000-4000-8000-000000001003','00000000-0000-4000-8000-000000001002','SS27','SS27');
 insert into public.products(id,brand_id,season_id,sku_base,name,wholesale_price_cents,vat_rate) values('00000000-0000-4000-8000-000000001004','00000000-0000-4000-8000-000000001002','00000000-0000-4000-8000-000000001003','COMMIT-SYN','Prodotto sintetico',123456,22);insert into public.product_variants(id,product_id,brand_id,size,color,sku) values('00000000-0000-4000-8000-000000001005','00000000-0000-4000-8000-000000001004','00000000-0000-4000-8000-000000001002','M','Nero','COMMIT-SYN-M');

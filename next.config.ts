@@ -1,3 +1,4 @@
+import { securityHeaders } from "./lib/security/headers";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -8,6 +9,14 @@ const nextConfig: NextConfig = {
   experimental: { proxyClientMaxBodySize: "12mb" },
   async headers() {
     return [
+      {
+        source: "/:path*",
+        headers: securityHeaders({
+          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+          appUrl: process.env.APP_URL,
+          development: process.env.NODE_ENV !== "production",
+        }),
+      },
       {
         source: "/manifest.webmanifest",
         headers: [{ key: "Content-Type", value: "application/manifest+json" }],

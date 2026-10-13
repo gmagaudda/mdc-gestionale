@@ -1,0 +1,16 @@
+begin;
+set local request.jwt.claims='{"aal":"aal2"}';select no_plan();
+set local role authenticated;
+select throws_ok($$select public.consume_rate_limit('login_email',repeat('a',64))$$,'42501',null,'client cannot bypass limit or manufacture counters');
+select throws_ok($$select * from app.rate_limits$$,'42501',null,'rate identities inaccessible to clients');
+reset role;set local request.jwt.claim.role='service_role';set local role service_role;
+select lives_ok($$insert into public.customers(legal_name) values('Server index fixture')$$,'privileged writes can evaluate the customer index without exposing the private schema');
+select is(public.consume_rate_limit('reset_email',repeat('a',64))->>'allowed','true','first allowed');
+select public.consume_rate_limit('reset_email',repeat('a',64));select public.consume_rate_limit('reset_email',repeat('a',64));
+select is(public.consume_rate_limit('reset_email',repeat('a',64))->>'allowed','false','fourth reset refused');
+select ok((public.consume_rate_limit('reset_email',repeat('a',64))->>'retry_after')::integer between 1 and 3600,'retry delay supplied');
+select is(public.consume_rate_limit('reset_email',repeat('b',64))->>'allowed','true','different identity independent');
+select throws_ok($$select public.consume_rate_limit('invented',repeat('c',64))$$,'23514','INVALID_SCOPE','server limits cannot be overridden');
+reset role;update app.rate_limits set reset_at=now()-interval '1 second' where scope='reset_email' and key_hash=repeat('a',64);set local role service_role;
+select is(public.consume_rate_limit('reset_email',repeat('a',64))->>'allowed','true','expired window resets');
+select * from finish();rollback;

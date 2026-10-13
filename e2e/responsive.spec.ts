@@ -1,3 +1,4 @@
+import { completeAdminMfa, enrollFixtureMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -72,6 +73,7 @@ test.beforeAll(async () => {
   );
   const login = await session.auth.signInWithPassword({ email, password });
   if (login.error) throw login.error;
+  await enrollFixtureMfa(session, email);
   const product = await session.rpc("save_product", {
     p_id: null,
     p_data: {
@@ -144,6 +146,7 @@ async function login(page: Page, address: string) {
   await page.getByLabel("Email", { exact: true }).fill(address);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/dashboard$/);
 }
 async function audit(page: Page, route: string) {

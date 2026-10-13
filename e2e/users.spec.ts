@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { navigateMenu } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -43,6 +44,7 @@ test("admin invites staff changes role and deactivates with an audit trail", asy
   await page.getByLabel("Email", { exact: true }).fill(adminEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await navigateMenu(page, "Utenti");
   await page.getByRole("link", { name: "Invita utente" }).click();
@@ -115,6 +117,7 @@ test("staff cannot open users or invoke invitation endpoint", async ({
   await page.getByLabel("Email", { exact: true }).fill(staffEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(
     page.getByRole("link", { name: "Utenti", exact: true }),

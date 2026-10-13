@@ -1,6 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { limitAuthAttempt } from "@/lib/security/rate-limit";
+import { headers } from "next/headers";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/supabase/config";
@@ -16,6 +18,15 @@ export async function login(
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   if (!hasSupabaseConfig()) return { ok: false, error: "unavailable" };
+  try {
+    if (
+      !(await limitAuthAttempt("login", parsed.data.email, await headers()))
+        .allowed
+    )
+      return { ok: false, error: "retryLater" };
+  } catch {
+    return { ok: false, error: "unavailable" };
+  }
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error || !data.user) return { ok: false, error: "credentials" };
@@ -27,6 +38,11 @@ export async function login(
   if (!profile?.is_active) {
     await supabase.auth.signOut();
     return { ok: false, error: "inactive" };
+  }
+  if (profile.role === "admin") {
+    const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (level.error || level.data.currentLevel !== "aal2")
+      redirect(`/mfa?next=${encodeURIComponent(safeNext(next))}`);
   }
   const home = homeForRole(profile.role);
   const destination = safeNext(next, home);
@@ -43,6 +59,15 @@ export async function requestReset(input: unknown): Promise<ActionResult> {
   if (!parsed.success) return { ok: false, error: "validation" };
   if (!hasSupabaseConfig() || !process.env.APP_URL)
     return { ok: false, error: "unavailable" };
+  try {
+    if (
+      !(await limitAuthAttempt("reset", parsed.data.email, await headers()))
+        .allowed
+    )
+      return { ok: false, error: "retryLater" };
+  } catch {
+    return { ok: false, error: "unavailable" };
+  }
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     parsed.data.email,

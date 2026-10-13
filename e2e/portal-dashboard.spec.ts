@@ -1,3 +1,4 @@
+import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { execFileSync } from "node:child_process";
@@ -175,6 +176,7 @@ test("portal dashboard isolates brands and preserves customer privacy", async ({
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await completeAdminMfa(page);
   await expect(page).toHaveURL(/portal/);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
