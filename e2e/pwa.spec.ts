@@ -265,8 +265,13 @@ test("production update waits for consent and cancellation preserves edits", asy
   test.skip(!production, "Requires local production Worker assets");
   test.setTimeout(90000);
   const url = new URL(process.env.E2E_BASE_URL!);
-  if (!["localhost", "127.0.0.1"].includes(url.hostname) || url.port !== "8790")
-    throw Error("Update fixture only supports local Wrangler on port 8790");
+  if (
+    !["localhost", "127.0.0.1"].includes(url.hostname) ||
+    !["8790", "3100"].includes(url.port)
+  )
+    throw Error(
+      "Update fixture only supports local Wrangler on port 8790 or 3100",
+    );
   const path = ".open-next/assets/sw.js",
     original = readFileSync(path, "utf8");
   try {

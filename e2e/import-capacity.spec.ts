@@ -68,11 +68,14 @@ test("20,000 physical rows are validated and staged within one minute", async ({
       (_, i) => `CAP-${i};Negozio sintetico ${i};Milano;IT`,
     ),
   ].join("\n");
-  await page.locator("input[type=file]").setInputFiles({
-    name: "capacity.csv",
-    mimeType: "text/csv",
-    buffer: Buffer.from(csv),
-  });
+  await page
+    .getByRole("main")
+    .locator("input[type=file]")
+    .setInputFiles({
+      name: "capacity.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from(csv),
+    });
   await expect(
     page.getByRole("button", { name: "Verifica righe", exact: true }),
   ).toBeVisible();

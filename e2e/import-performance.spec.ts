@@ -61,6 +61,7 @@ async function login(page: Page) {
 async function choose(page: Page) {
   await page.goto("/imports/new");
   await page
+    .getByRole("main")
     .locator('input[type="file"]')
     .setInputFiles(".fixtures/imports/synthetic-performance.xlsx");
   await expect(
@@ -74,11 +75,14 @@ test("historical preview, persistence, filters, duplicates and rollback", async 
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/imports/new");
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "invalid.xlsm",
-    mimeType: "application/octet-stream",
-    buffer: Buffer.from("invalid"),
-  });
+  await page
+    .getByRole("main")
+    .locator('input[type="file"]')
+    .setInputFiles({
+      name: "invalid.xlsm",
+      mimeType: "application/octet-stream",
+      buffer: Buffer.from("invalid"),
+    });
   await expect(
     page
       .getByRole("alert")
@@ -87,11 +91,14 @@ test("historical preview, persistence, filters, duplicates and rollback", async 
   await page
     .getByRole("button", { name: "Scegli un altro file", exact: true })
     .click();
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "too-large.xlsx",
-    mimeType: "application/octet-stream",
-    buffer: Buffer.alloc(10485761),
-  });
+  await page
+    .getByRole("main")
+    .locator('input[type="file"]')
+    .setInputFiles({
+      name: "too-large.xlsx",
+      mimeType: "application/octet-stream",
+      buffer: Buffer.alloc(10485761),
+    });
   await expect(
     page.getByRole("alert").filter({ hasText: "Il file supera i limiti" }),
   ).toBeVisible();
@@ -261,6 +268,7 @@ test("read-only verification of an operator supplied workbook", async ({
     await db().from("import_batches").select("id").eq("created_by", userId)
   ).data;
   await page
+    .getByRole("main")
     .locator('input[type="file"]')
     .setInputFiles(process.env.IMPORT_READONLY_SOURCE!);
   await expect(

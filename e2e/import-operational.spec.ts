@@ -192,7 +192,7 @@ test("complete operational flow with review, exact totals, duplicate hash and ro
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/imports/operational");
-  await page.locator("input[type=file]").setInputFiles({
+  await page.getByRole("main").locator("input[type=file]").setInputFiles({
     name: "synthetic-operation.xlsx",
     mimeType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

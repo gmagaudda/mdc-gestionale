@@ -64,6 +64,7 @@ test("three sheets, profile persistence, deliberate errors and bounded staging",
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/imports/operational");
   await page
+    .getByRole("main")
     .locator("input[type=file]")
     .setInputFiles(".fixtures/imports/synthetic-import.xlsx");
   const stores = page.getByRole("region", {
@@ -169,6 +170,7 @@ test("three sheets, profile persistence, deliberate errors and bounded staging",
   expect(await overflow()).toBe(false);
   await page.goto("/imports/operational");
   await page
+    .getByRole("main")
     .locator("input[type=file]")
     .setInputFiles(".fixtures/imports/synthetic-import.xlsx");
   await expect(

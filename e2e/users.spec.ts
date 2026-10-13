@@ -70,7 +70,9 @@ test("admin invites staff changes role and deactivates with an audit trail", asy
         .eq("record_id", id)
     ).data?.length,
   ).toBe(1);
-  await page.getByText("Amministrazione", { exact: true }).click();
+  await page
+    .getByRole("radio", { name: "Amministrazione", exact: true })
+    .press("Space");
   await page
     .getByRole("radio", { name: "Disattivato", exact: true })
     .press("Space");

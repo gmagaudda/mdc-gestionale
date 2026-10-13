@@ -310,6 +310,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await expect(page).toHaveURL(/\/orders$/);
   await page.goto("/dashboard");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
   await page.getByLabel("Email", { exact: true }).fill(accountEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
@@ -349,6 +350,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await admin().from("profiles").update({ role: "brand" }).eq("id", accountId);
   await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
   await page.getByLabel("Email", { exact: true }).fill(accountEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();

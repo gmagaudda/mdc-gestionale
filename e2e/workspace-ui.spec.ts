@@ -59,6 +59,8 @@ async function noOverflow(page: Page) {
   ).toBe(true);
 }
 async function axe(page: Page) {
+  // Metadata can finish streaming after the route's visible content.
+  await expect(page).toHaveTitle(/MDC Gestionale/);
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();

@@ -210,13 +210,21 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
   await expect(
     page.getByRole("button", { name: "Genera fattura", exact: true }),
   ).toBeVisible();
-  await page.getByLabel("Data emissione", { exact: true }).fill("2033-01-01");
-  await page.getByLabel("Data scadenza", { exact: true }).fill("2032-01-01");
+  await page
+    .getByRole("textbox", { name: "Data emissione", exact: true })
+    .fill("2033-01-01");
+  await page
+    .getByRole("textbox", { name: "Data scadenza", exact: true })
+    .fill("2032-01-01");
   await page
     .getByRole("button", { name: "Genera fattura", exact: true })
     .click();
-  await expect(page.getByLabel("Data scadenza", { exact: true })).toBeFocused();
-  await page.getByLabel("Data scadenza", { exact: true }).fill("2033-02-01");
+  await expect(
+    page.getByRole("textbox", { name: "Data scadenza", exact: true }),
+  ).toBeFocused();
+  await page
+    .getByRole("textbox", { name: "Data scadenza", exact: true })
+    .fill("2033-02-01");
   await page
     .getByRole("button", { name: "Genera fattura", exact: true })
     .click();
@@ -239,7 +247,9 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     page.getByRole("heading", { name: /Fattura F-2033/ }),
   ).toBeVisible();
   await expect(
-    page.getByText("Nessun pagamento registrato.", { exact: true }),
+    page
+      .getByRole("main")
+      .getByText("Nessun pagamento registrato.", { exact: true }),
   ).toBeVisible();
   await expect(page.locator("#content")).toContainText("24,40");
   await expect(page.locator("#content")).toContainText("Fattura simulata");
@@ -312,7 +322,7 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     .getByRole("button", { name: "Aggiorna stato", exact: true })
     .click();
   await expect(
-    page.getByText("Inviata", { exact: true }).first(),
+    page.getByRole("main").getByText("Inviata", { exact: true }).first(),
   ).toBeVisible();
   await page.getByLabel("Importo ricevuto (€)", { exact: true }).fill("30");
   await page
@@ -331,9 +341,11 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     .getByRole("button", { name: "Registra pagamento", exact: true })
     .click();
   await expect(
-    page.getByText("Pagamento registrato. Il saldo è aggiornato.", {
-      exact: true,
-    }),
+    page
+      .getByRole("main")
+      .getByText("Pagamento registrato. Il saldo è aggiornato.", {
+        exact: true,
+      }),
   ).toBeVisible();
   await expect(page.locator("#content")).toContainText("14,40");
   expect(
@@ -351,7 +363,9 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
   await expect(
     page.getByRole("button", { name: "Registra pagamento", exact: true }),
   ).toHaveCount(0);
-  await expect(page.getByText("Pagata", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByRole("main").getByText("Pagata", { exact: true }).first(),
+  ).toBeVisible();
   expect(
     (
       await db
@@ -383,11 +397,15 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     page.getByRole("region", { name: "Riepilogo", exact: true }),
   ).toContainText("20,00");
   await page.goto(`/orders/${cancelOrderId}`);
-  await expect(page.getByLabel("Data emissione", { exact: true })).toHaveCount(
-    1,
-  );
-  await page.getByLabel("Data emissione", { exact: true }).fill("2033-01-01");
-  await page.getByLabel("Data scadenza", { exact: true }).fill("2033-02-01");
+  await expect(
+    page.getByRole("textbox", { name: "Data emissione", exact: true }),
+  ).toHaveCount(1);
+  await page
+    .getByRole("textbox", { name: "Data emissione", exact: true })
+    .fill("2033-01-01");
+  await page
+    .getByRole("textbox", { name: "Data scadenza", exact: true })
+    .fill("2033-02-01");
   await page
     .getByRole("button", { name: "Genera fattura", exact: true })
     .click();
@@ -404,7 +422,7 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     .click();
   await expect(dialog).toHaveCount(0);
   await expect(
-    page.getByText("Fattura annullata.", { exact: true }),
+    page.getByRole("main").getByText("Fattura annullata.", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Registra pagamento", exact: true }),
@@ -442,10 +460,14 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     if (result.error) throw result.error;
   await page.goto(`/invoices/${ficId}`);
   await expect(
-    page.getByText("L’esito della creazione è incerto.", { exact: false }),
+    page
+      .getByRole("main")
+      .getByText("L’esito della creazione è incerto.", { exact: false }),
   ).toBeVisible();
   await expect(
-    page.getByText("Riferimento nel gestionale", { exact: true }),
+    page
+      .getByRole("main")
+      .getByText("Riferimento nel gestionale", { exact: true }),
   ).toBeVisible();
   const retry = await accounting.rpc("claim_invoice_issue", { p_id: ficId });
   if (retry.error) throw retry.error;
@@ -467,12 +489,16 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
     page.getByRole("heading", { name: "Fattura 17/MDC", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Numero in Fatture in Cloud", { exact: true }),
+    page
+      .getByRole("main")
+      .getByText("Numero in Fatture in Cloud", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Questa fattura è gestita con Fatture in Cloud.", {
-      exact: false,
-    }),
+    page
+      .getByRole("main")
+      .getByText("Questa fattura è gestita con Fatture in Cloud.", {
+        exact: false,
+      }),
   ).toBeVisible();
   await page
     .locator("summary")
