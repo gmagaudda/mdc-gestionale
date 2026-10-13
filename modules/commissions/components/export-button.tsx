@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
 import { Alert } from "@/components/arc/alert/alert";
+import { ListCsvDownload } from "@/components/shared/list-csv-download";
 export function CommissionExportButton({ params }: { params: string }) {
   const t = useTranslations("commissions"),
     [pending, setPending] = useState(false),
@@ -51,6 +52,10 @@ export function CommissionExportButton({ params }: { params: string }) {
         {pending ? t("exporting") : ready ? t("exported") : ""}
       </p>
       <Alert open={!!error} tone="danger" title={error} />
+      <ListCsvDownload
+        href={`/api/commissions/export?${params}&format=csv`}
+        fileName="provvigioni.csv"
+      />
     </div>
   );
 }

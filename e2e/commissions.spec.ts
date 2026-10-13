@@ -233,6 +233,20 @@ test("filters commissions and downloads an exact safe workbook", async ({
   );
   expect(response.status()).toBe(200);
   expect(response.headers()["cache-control"]).toBe("private, no-store");
+  const csv = await page.request.get(
+    `/api/commissions/export?brand_id=${brandId}&format=csv`,
+  );
+  expect(csv.status()).toBe(200);
+  const csvText = await csv.text();
+  expect(csvText).toContain("245");
+  expect(csvText).toContain("75");
+  expect(csvText).toContain(`'${name}`);
+  expect(csvText).not.toContain("Secret commission note");
+  const [csvDownload] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: "Esporta CSV", exact: true }).click(),
+  ]);
+  expect(csvDownload.suggestedFilename()).toBe("provvigioni.csv");
   await page.getByLabel("Al", { exact: true }).fill("2032-01-31");
   await page
     .getByRole("button", { name: "Applica filtri", exact: true })

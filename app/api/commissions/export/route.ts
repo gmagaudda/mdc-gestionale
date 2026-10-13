@@ -4,6 +4,8 @@ import { commissionsFiltersSchema } from "@/modules/commissions/schema";
 import { getCommissionsReport } from "@/modules/commissions/queries";
 import { commissionSheets } from "@/modules/commissions/export";
 import { exportXlsx } from "@/lib/xlsx";
+import { z } from "zod";
+import { exportCsv } from "@/lib/csv";
 const headers = {
   "Cache-Control": "private, no-store",
   "X-Content-Type-Options": "nosniff",
@@ -16,7 +18,10 @@ export async function GET(request: Request) {
   const parsed = commissionsFiltersSchema.safeParse(
     Object.fromEntries(new URL(request.url).searchParams),
   );
-  if (!parsed.success)
+  const format = z
+    .enum(["xlsx", "csv"])
+    .safeParse(new URL(request.url).searchParams.get("format") ?? "xlsx");
+  if (!parsed.success || !format.success)
     return new Response(t("invalidFilters"), { status: 400, headers });
   try {
     // One SQL snapshot: summary and complete order export cannot disagree because
@@ -26,9 +31,16 @@ export async function GET(request: Request) {
       return new Response(t("loadError"), { status: 503, headers });
     if (report.data.order_count > 10000 || report.data.brand_count > 500)
       return new Response(t("tooLarge"), { status: 413, headers });
-    const bytes = await exportXlsx(
-      commissionSheets(report.data, t, parsed.data),
-    );
+    const sheets = commissionSheets(report.data, t, parsed.data);
+    if (format.data === "csv")
+      return new Response(exportCsv(sheets[2].fields, sheets[2].rows), {
+        headers: {
+          ...headers,
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": 'attachment; filename="provvigioni.csv"',
+        },
+      });
+    const bytes = await exportXlsx(sheets);
     return new Response(bytes, {
       headers: {
         ...headers,
