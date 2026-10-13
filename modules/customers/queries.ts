@@ -1,4 +1,8 @@
 import "server-only";
+import {
+  parseColumnFilters,
+  applyColumnFilters,
+} from "@/lib/queries/column-filters";
 import { createClient } from "@/lib/supabase/server";
 import { escapeLike, type ListQuery } from "@/lib/queries/list";
 export async function listCustomers(query: ListQuery) {
@@ -13,7 +17,9 @@ export async function listCustomers(query: ListQuery) {
     .range(offset, offset + query.size - 1);
   if (query.q)
     request = request.ilike("legal_name", `%${escapeLike(query.q)}%`);
-  return request;
+  const filters = parseColumnFilters(query.columnFilters, "customers");
+  if (!filters.ok) return { data: [], count: 0, error: null };
+  return applyColumnFilters(request, "customers", filters.data);
 }
 export async function getCustomer(id: string) {
   const client = await createClient();

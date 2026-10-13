@@ -209,6 +209,36 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   expect(csv.data).toHaveLength(2);
   expect(csv.data[1][0]).toBe(number);
   expect(csv.data[1][8]).toBe("48,78");
+  await page
+    .getByRole("main")
+    .getByRole("checkbox", { name: `Seleziona ${number}`, exact: true })
+    .check();
+  const selectedDownload = page.waitForEvent("download");
+  await page
+    .getByRole("main")
+    .getByRole("button", { name: "Esporta selezione CSV", exact: true })
+    .click();
+  expect((await selectedDownload).suggestedFilename()).toBe("orders.csv");
+  expect(
+    (
+      await page.request.get(
+        `/api/orders/export?ids=${orderId}&status=confirmed`,
+      )
+    ).status(),
+  ).toBe(200);
+  expect(
+    Papa.parse<string[]>(
+      await (
+        await page.request.get(
+          `/api/orders/export?ids=${orderId}&status=confirmed`,
+        )
+      ).text(),
+      { delimiter: ";", skipEmptyLines: true },
+    ).data,
+  ).toHaveLength(1);
+  expect((await page.request.get("/api/orders/export?ids=bad")).status()).toBe(
+    400,
+  );
   const bad = await page.request.get("/api/orders/export?brand_id=bad");
   expect(bad.status()).toBe(400);
   await page

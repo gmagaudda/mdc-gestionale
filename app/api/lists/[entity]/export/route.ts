@@ -4,6 +4,11 @@ import { internalRoles } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 import { exportCsv } from "@/lib/csv";
 import { centsToDecimal } from "@/lib/money";
+import { exportSelectionSchema } from "@/lib/exports/selection";
+import {
+  captureColumnFilters,
+  parseColumnFilters,
+} from "@/lib/queries/column-filters";
 import {
   listExports,
   listExportEntitySchema,
@@ -24,13 +29,16 @@ export async function GET(
     return new Response(null, { status: 403, headers });
   const entity = listExportEntitySchema.safeParse((await params).entity);
   if (!entity.success) return new Response(null, { status: 404, headers });
-  const filters = listExportFiltersSchema.safeParse(
-    Object.fromEntries(new URL(request.url).searchParams),
-  );
+  const input = Object.fromEntries(new URL(request.url).searchParams);
+  const filters = listExportFiltersSchema.safeParse(input);
+  const columns = parseColumnFilters(captureColumnFilters(input), entity.data);
+  const ids = exportSelectionSchema.safeParse(input.ids);
   const t = await getTranslations("lists");
   const config = listExports[entity.data];
   if (
     !filters.success ||
+    !columns.ok ||
+    !ids.success ||
     (filters.data.sort && !config.sort.includes(filters.data.sort))
   )
     return new Response(t("exportInvalid"), { status: 400, headers });
@@ -43,6 +51,8 @@ export async function GET(
     p_direction: filters.data.direction,
     p_status: filters.data.status,
     p_overdue: filters.data.overdue === "yes",
+    p_column_filters: columns.data,
+    ...(ids.data ? { p_ids: [...new Set(ids.data)] } : {}),
   });
   const parsed = listExportReportSchema.safeParse(response.data);
   if (response.error || !parsed.success)

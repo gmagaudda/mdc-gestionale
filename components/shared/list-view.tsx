@@ -6,7 +6,13 @@ import { EmptyState } from "./empty-state";
 import { DataTable, type ListRow, type ListColumn } from "./data-table";
 import { listHref, type ListQuery } from "@/lib/queries/list";
 import { listExportEntitySchema } from "@/lib/exports/lists";
-import { ListCsvDownload } from "./list-csv-download";
+import {
+  columnFilterParams,
+  parseColumnFilters,
+} from "@/lib/queries/column-filters";
+import { ListColumnFilters } from "./list-column-filters";
+import { SelectableListTable } from "./selectable-list-table";
+import { Alert } from "@/components/arc/alert/alert";
 
 export async function ListView({
   base,
@@ -19,6 +25,7 @@ export async function ListView({
   sortable = [],
   filterParams = {},
   emptyDescription,
+  exportBase,
 }: {
   base: string;
   query: ListQuery;
@@ -30,22 +37,46 @@ export async function ListView({
   sortable?: ListColumn[];
   filterParams?: Record<string, string>;
   emptyDescription?: string;
+  exportBase?: string;
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
   const exportEntity = listExportEntitySchema.safeParse(base.slice(1));
+  const validColumns =
+    !exportEntity.success ||
+    parseColumnFilters(query.columnFilters, exportEntity.data).ok;
+  const exportHref =
+    exportBase ??
+    (exportEntity.success
+      ? `/api/lists/${exportEntity.data}/export`
+      : undefined);
+  const parameters = {
+    ...filterParams,
+    ...columnFilterParams(query.columnFilters),
+    q: query.q,
+    sort: query.sort,
+    direction: query.direction,
+  };
   return (
-    <section className="stack" aria-label={title}>
+    <section className="stack list-controls" aria-label={title}>
       {exportEntity.success && (
-        <ListCsvDownload
-          href={`/api/lists/${exportEntity.data}/export?${new URLSearchParams({ ...filterParams, q: query.q, sort: query.sort, direction: query.direction })}`}
-          fileName={`${exportEntity.data}.csv`}
+        <ListColumnFilters
+          entity={exportEntity.data}
+          base={base}
+          query={query}
+          filterParams={filterParams}
         />
       )}
       {searchLabel && (
         <form action={base} className="list-search">
           <input type="hidden" name="sort" value={query.sort} />
           <input type="hidden" name="direction" value={query.direction} />
+          {Object.entries({
+            ...filterParams,
+            ...columnFilterParams(query.columnFilters),
+          }).map(([name, value]) => (
+            <input key={name} type="hidden" name={name} value={value} />
+          ))}
           <Input
             label={searchLabel}
             name="q"
@@ -85,7 +116,47 @@ export async function ListView({
           ))}
         </nav>
       )}
-      {rows.length ? (
+      {!validColumns ? (
+        <Alert tone="danger" title={t("columnFilterInvalid")}>
+          <Link
+            className="text-link"
+            href={listHref(
+              base,
+              query,
+              { page: 1, columnFilters: undefined },
+              filterParams,
+            )}
+          >
+            {t("clearColumnFilters")}
+          </Link>
+        </Alert>
+      ) : exportHref ? (
+        <SelectableListTable
+          key={JSON.stringify({ base, query, filterParams })}
+          rows={rows}
+          columns={columns}
+          caption={title}
+          emptyMessage={
+            emptyDescription ??
+            t(
+              query.q || Object.keys(query.columnFilters ?? {}).length
+                ? "emptySearch"
+                : "emptyDescription",
+            )
+          }
+          exportHref={`${exportHref}?${new URLSearchParams(parameters)}`}
+          fileName={`${base.slice(1)}.csv`}
+          clearHref={
+            query.q ||
+            Object.values(query.columnFilters ?? {}).some(Boolean) ||
+            Object.values(filterParams).some(
+              (value) => value !== "all" && value !== "",
+            )
+              ? base
+              : undefined
+          }
+        />
+      ) : rows.length ? (
         <DataTable
           rows={rows}
           columns={columns}
@@ -107,40 +178,42 @@ export async function ListView({
           }
         />
       )}
-      <div className="list-footer">
-        <p role="status">{t("count", { count })}</p>
-        <nav className="list-sort" aria-label={t("pagination")}>
-          {query.page > 1 && (
-            <Link
-              className="text-link"
-              href={listHref(
-                base,
-                query,
-                { page: query.page - 1 },
-                filterParams,
-              )}
-            >
-              {t("previous")}
-            </Link>
-          )}
-          <span className="tabular-nums">
-            {t("page", { page: query.page, pages })}
-          </span>
-          {query.page < pages && (
-            <Link
-              className="text-link"
-              href={listHref(
-                base,
-                query,
-                { page: query.page + 1 },
-                filterParams,
-              )}
-            >
-              {t("next")}
-            </Link>
-          )}
-        </nav>
-      </div>
+      {validColumns && (
+        <div className="list-footer">
+          <p role="status">{t("count", { count })}</p>
+          <nav className="list-sort" aria-label={t("pagination")}>
+            {query.page > 1 && (
+              <Link
+                className="text-link"
+                href={listHref(
+                  base,
+                  query,
+                  { page: query.page - 1 },
+                  filterParams,
+                )}
+              >
+                {t("previous")}
+              </Link>
+            )}
+            <span className="tabular-nums">
+              {t("page", { page: query.page, pages })}
+            </span>
+            {query.page < pages && (
+              <Link
+                className="text-link"
+                href={listHref(
+                  base,
+                  query,
+                  { page: query.page + 1 },
+                  filterParams,
+                )}
+              >
+                {t("next")}
+              </Link>
+            )}
+          </nav>
+        </div>
+      )}
     </section>
   );
 }

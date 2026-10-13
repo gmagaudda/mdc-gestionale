@@ -202,7 +202,20 @@
     "exportReady": "CSV pronto. Download avviato.",
     "exportError": "Impossibile esportare i dati. Controlla la connessione e riprova.",
     "exportTooLarge": "L’esportazione supera 10.000 righe. Restringi i filtri e riprova.",
-    "exportInvalid": "Filtri di esportazione non validi. Reimposta i filtri e riprova."
+    "exportInvalid": "Filtri di esportazione non validi. Reimposta i filtri e riprova.",
+    "columnFilters": "Filtri per colonna",
+    "columnFilterHint": "I filtri si combinano con la ricerca. Il testo viene cercato anche all’interno del valore; importi in euro, date e dimensioni devono coincidere esattamente. Lascia vuoto per includere tutti i valori.",
+    "columnFilterField": "{field} (filtro)",
+    "applyColumnFilters": "Applica filtri per colonna",
+    "clearColumnFilters": "Azzera filtri per colonna",
+    "columnFilterInvalid": "Uno o più filtri non sono validi. Usa importi in euro con al massimo due decimali, date valide e dimensioni da 0 a 10.485.760 byte. Correggi i valori oppure azzera i filtri.",
+    "selection": "Selezione",
+    "selectPage": "Seleziona tutte le righe di questa pagina",
+    "selectRow": "Seleziona {value}",
+    "selectedRows": "<number>{count}</number> {count, plural, one {riga selezionata} other {righe selezionate}}",
+    "selectionHint": "La selezione vale solo per questa pagina. Cambiando filtri, ordinamento o pagina viene azzerata.",
+    "clearSelection": "Azzera selezione",
+    "exportSelected": "Esporta selezione CSV"
   },
   "audit": {
     "title": "Registro modifiche",
@@ -675,7 +688,8 @@
       "order_confirmation": "Conferma ordine",
       "contract": "Contratto",
       "other": "Altro"
-    }
+    },
+    "fileSizeBytes": "Dimensione (byte)"
   },
   "budgets": {
     "title": "Budget",

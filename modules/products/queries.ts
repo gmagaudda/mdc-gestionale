@@ -1,4 +1,8 @@
 import "server-only";
+import {
+  parseColumnFilters,
+  applyColumnFilters,
+} from "@/lib/queries/column-filters";
 import { createClient } from "@/lib/supabase/server";
 import { escapeLike, type ListQuery } from "@/lib/queries/list";
 export async function listProducts(query: ListQuery) {
@@ -14,7 +18,9 @@ export async function listProducts(query: ListQuery) {
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
   if (query.q) request = request.ilike("name", `%${escapeLike(query.q)}%`);
-  return request;
+  const filters = parseColumnFilters(query.columnFilters, "products");
+  if (!filters.ok) return { data: [], count: 0, error: null };
+  return applyColumnFilters(request, "products", filters.data);
 }
 export async function getProduct(id: string) {
   const db = await createClient();

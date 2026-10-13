@@ -4,6 +4,7 @@ export type ListQuery = {
   q: string;
   sort: string;
   direction: "asc" | "desc";
+  columnFilters?: Record<string, unknown>;
 };
 export function parseListQuery(
   input: Record<string, string | string[] | undefined>,
@@ -12,7 +13,13 @@ export function parseListQuery(
   defaultDirection: "asc" | "desc" = "asc",
 ): ListQuery {
   const page = Number(input.page);
+  const columnFilters = Object.fromEntries(
+    Object.entries(input)
+      .filter(([key]) => key.startsWith("cf_"))
+      .map(([key, value]) => [key.slice(3), value]),
+  );
   return {
+    ...(Object.keys(columnFilters).length ? { columnFilters } : {}),
     page: Number.isInteger(page) && page > 0 && page <= 100000 ? page : 1,
     size: 25,
     q: typeof input.q === "string" ? input.q.trim().slice(0, 100) : "",
@@ -41,6 +48,11 @@ export function listHref(
     q: next.q,
     sort: next.sort,
     direction: next.direction,
+    ...Object.fromEntries(
+      Object.entries(next.columnFilters ?? {})
+        .filter(([, value]) => typeof value === "string")
+        .map(([key, value]) => [`cf_${key}`, value as string]),
+    ),
   });
   return `${base}?${params}`;
 }

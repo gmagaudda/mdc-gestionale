@@ -91,7 +91,7 @@ export const listExports: Record<
       { key: "brand", label: "brand" },
       { key: "kind", label: "kind", kind: "documentKind" },
       { key: "shared_with_brand", label: "visibility", kind: "visibility" },
-      { key: "size_bytes", label: "fileSize" },
+      { key: "size_bytes", label: "fileSizeBytes" },
     ],
   },
   invoices: {

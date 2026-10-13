@@ -2586,8 +2586,10 @@ export type Database = {
       };
       export_business_list: {
         Args: {
+          p_column_filters?: Json;
           p_direction?: string;
           p_entity: string;
+          p_ids?: string[];
           p_overdue?: boolean;
           p_q?: string;
           p_sort?: string;

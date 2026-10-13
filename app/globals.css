@@ -299,6 +299,25 @@ a {
   gap: var(--space-3);
   align-items: center;
 }
+.workspace-filters > summary {
+  cursor: pointer;
+  min-height: var(--control-height-lg);
+  padding-block: var(--space-3);
+}
+.workspace-filters[open] > summary {
+  margin-block-end: var(--space-4);
+}
+.list-controls {
+  container-type: inline-size;
+}
+.list-button-copy {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-inline-size: min(
+    calc(100cqi - var(--space-4) * 2 - var(--space-1)),
+    calc(100vi - var(--space-6) * 2 - var(--space-4) * 2 - var(--space-1))
+  );
+}
 html {
   scroll-padding-block-end: calc(var(--control-height-lg) + var(--space-8));
 }
@@ -551,9 +570,13 @@ summary {
 }
 .mobile-cards {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: var(--space-4);
 }
 .data-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-panel);

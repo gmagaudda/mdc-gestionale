@@ -4,7 +4,6 @@ import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
 import { formatMoney } from "@/lib/money";
-import { listHref } from "@/lib/queries/list";
 import { PageHeader } from "@/components/shared/page-header";
 import { ListView } from "@/components/shared/list-view";
 import { Alert } from "@/components/arc/alert/alert";
@@ -69,17 +68,12 @@ export default async function OrdersPage({
         q={query.q}
         {...choices}
       />
-      <Link
-        className="text-link"
-        href={listHref("/api/orders/export", query, {}, params)}
-      >
-        {t("exportCsv")}
-      </Link>
       {result.error ? (
         <LoadError title={t("loadError")} />
       ) : (
         <ListView
           base="/orders"
+          exportBase="/api/orders/export"
           query={query}
           filterParams={params}
           title={t("title")}

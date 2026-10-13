@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import Papa from "papaparse";
 import AxeBuilder from "@axe-core/playwright";
+import { readFileSync } from "node:fs";
 const password = "Csv-local-fixture-42";
 let email: string,
   userId: string,
@@ -42,7 +43,7 @@ test.beforeAll(async () => {
           n === 31
             ? `=${prefix} formula`
             : `${prefix} ${String(n).padStart(2, "0")}`,
-        city: "Roma",
+        city: n === 31 ? "Milano" : "Roma",
         notes: "Private CSV fixture note",
       })),
     )
@@ -105,6 +106,239 @@ test.beforeAll(async () => {
     .single();
   if (invoice.error) throw invoice.error;
   invoiceId = invoice.data.id;
+});
+test("column filters and page selection stay aligned with CSV and reset on navigation", async ({
+  page,
+}, info) => {
+  test.setTimeout(60000);
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Esci", exact: true }),
+  ).toBeVisible();
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
+    await page.evaluate(() => localStorage.removeItem("theme"));
+    await page.goto(`/customers?q=${prefix}&sort=legal_name&direction=desc`);
+    const main = page.getByRole("main");
+    const summary = main
+      .locator("summary")
+      .filter({ hasText: "Filtri per colonna" });
+    await summary.focus();
+    await summary.press("Enter");
+    await main.getByLabel("Città (filtro)", { exact: true }).fill("Roma");
+    await main
+      .getByRole("button", { name: "Applica filtri per colonna", exact: true })
+      .click();
+    await expect(page).toHaveURL(/cf_city=Roma/);
+    await expect(main.getByText("31 elementi", { exact: true })).toBeVisible();
+    const select = main.getByRole("checkbox", {
+      name: `Seleziona ${prefix} 30`,
+      exact: true,
+    });
+    await select.focus();
+    await select.press("Space");
+    await expect(select).toBeChecked();
+    expect((await select.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    const selectPage = main.getByRole("checkbox", {
+      name: "Seleziona tutte le righe di questa pagina",
+      exact: true,
+    });
+    await expect(selectPage).toHaveAttribute("aria-checked", "mixed");
+    const downloading = page.waitForEvent("download");
+    await main
+      .getByRole("button", { name: "Esporta selezione CSV", exact: true })
+      .click();
+    const csv = readFileSync((await (await downloading).path())!, "utf8");
+    const data = Papa.parse<string[]>(csv, {
+      delimiter: ";",
+      skipEmptyLines: true,
+    }).data;
+    expect(data).toHaveLength(2);
+    expect(data[1][0]).toBe(`${prefix} 30`);
+    expect(data[1][2]).toBe("Roma");
+    await selectPage.check();
+    await expect(selectPage).toBeChecked();
+    const pageDownload = page.waitForEvent("download");
+    await main
+      .getByRole("button", { name: "Esporta selezione CSV", exact: true })
+      .click();
+    const pageCsv = Papa.parse<string[]>(
+      readFileSync((await (await pageDownload).path())!, "utf8"),
+      { delimiter: ";", skipEmptyLines: true },
+    ).data;
+    expect(pageCsv).toHaveLength(26);
+    expect(pageCsv.slice(1).every((row) => row[2] === "Roma")).toBe(true);
+    await main
+      .getByRole("button", { name: "Azzera selezione", exact: true })
+      .click();
+    await expect(selectPage).not.toBeChecked();
+    await select.check();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(page.viewportSize()!.width);
+    await page.screenshot({
+      path: info.outputPath(`column-selection-${theme}.png`),
+      fullPage: true,
+    });
+    await main
+      .getByRole("link", {
+        name: "Ordina per Ragione sociale decrescente",
+        exact: true,
+      })
+      .click();
+    await expect(page).toHaveURL(/direction=asc/);
+    await expect(page).toHaveURL(/cf_city=Roma/);
+    await expect(
+      main.getByRole("button", { name: "Esporta selezione CSV", exact: true }),
+    ).toHaveCount(0);
+    await selectPage.check();
+    await main
+      .getByRole("link", { name: "Pagina successiva", exact: true })
+      .click();
+    await expect(page).toHaveURL(/page=2/);
+    await expect(page).toHaveURL(/cf_city=Roma/);
+    await expect(
+      main.getByRole("button", { name: "Esporta selezione CSV", exact: true }),
+    ).toHaveCount(0);
+    await page.goBack();
+    await expect(page).toHaveURL(/page=1/);
+    await expect(
+      main.getByRole("button", { name: "Esporta selezione CSV", exact: true }),
+    ).toHaveCount(0);
+    await main
+      .getByRole("link", { name: "Azzera filtri per colonna", exact: true })
+      .click();
+    await expect(main.getByText("32 elementi", { exact: true })).toBeVisible();
+    await expect(page).not.toHaveURL(/cf_city/);
+  }
+  for (const [entity, filters, rows] of [
+    ["products", "cf_wholesale_price_cents=123%2C45", 1],
+    ["products", "cf_wholesale_price_cents=123%2C46", 0],
+    ["budgets", "cf_period_start=2034-01-01&cf_amount_cents=123%2C45", 1],
+    [
+      "invoices",
+      "cf_due_date=2026-01-31&cf_gross_cents=122%2C00&status=issued",
+      1,
+    ],
+    ["customers", "cf_city=Milano", 1],
+  ] as const) {
+    const url = `/${entity}?q=${prefix}&${filters}`;
+    await page.goto(url);
+    await expect(
+      page
+        .getByRole("main")
+        .getByRole("status")
+        .filter({
+          hasText: new RegExp(
+            `^${rows == 0 ? "Nessun elemento" : rows == 1 ? "1 elemento" : `${rows} elementi`}$`,
+          ),
+        }),
+    ).toBeVisible();
+    const response = await page.request.get(
+      `/api/lists${url.replace("?", "/export?")}`,
+    );
+    expect(response.status(), await response.text()).toBe(200);
+    expect(
+      Papa.parse<string[]>(await response.text(), {
+        delimiter: ";",
+        skipEmptyLines: true,
+      }).data,
+    ).toHaveLength(rows + 1);
+  }
+  for (const query of [
+    "cf_city=Roma&ids=bad",
+    "cf_city=Roma&ids=",
+    "cf_notes=private",
+    "cf_city=Roma&cf_legal_name=missing",
+  ]) {
+    const result = await page.request.get(
+      `/api/lists/customers/export?q=${prefix}&${query}`,
+    );
+    expect(result.status()).toBe(query.includes("missing") ? 200 : 400);
+    if (query.includes("missing"))
+      expect(
+        Papa.parse<string[]>(await result.text(), {
+          delimiter: ";",
+          skipEmptyLines: true,
+        }).data,
+      ).toHaveLength(1);
+  }
+  const intersection = await page.request.get(
+    `/api/lists/customers/export?q=${prefix}&cf_city=Milano&ids=${customerIds[0]}`,
+  );
+  expect(
+    Papa.parse<string[]>(await intersection.text(), {
+      delimiter: ";",
+      skipEmptyLines: true,
+    }).data,
+  ).toHaveLength(1);
+  await page.goto(`/products?q=${prefix}&cf_wholesale_price_cents=invalid`);
+  await expect(page.getByRole("main").getByRole("alert")).toBeVisible();
+  await expect(
+    page
+      .getByRole("main")
+      .getByRole("button", { name: "Esporta CSV", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("main")
+    .getByRole("link", { name: "Azzera filtri per colonna", exact: true })
+    .last()
+    .click();
+  await expect(
+    page.getByRole("main").getByText("1 elemento", { exact: true }),
+  ).toBeVisible();
+  await page.goto(`/customers?q=${prefix}&cf_city=missing`);
+  await expect(
+    page
+      .getByRole("main")
+      .getByRole("status")
+      .filter({ hasText: /^Nessun elemento$/ }),
+  ).toBeVisible();
+  await page
+    .getByRole("main")
+    .getByRole("link", { name: "Rimuovi filtri", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/customers$/);
+  // Reflow of the complete filtered list, including the disclosure and selection.
+  await page.goto(`/customers?q=${prefix}&cf_city=Roma`);
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.evaluate(() => (document.documentElement.style.fontSize = "200%"));
+  await page
+    .getByRole("main")
+    .getByRole("checkbox", {
+      name: "Seleziona tutte le righe di questa pagina",
+      exact: true,
+    })
+    .check();
+  const selectedButton = page
+    .getByRole("main")
+    .getByRole("button", { name: "Esporta selezione CSV", exact: true });
+  await expect(selectedButton).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(320);
+  await page
+    .getByRole("main")
+    .getByLabel("Città (filtro)", { exact: true })
+    .focus();
+  await page.keyboard.type("a");
+  expect(
+    await page
+      .getByRole("main")
+      .getByLabel("Città (filtro)", { exact: true })
+      .inputValue(),
+  ).toContain("a");
+  await page.evaluate(() => (document.documentElement.style.fontSize = ""));
 });
 test.afterAll(async () => {
   if (invoiceId) await admin().from("invoices").delete().eq("id", invoiceId);

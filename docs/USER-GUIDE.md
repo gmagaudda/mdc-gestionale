@@ -36,6 +36,10 @@ Consulta dashboard, ordini, vendite, calendario e documenti dei soli brand assoc
 
 Le liste principali hanno «Esporta CSV»: il file comprende tutte le pagine con ricerca, ordinamento e filtri correnti. Il limite è 10.000 righe; oltre il limite restringi i filtri. Importi in formato italiano, separatore punto e virgola. Le provvigioni offrono anche Excel.
 
+In Brand, Negozi, Stagioni, Prodotti, Budget, Documenti e Fatture apri «Filtri per colonna» per affinare la ricerca sui campi disponibili. I filtri si combinano: il testo cerca anche dentro al valore, mentre euro, date e dimensioni in byte devono coincidere esattamente. Inserisci gli importi senza separatori delle migliaia, ad esempio `123,45`. «Azzera filtri per colonna» conserva la ricerca e i filtri di dominio.
+
+Nelle stesse liste e in Ordini, seleziona le caselle delle righe oppure tutte quelle della pagina e usa «Esporta selezione CSV». Il file rispetta anche i filtri correnti. La selezione riguarda la pagina visibile e viene azzerata cambiando pagina, filtri o ordinamento; «Esporta CSV» continua a comprendere tutte le pagine.
+
 Dal dettaglio brand o dalla panoramica filtrata per brand scarica il riepilogo vendite PDF. Nel portale Vendite trovi CSV e riepilogo PDF quando è selezionato un brand (oppure ne hai uno solo). Stagione e date ordine vengono rispettate; oltre 1.000 gruppi restringi i filtri per il PDF. I nomi/città restano riservati se il brand non ha il permesso di vederli. Questi export riguardano ordini operativi; i dati storici Excel hanno export separati in Analisi.
 
 ## Come leggere i confronti

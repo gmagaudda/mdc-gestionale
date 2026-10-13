@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
 import { parseListQuery } from "@/lib/queries/list";
+import { columnFilterParams } from "@/lib/queries/column-filters";
 import { formatMoney } from "@/lib/money";
 import { externalStatusSchema } from "@/lib/invoicing/types";
 import { listInvoices } from "@/modules/invoices/queries";
@@ -47,6 +48,13 @@ export default async function InvoicesPage({
       <PageHeader title={t("title")} />
       <p>{t("listHint")}</p>
       <form action="/invoices" className="stack">
+        {Object.entries({
+          ...columnFilterParams(query.columnFilters),
+          sort: query.sort,
+          direction: query.direction,
+        }).map(([name, value]) => (
+          <input key={name} type="hidden" name={name} value={value} />
+        ))}
         <fieldset className="form-grid">
           <legend className="sr-only">{t("filters")}</legend>
           <Input

@@ -6,6 +6,7 @@ import { Button } from "@/components/arc/button/button";
 import { Copy } from "lucide-react";
 import { SortableDataTable } from "@/components/arc/sortable-data-table/sortable-data-table";
 import { EmptyState } from "./empty-state";
+import { Checkbox } from "@/components/arc/checkbox/checkbox";
 
 export type ListRow = { id: string; [key: string]: string | number | null };
 export type ListColumn = {
@@ -23,13 +24,16 @@ export function DataTable({
   columns,
   caption,
   emptyMessage,
+  selection,
 }: {
   rows: ListRow[];
   columns: ListColumn[];
   caption: string;
   emptyMessage: string;
+  selection?: { keys: string[]; onChange: (keys: string[]) => void };
 }) {
   const t = useTranslations("common");
+  const lists = useTranslations("lists");
   const [feedback, setFeedback] = useState("");
   const desktop = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -95,6 +99,24 @@ export function DataTable({
     ) : (
       <span className="wrap-value">{String(row[column.key] ?? "")}</span>
     );
+  const selectRow = (row: ListRow, mobile = false) => {
+    const label = lists("selectRow", {
+      value: String(row[columns[0]?.key] ?? row.id),
+    });
+    return (
+      <Checkbox
+        checked={selection!.keys.includes(row.id)}
+        {...(mobile ? { label } : { "aria-label": label })}
+        onCheckedChange={(checked) =>
+          selection!.onChange(
+            checked === true
+              ? [...new Set([...selection!.keys, row.id])]
+              : selection!.keys.filter((key) => key !== row.id),
+          )
+        }
+      />
+    );
+  };
   if (!rows.length)
     return (
       <EmptyState title={caption} description={emptyMessage} label={caption} />
@@ -107,17 +129,30 @@ export function DataTable({
           rowKey="id"
           caption={caption}
           emptyMessage={emptyMessage}
-          columns={columns.map((column) => ({
-            ...column,
-            sortable: false,
-            render: (_value: unknown, row: ListRow) => render(column, row),
-          }))}
+          columns={[
+            ...(selection
+              ? [
+                  {
+                    key: "_selection",
+                    label: lists("selection"),
+                    sortable: false,
+                    render: (_value: unknown, row: ListRow) => selectRow(row),
+                  },
+                ]
+              : []),
+            ...columns.map((column) => ({
+              ...column,
+              sortable: false,
+              render: (_value: unknown, row: ListRow) => render(column, row),
+            })),
+          ]}
         />
       </div>
       <p role="status">{feedback}</p>
       <div className="mobile-cards" role="list" aria-label={caption}>
         {rows.map((row) => (
           <article className="data-card" role="listitem" key={row.id}>
+            {selection && selectRow(row, true)}
             <dl>
               {columns.map((column) => (
                 <div key={column.key}>

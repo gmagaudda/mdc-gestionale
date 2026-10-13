@@ -119,6 +119,7 @@ export async function getOrder(id: string) {
 export async function listOrders(
   query: import("@/lib/queries/list").ListQuery,
   filters: import("./filters").OrderFilters,
+  ids?: string[],
 ) {
   const db = await createClient();
   let request = db
@@ -132,6 +133,7 @@ export async function listOrders(
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
   if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);
+  if (ids) request = request.in("id", ids);
   if (filters.status) request = request.eq("status", filters.status);
   if (filters.brand_id) request = request.eq("brand_id", filters.brand_id);
   if (filters.customer_id)

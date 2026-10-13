@@ -1,4 +1,8 @@
 import "server-only";
+import {
+  parseColumnFilters,
+  applyColumnFilters,
+} from "@/lib/queries/column-filters";
 import { createClient } from "@/lib/supabase/server";
 import { escapeLike, type ListQuery } from "@/lib/queries/list";
 import type { ExternalStatus } from "@/lib/invoicing/types";
@@ -16,7 +20,9 @@ export async function listInvoices(
   if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);
   if (status) request = request.eq("status", status);
   if (overdue) request = request.eq("overdue", true);
-  return request;
+  const filters = parseColumnFilters(query.columnFilters, "invoices");
+  if (!filters.ok) return { data: [], count: 0, error: null };
+  return applyColumnFilters(request, "invoices", filters.data);
 }
 export async function getInvoice(id: string) {
   return (await createClient())
