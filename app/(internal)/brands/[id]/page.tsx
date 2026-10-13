@@ -9,6 +9,7 @@ import { archiveBrand, archiveContact } from "@/modules/brands/actions";
 import { ContactForm } from "@/modules/brands/components/contact-form";
 import { ConfirmAction } from "@/components/shared/confirm-action";
 import { Alert } from "@/components/arc/alert/alert";
+import { BrandSummaryDownload } from "@/components/shared/brand-summary-download";
 export default async function BrandPage({
   params,
   searchParams,
@@ -41,6 +42,7 @@ export default async function BrandPage({
         )}
       </header>
       <Alert open={saved} tone="success" title={t("saved")} />
+      <BrandSummaryDownload href={`/api/pdf/brand-summary/${id}`} />
       <dl className="details-grid">
         <div>
           <dt>{t("legal_name")}</dt>

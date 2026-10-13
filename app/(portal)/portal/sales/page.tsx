@@ -9,6 +9,7 @@ import { AnimatedMoney } from "@/components/shared/animated-number";
 import { PortalFilters } from "@/modules/portal/components/portal-filters";
 import { getPortalContext } from "@/modules/portal/context";
 import { getPortalSales } from "@/modules/portal/queries";
+import { BrandSummaryDownload } from "@/components/shared/brand-summary-download";
 export default async function Sales({
   searchParams,
 }: {
@@ -18,6 +19,8 @@ export default async function Sales({
     c = await getPortalContext(input),
     t = await getTranslations("portal"),
     q = parseListQuery(input, ["net_cents"], "net_cents", "desc");
+  const summaryBrand =
+    c.filters.brand_id || (c.brands.length === 1 ? c.brands[0].id : "");
   return (
     <>
       <h1>{t("salesTitle")}</h1>
@@ -39,6 +42,11 @@ export default async function Sales({
               <LoadError title={t("loadError")} />
             ) : (
               <>
+                {summaryBrand && (
+                  <BrandSummaryDownload
+                    href={`/api/pdf/brand-summary/${summaryBrand}?${new URLSearchParams(Object.entries(c.filters).filter(([key, value]) => key !== "brand_id" && !!value))}`}
+                  />
+                )}
                 <p className="report-value">
                   {t("sold")}:{" "}
                   <AnimatedMoney cents={BigInt(report.data.sold_cents)} />

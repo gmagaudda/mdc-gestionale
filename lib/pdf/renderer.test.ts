@@ -7,7 +7,7 @@ import {
   wrapPdfText,
   UnsupportedPdfCharacters,
 } from "./renderer";
-import type { OrderPdf } from "./types";
+import type { OrderPdf, BrandSummaryPdf } from "./types";
 import messages from "@/messages/it.json";
 const fontBytes = new Uint8Array(
   readFileSync("public/fonts/Inter-Regular.ttf"),
@@ -46,6 +46,68 @@ const order: OrderPdf = {
   labels,
 };
 describe("print PDF", () => {
+  it("prints SQL summary strings beyond safe integers and repeats headings across A4 pages", async () => {
+    const summary: BrandSummaryPdf = {
+      type: "brand-summary",
+      title: "Riepilogo vendite brand",
+      brand: "Marchio prova",
+      season: "Tutte le stagioni",
+      period: "Tutte le date ordine",
+      labels: {
+        ...labels,
+        season: "Stagione",
+        customer: "Cliente",
+        orders: "Ordini",
+        empty: "Nessun ordine",
+        definition: "Ordini confermati e successivi",
+      },
+      report: {
+        count: 100,
+        order_count: 100,
+        net_cents: "9007199254740993",
+        vat_cents: "0",
+        gross_cents: "9007199254740993",
+        rows: Array.from({ length: 100 }, () => ({
+          season_code: "FW26",
+          customer: "Cliente riservato",
+          city: "",
+          order_count: 1,
+          net_cents: "9007199254740993",
+          vat_cents: "0",
+          gross_cents: "9007199254740993",
+        })),
+      },
+    };
+    const bytes = await new PrintPdfRenderer(fontBytes).render(
+      summary.type,
+      summary,
+    );
+    const doc = await PDFDocument.load(bytes);
+    expect(doc.getPageCount()).toBeGreaterThan(1);
+    expect(doc.getTitle()).toBe(summary.title);
+    expect(doc.getAuthor()).toBe("MDC Gestionale");
+    expect(doc.getPages().every((page) => page.getHeight() === 841.89)).toBe(
+      true,
+    );
+    if (process.env.PDF_LAYOUT_CHECK) {
+      mkdirSync("tmp/pdfs", { recursive: true });
+      writeFileSync("tmp/pdfs/brand-summary-many.pdf", bytes);
+    }
+    const empty = await PDFDocument.load(
+      await new PrintPdfRenderer(fontBytes).render(summary.type, {
+        ...summary,
+        report: {
+          count: 0,
+          order_count: 0,
+          net_cents: "0",
+          vat_cents: "0",
+          gross_cents: "0",
+          rows: [],
+        },
+      }),
+    );
+    expect(empty.getPageCount()).toBe(1);
+  });
   it("wraps long unbroken SKUs without losing text or exceeding a column", async () => {
     const doc = await PDFDocument.create();
     doc.registerFontkit(fontkit);

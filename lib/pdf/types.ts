@@ -1,4 +1,6 @@
-export type PdfType = "order-confirmation" | "line-sheet";
+import type { z } from "zod";
+import type { brandSummarySchema } from "./summary-schema";
+export type PdfType = "order-confirmation" | "line-sheet" | "brand-summary";
 export type PdfLine = {
   name: string;
   sku: string;
@@ -41,7 +43,16 @@ export type LineSheetPdf = {
   }[];
   labels: Record<string, string>;
 };
-export type PdfData = OrderPdf | LineSheetPdf;
+export type BrandSummaryPdf = {
+  type: "brand-summary";
+  title: string;
+  brand: string;
+  season: string;
+  period: string;
+  report: z.infer<typeof brandSummarySchema>;
+  labels: Record<string, string>;
+};
+export type PdfData = OrderPdf | LineSheetPdf | BrandSummaryPdf;
 export interface PdfRenderer {
   render(type: PdfType, data: PdfData): Promise<Uint8Array>;
 }

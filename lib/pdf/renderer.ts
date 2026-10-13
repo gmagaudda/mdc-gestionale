@@ -69,7 +69,7 @@ export class PrintPdfRenderer implements PdfRenderer {
     doc.registerFontkit(fontkit);
     const font = await doc.embedFont(this.fontBytes, { subset: true });
     doc.setTitle(data.title);
-    doc.setAuthor("Gestionale showroom");
+    doc.setAuthor("MDC Gestionale");
     doc.setLanguage("it-IT");
     let page: PDFPage;
     let y = 0;
@@ -164,6 +164,62 @@ export class PrintPdfRenderer implements PdfRenderer {
       text(`${l.net}: ${formatMoney(data.net)}`, 12);
       text(`${l.vat}: ${formatMoney(data.vat)}`, 12);
       text(`${l.gross}: ${formatMoney(data.gross)}`, 16);
+    } else if (data.type === "brand-summary") {
+      const l = data.labels;
+      text(data.period);
+      text(l.definition, 10, 16);
+      text(`${l.orders}: ${data.report.order_count}`, 12);
+      text(`${l.net}: ${formatMoney(BigInt(data.report.net_cents))}`, 12);
+      text(`${l.vat}: ${formatMoney(BigInt(data.report.vat_cents))}`, 12);
+      text(
+        `${l.gross}: ${formatMoney(BigInt(data.report.gross_cents))}`,
+        16,
+        20,
+      );
+      const widths = [68, 248, 48, contentWidth - 364];
+      const headings = [l.season, l.customer, l.orders, l.net];
+      const row = (values: string[], header = false) => {
+        const cells = values.map((value, index) =>
+          wrapPdfText(value, font, 9, widths[index] - 10),
+        );
+        const height = Math.max(...cells.map((cell) => cell.length)) * 13 + 16;
+        if (y - height < margin + 24) {
+          newPage();
+          if (!header) row(headings, true);
+        }
+        let x = margin;
+        cells.forEach((lines, index) => {
+          lines.forEach((line, j) =>
+            page.drawText(line, {
+              x:
+                index >= 2
+                  ? x + widths[index] - 8 - font.widthOfTextAtSize(line, 9)
+                  : x + 4,
+              y: y - 13 - j * 13,
+              size: 9,
+              font,
+              color: header ? muted : ink,
+            }),
+          );
+          x += widths[index];
+        });
+        y -= height;
+        page.drawLine({
+          start: { x: margin, y },
+          end: { x: margin + contentWidth, y },
+          thickness: 0.5,
+          color: border,
+        });
+      };
+      row(headings, true);
+      if (!data.report.rows.length) text(l.empty);
+      for (const group of data.report.rows)
+        row([
+          group.season_code,
+          [group.customer, group.city].filter(Boolean).join(" · "),
+          String(group.order_count),
+          formatMoney(BigInt(group.net_cents)),
+        ]);
     } else {
       const l = data.labels;
       if (!data.products.length) text(l.emptyProducts);

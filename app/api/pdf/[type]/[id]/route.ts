@@ -4,20 +4,39 @@ import { getSessionUser } from "@/lib/auth";
 import { getPdfModel } from "@/lib/pdf/models";
 import { PrintPdfRenderer, UnsupportedPdfCharacters } from "@/lib/pdf/renderer";
 import { pdfFont } from "@/lib/pdf/font";
+import { dashboardFiltersSchema } from "@/modules/dashboard/schema";
+import { PdfSummaryTooLarge } from "@/lib/pdf/summary-schema";
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ type: string; id: string }> },
 ) {
   const user = await getSessionUser();
   if (!user) return new Response(null, { status: 401 });
   const { type, id } = await params;
-  const parsed = enumeration(["order-confirmation", "line-sheet"]).safeParse(
-    type,
-  );
+  const parsed = enumeration([
+    "order-confirmation",
+    "line-sheet",
+    "brand-summary",
+  ]).safeParse(type);
   if (!parsed.success || !uuid().safeParse(id).success)
     return new Response(null, { status: 404 });
   try {
-    const model = await getPdfModel(parsed.data, id);
+    const input = dashboardFiltersSchema.safeParse({
+      ...Object.fromEntries(new URL(request.url).searchParams),
+      brand_id: id,
+    });
+    if (parsed.data === "brand-summary" && !input.success) {
+      const t = await getTranslations("portal");
+      return new Response(t("invalidFilters"), {
+        status: 400,
+        headers: { "Cache-Control": "private, no-store" },
+      });
+    }
+    const model = await getPdfModel(
+      parsed.data,
+      id,
+      input.success ? input.data : undefined,
+    );
     if (!model) return new Response(null, { status: 404 });
     const renderer = new PrintPdfRenderer(await pdfFont());
     const bytes = await renderer.render(parsed.data, model);
@@ -33,12 +52,19 @@ export async function GET(
     const t = await getTranslations("pdf");
     return new Response(
       t(
-        error instanceof UnsupportedPdfCharacters
-          ? "unsupportedCharacters"
-          : "generationError",
+        error instanceof PdfSummaryTooLarge
+          ? "summaryTooLarge"
+          : error instanceof UnsupportedPdfCharacters
+            ? "unsupportedCharacters"
+            : "generationError",
       ),
       {
-        status: error instanceof UnsupportedPdfCharacters ? 422 : 503,
+        status:
+          error instanceof PdfSummaryTooLarge
+            ? 413
+            : error instanceof UnsupportedPdfCharacters
+              ? 422
+              : 503,
         headers: { "Cache-Control": "private, no-store" },
       },
     );

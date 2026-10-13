@@ -232,6 +232,7 @@ test("generates print PDFs and enforces brand isolation and customer privacy", a
     .insert({ brand_id: brandId, user_id: userId });
   await page.goto("/dashboard");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
   await login();
   await download("order-confirmation", orderId, "order-confirmation-demo.pdf");
   expect(
@@ -245,4 +246,138 @@ test("generates print PDFs and enforces brand isolation and customer privacy", a
   expect((await page.request.get(`/api/pdf/invalid/${orderId}`)).status()).toBe(
     404,
   );
+});
+
+test("brand summary download preserves date filters, privacy and recoverable errors", async ({
+  page,
+}) => {
+  const url = `/api/pdf/brand-summary/${brandId}`;
+  expect((await page.request.get(url)).status()).toBe(401);
+  await admin().from("profiles").update({ role: "staff" }).eq("id", userId);
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false } },
+  );
+  await db.auth.signInWithPassword({ email, password });
+  const confirmed = await db.rpc("change_order_status", {
+    p_id: orderId,
+    p_status: "confirmed",
+    p_note: "",
+  });
+  if (confirmed.error) throw confirmed.error;
+  const login = async () => {
+    await page.goto("/login");
+    await page.getByLabel("Email", { exact: true }).fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByRole("button", { name: "Accedi", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Esci", exact: true }),
+    ).toBeVisible();
+  };
+  const save = async (path: string, name: string) => {
+    const response = await page.request.get(path);
+    expect(
+      response.status(),
+      response.ok() ? "PDF" : await response.text(),
+    ).toBe(200);
+    expect(response.headers()["cache-control"]).toBe("private, no-store");
+    const bytes = await response.body();
+    const pdf = await PDFDocument.load(bytes);
+    expect(pdf.getTitle()).toBe("Riepilogo vendite brand");
+    mkdirSync("output/pdf", { recursive: true });
+    writeFileSync(`output/pdf/${name}`, bytes);
+  };
+  await login();
+  await page.goto(`/brands/${brandId}`);
+  const button = page.getByRole("button", {
+    name: "Scarica riepilogo PDF",
+    exact: true,
+  });
+  await expect(button).toBeVisible();
+  const bounds = await button.boundingBox();
+  expect(bounds!.height).toBeGreaterThanOrEqual(44);
+  await page.route(`**${url}`, (route) => route.fulfill({ status: 503 }));
+  await button.focus();
+  await button.press("Enter");
+  await expect(
+    page.getByText("Impossibile generare il PDF. Controlla i dati e riprova.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.unroute(`**${url}`);
+  const downloading = page.waitForEvent("download");
+  await button.click();
+  const file = await downloading;
+  expect(file.suggestedFilename()).toBe("riepilogo-brand.pdf");
+  await expect(
+    page.getByText("Riepilogo PDF pronto. Download avviato.", { exact: true }),
+  ).toBeVisible();
+  await save(url, "brand-summary-internal.pdf");
+  expect(
+    (await page.request.get(`${url}?season_id=${otherSeasonId}`)).status(),
+  ).toBe(404);
+  expect(
+    (await page.request.get(`${url}?from=2026-10-13&to=2026-10-12`)).status(),
+  ).toBe(400);
+  await save(`${url}?from=2026-10-13`, "brand-summary-empty.pdf");
+  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await admin().from("profiles").update({ role: "brand" }).eq("id", userId);
+  await admin()
+    .from("brand_users")
+    .upsert({ brand_id: brandId, user_id: userId });
+  await login();
+  await page.goto(
+    `/portal/sales?brand_id=${brandId}&season_id=${seasonId}&from=2026-10-12&to=2026-10-12`,
+  );
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.evaluate(() => {
+      localStorage.removeItem("theme");
+    });
+    await page.reload();
+    await expect(button).toBeVisible();
+    const request = page.waitForRequest(
+      (req) => new URL(req.url()).pathname === url,
+    );
+    const download = page.waitForEvent("download");
+    await button.click();
+    const actual = new URL((await request).url());
+    expect(actual.searchParams.get("season_id")).toBe(seasonId);
+    expect(actual.searchParams.get("from")).toBe("2026-10-12");
+    expect(actual.searchParams.get("to")).toBe("2026-10-12");
+    await download;
+    await expect(
+      page.getByText("Riepilogo PDF pronto. Download avviato.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(page.viewportSize()!.width);
+    await page.screenshot({
+      path: `output/pdf/brand-summary-${theme}-${page.viewportSize()!.width}.png`,
+      fullPage: true,
+    });
+  }
+  await save(`${url}?season_id=${seasonId}`, "brand-summary-private.pdf");
+  expect(
+    (await page.request.get(`/api/pdf/brand-summary/${otherBrandId}`)).status(),
+  ).toBe(404);
+  expect(
+    (await page.request.get(`${url}?season_id=${otherSeasonId}`)).status(),
+  ).toBe(404);
+  await admin()
+    .from("brands")
+    .update({ can_see_customer_names: true })
+    .eq("id", brandId);
+  await save(url, "brand-summary-shared.pdf");
 });

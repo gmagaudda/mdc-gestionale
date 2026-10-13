@@ -520,7 +520,20 @@
     "generationError": "Impossibile generare il PDF. Controlla i dati e riprova.",
     "downloadOrder": "Scarica PDF ordine",
     "downloadLineSheet": "Scarica catalogo PDF",
-    "unsupportedCharacters": "Il font PDF non supporta alcuni caratteri del documento. Sostituisci emoji o simboli nei nomi e nelle descrizioni, poi riprova."
+    "unsupportedCharacters": "Il font PDF non supporta alcuni caratteri del documento. Sostituisci emoji o simboli nei nomi e nelle descrizioni, poi riprova.",
+    "summaryTitle": "Riepilogo vendite brand",
+    "downloadSummary": "Scarica riepilogo PDF",
+    "allSeasons": "Tutte le stagioni",
+    "allDates": "Tutte le date ordine",
+    "summaryPeriod": "Date ordine: {from} → {to}",
+    "startUnbounded": "inizio non limitato",
+    "endUnbounded": "fine non limitata",
+    "orders": "Ordini",
+    "emptySummary": "Nessun ordine confermato nel periodo selezionato.",
+    "summaryDefinition": "Venduto da ordini confermati e successivi. Bozze e ordini annullati esclusi. Importi netti dopo gli sconti, IVA e totale lordo.",
+    "summaryTooLarge": "Il riepilogo supera 1.000 righe. Seleziona un brand nella Panoramica o nelle Vendite e restringi stagione o date, poi riprova.",
+    "preparingSummary": "Preparazione del riepilogo PDF…",
+    "summaryReady": "Riepilogo PDF pronto. Download avviato."
   },
   "calendar": {
     "calendar": "Calendario",

@@ -121,3 +121,7 @@
 - Review better-interface nei sei domini e checklist Arc in UI-REVIEW-2026-10-13.md. Restano non verificati screen reader manuale, dispositivi fisici e RTL/pseudo-localizzazione. Nessun deploy e nessuna importazione automatica del workbook reale.
 
 - Gate finali UI: lint, typecheck, token, Prettier e build OpenNext locale verdi; scanner di 197 asset client senza segreti server configurati. App locale risponde HTTP 200 su porta 3100. Screenshot mobile/desktop conservati fuori dal repository per l’anteprima.
+
+## Ripresa del piano: export e conferme (13 ottobre 2026)
+
+- M6-T2 / PDF: riepilogo vendite brand, stagione/date, totali SQL esatti, mascheratura nomi/città e download recuperabile implementati. Migrazione 039 applicata senza reset; 21 controlli pgTAP verdi. Render A4 ispezionati su prima/intermedia/ultima pagina e con importi oltre la precisione JavaScript; stato vuoto e limite esplicito di 1.000 gruppi.

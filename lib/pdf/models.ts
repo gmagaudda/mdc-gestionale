@@ -3,9 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
 import type { PdfData, PdfType } from "./types";
+import type { DashboardFilters } from "@/modules/dashboard/schema";
+import { brandSummarySchema, PdfSummaryTooLarge } from "./summary-schema";
 export async function getPdfModel(
   type: PdfType,
   id: string,
+  filters?: DashboardFilters,
 ): Promise<PdfData | null> {
   const db = await createClient();
   const user = await getSessionUser();
@@ -38,6 +41,66 @@ export async function getPdfModel(
     variants: p("variants"),
     retail: p("retail"),
   });
+  if (type === "brand-summary") {
+    const brand = await db
+      .from("brands")
+      .select("name")
+      .eq("id", id)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (brand.error) throw Error("PDF brand unavailable");
+    if (!brand.data) return null;
+    let seasonName = p("allSeasons");
+    if (filters?.season_id) {
+      const season = await db
+        .from("seasons")
+        .select("code,name")
+        .eq("id", filters.season_id)
+        .eq("brand_id", id)
+        .is("deleted_at", null)
+        .maybeSingle();
+      if (season.error) throw Error("PDF season unavailable");
+      if (!season.data) return null;
+      seasonName = `${season.data.code}: ${season.data.name}`;
+    }
+    const summary = await db.rpc("brand_sales_summary", {
+      p_brand_id: id,
+      ...(filters?.season_id ? { p_season_id: filters.season_id } : {}),
+      ...(filters?.from ? { p_start: filters.from } : {}),
+      ...(filters?.to ? { p_end: filters.to } : {}),
+    });
+    const parsed = brandSummarySchema.safeParse(summary.data);
+    if (summary.error || !parsed.success)
+      throw Error("PDF summary unavailable");
+    if (parsed.data.count > 1000) throw new PdfSummaryTooLarge();
+    const date = (value: string) =>
+      new Intl.DateTimeFormat("it-IT", { timeZone: "UTC" }).format(
+        new Date(`${value}T12:00:00Z`),
+      );
+    const period =
+      filters?.from || filters?.to
+        ? p("summaryPeriod", {
+            from: filters.from ? date(filters.from) : p("startUnbounded"),
+            to: filters.to ? date(filters.to) : p("endUnbounded"),
+          })
+        : p("allDates");
+    return {
+      type,
+      title: p("summaryTitle"),
+      brand: brand.data.name,
+      season: seasonName,
+      period,
+      report: parsed.data,
+      labels: {
+        ...labels,
+        customer: t("customer"),
+        season: t("season"),
+        orders: p("orders"),
+        empty: p("emptySummary"),
+        definition: p("summaryDefinition"),
+      },
+    };
+  }
   if (type === "order-confirmation") {
     // The privacy view applies the same customer-name flag to downloads as to the portal.
     const order = await db

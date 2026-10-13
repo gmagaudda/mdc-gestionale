@@ -2470,6 +2470,15 @@ export type Database = {
         };
         Returns: boolean;
       };
+      brand_sales_summary: {
+        Args: {
+          p_brand_id: string;
+          p_end?: string;
+          p_season_id?: string;
+          p_start?: string;
+        };
+        Returns: Json;
+      };
       calendar_assignees: {
         Args: Record<PropertyKey, never>;
         Returns: {

@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/shared/page-header";
+import { BrandSummaryDownload } from "@/components/shared/brand-summary-download";
 import { ErpIcon } from "@/components/shared/erp-icon";
 import Link from "next/link";
 import { LoadError } from "@/components/shared/load-error";
@@ -87,6 +88,11 @@ export default async function DashboardPage({
         <Alert tone="danger" title={t("invalidFilters")} />
       ) : report?.ok ? (
         <>
+          {filters.brand_id && (
+            <BrandSummaryDownload
+              href={`/api/pdf/brand-summary/${filters.brand_id}?${new URLSearchParams(Object.entries(filters).filter(([key, value]) => key !== "brand_id" && !!value))}`}
+            />
+          )}
           <ReportMetrics report={report.data} />
           <div className="report-sections">
             <BudgetVsActualChart report={report.data} />
