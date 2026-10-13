@@ -1,3 +1,5 @@
+import { PageHeader } from "@/components/shared/page-header";
+import { ErpIcon } from "@/components/shared/erp-icon";
 import Link from "next/link";
 import { LoadError } from "@/components/shared/load-error";
 import { getTranslations } from "next-intl/server";
@@ -62,7 +64,39 @@ export default async function DashboardPage({
   const report = parsed.success ? await getDashboardReport(filters) : null;
   return (
     <>
-      <h1>{t("title")}</h1>
+      <PageHeader title={t("title")} description={t("overviewHint")} />
+      <details
+        className="dashboard-filters"
+        open={Object.values(filters).some(Boolean)}
+      >
+        <summary className="dashboard-filters-trigger">
+          {t("filters")}
+          <ErpIcon name="chevron" className="navigation-chevron" />
+        </summary>
+        <DashboardFiltersForm
+          initial={filters}
+          brands={brands.data}
+          season={
+            season
+              ? { value: season.id, label: `${season.code} · ${season.name}` }
+              : undefined
+          }
+        />
+      </details>
+      {!parsed.success ? (
+        <Alert tone="danger" title={t("invalidFilters")} />
+      ) : report?.ok ? (
+        <>
+          <ReportMetrics report={report.data} />
+          <div className="report-sections">
+            <BudgetVsActualChart report={report.data} />
+            <SalesTrendChart report={report.data} />
+            <TopCustomersChart report={report.data} />
+          </div>
+        </>
+      ) : (
+        <LoadError title={t("loadError")} />
+      )}
       {latest && (
         <section className="stack" aria-label={ti("latestOperationalImport")}>
           <h2>{ti("latestOperationalImport")}</h2>
@@ -82,27 +116,6 @@ export default async function DashboardPage({
             <p>{ti("noOperationalImports")}</p>
           )}
         </section>
-      )}
-      <DashboardFiltersForm
-        initial={filters}
-        brands={brands.data}
-        season={
-          season
-            ? { value: season.id, label: `${season.code} · ${season.name}` }
-            : undefined
-        }
-      />
-      {!parsed.success ? (
-        <Alert tone="danger" title={t("invalidFilters")} />
-      ) : report?.ok ? (
-        <>
-          <ReportMetrics report={report.data} />
-          <BudgetVsActualChart report={report.data} />
-          <SalesTrendChart report={report.data} />
-          <TopCustomersChart report={report.data} />
-        </>
-      ) : (
-        <LoadError title={t("loadError")} />
       )}
     </>
   );

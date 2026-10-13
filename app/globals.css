@@ -116,6 +116,48 @@ a {
   gap: var(--space-4);
   padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.workspace-path {
+  min-width: 0;
+  flex: 1 0 14rem;
+  max-width: 100%;
+}
+.workspace-path-compact {
+  display: none;
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+}
+.identity-copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.identity-role {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+@media (max-width: 767px) {
+  .workspace-path-full {
+    display: none;
+  }
+  .workspace-path-compact {
+    display: block;
+  }
+  .workspace-path {
+    flex-basis: 100%;
+    order: 2;
+  }
+  .session-actions {
+    margin-inline-start: auto;
+  }
 }
 .identity {
   display: flex;
@@ -201,7 +243,7 @@ a {
 }
 .list-search > div {
   flex: 1;
-  min-width: 12rem;
+  min-width: min(100%, 12rem);
 }
 .list-sort,
 .list-footer {
@@ -225,6 +267,9 @@ a {
   display: grid;
   gap: var(--space-6);
   min-width: 0;
+}
+.form-grid {
+  align-items: start;
 }
 .details-grid {
   margin: 0;
@@ -278,23 +323,107 @@ textarea,
 .app-navigation {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  min-height: 0;
+  padding: var(--space-1);
+}
+.responsive-dialog .app-navigation {
+  flex-shrink: 0;
+}
+.navigation-list,
+.navigation-submenu {
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navigation-submenu {
+  padding-inline-start: var(--space-4);
+  margin-block: var(--space-1) var(--space-2);
+  margin-inline-start: var(--space-5);
+  border-inline-start: 1px solid var(--border);
 }
 .navigation-link {
   display: flex;
   align-items: center;
+  gap: var(--space-3);
   min-height: var(--control-height-md);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-control);
   text-decoration: none;
   overflow-wrap: anywhere;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+.navigation-link svg {
+  flex-shrink: 0;
+}
+.navigation-link > span {
+  min-width: 0;
+}
+.navigation-group-trigger {
+  list-style: none;
+}
+.navigation-group-trigger::-webkit-details-marker {
+  display: none;
+}
+.navigation-chevron {
+  margin-inline-start: auto;
+}
+.navigation-group[open] .navigation-chevron {
+  transform: rotate(180deg);
+}
+.navigation-group-trigger[data-active] {
+  color: var(--foreground);
+  font-weight: 500;
 }
 .navigation-link[aria-current="page"] {
-  background: var(--surface-muted);
+  background: var(--accent-subtle);
   color: var(--accent);
+  font-weight: 500;
+}
+@media (hover: hover) {
+  .navigation-link:hover:not([aria-current="page"]) {
+    background: var(--surface-muted);
+    color: var(--foreground);
+  }
+}
+.sidebar-brand {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: var(--control-height-md);
+  padding: var(--space-2) var(--space-4);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.sidebar-wordmark {
+  font-size: var(--text-2xl);
+  font-weight: 500;
+  color: var(--foreground);
+  letter-spacing: var(--tracking-display);
+}
+.sidebar-account {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border);
 }
 .user-preferences {
   position: relative;
+}
+.user-preferences > summary {
+  min-height: var(--control-height-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+.user-preferences > summary::after {
+  content: "▾";
+}
+.user-preferences[open] > summary::after {
+  content: "▴";
 }
 .user-preferences .theme-controls {
   padding-block: var(--space-3);
@@ -305,6 +434,28 @@ textarea,
   align-items: center;
   justify-content: space-between;
   gap: var(--space-6);
+}
+.page-header > .stack {
+  gap: var(--space-2);
+}
+.dashboard-filters-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: fit-content;
+  min-height: var(--control-height-md);
+  list-style: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.dashboard-filters-trigger::-webkit-details-marker {
+  display: none;
+}
+.dashboard-filters[open] .navigation-chevron {
+  transform: rotate(180deg);
+}
+.dashboard-filters > form {
+  margin-block-start: var(--space-4);
 }
 .dialog-overlay {
   position: fixed;
@@ -346,18 +497,23 @@ textarea,
   .app-sidebar {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: var(--space-4);
     position: fixed;
     inset-block: 0;
     inset-inline-start: 0;
-    width: 16rem;
-    padding: var(--space-6);
-    overflow-y: auto;
-    border-right: 1px solid var(--border);
+    width: min(16rem, 33vw);
+    padding: var(--space-4) var(--space-2) 0;
+    border-inline-end: 1px solid var(--border);
     background: var(--surface);
   }
+  .app-sidebar .app-navigation {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+  }
   .app-body {
-    margin-inline-start: 16rem;
+    margin-inline-start: min(16rem, 33vw);
   }
   .responsive-dialog {
     inset: 0;
@@ -388,11 +544,6 @@ summary {
   font-weight: 500;
   font-size: var(--text-xl);
   margin-bottom: var(--space-4);
-}
-.session-header nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
 }
 .desktop-table {
   display: none;
@@ -518,6 +669,10 @@ summary {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
 }
 .report-metrics dd {
   margin: 0;
@@ -525,6 +680,16 @@ summary {
 .report-metrics dd:not(.report-value) {
   color: var(--text-secondary);
   font-size: var(--text-sm);
+}
+.report-sections {
+  display: grid;
+  gap: var(--space-6);
+  min-width: 0;
+}
+.report-sections > section {
+  min-width: 0;
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--border);
 }
 
 .native-select-field {

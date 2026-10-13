@@ -44,7 +44,20 @@
     "appDescription": "Ordini, clienti e appuntamenti dello showroom",
     "logoutError": "Non è stato possibile uscire e revocare le notifiche. Controlla la connessione e riprova.",
     "analysis": "Analisi stagioni",
-    "imports": "Importazioni"
+    "imports": "Importazioni",
+    "brandMark": "MDC",
+    "workspaceName": "Gestionale",
+    "commercial": "Commerciale",
+    "catalog": "Catalogo",
+    "finance": "Amministrazione",
+    "insights": "Analisi e dati",
+    "settings": "Impostazioni",
+    "pageLocation": "Percorso della pagina",
+    "recordDetail": "Dettaglio",
+    "role_admin": "Amministratore",
+    "role_accounting": "Contabilità",
+    "role_staff": "Staff showroom",
+    "role_brand": "Utente brand"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -112,6 +125,7 @@
   },
   "dashboard": {
     "title": "Panoramica showroom",
+    "overviewHint": "Vendite, fatturato e obiettivi dello showroom in un unico riepilogo.",
     "description": "Accesso completato. Le anagrafiche e i riepiloghi operativi saranno disponibili nei prossimi moduli.",
     "portalTitle": "Portale brand",
     "portalDescription": "Accesso completato. I dati condivisi saranno disponibili dopo l’associazione del tuo account al brand.",

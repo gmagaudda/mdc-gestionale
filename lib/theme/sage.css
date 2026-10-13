@@ -1,0 +1,28 @@
+/* Product tokens. Arc source stays unchanged; components consume semantic roles. */
+:root {
+  --radius-control: 0.5rem;
+  --radius-panel: 0.75rem;
+  --radius-surface: 1rem;
+}
+:root[data-accent="green"] {
+  --background: oklch(97.8% 0.003 125);
+  --accent: oklch(43% 0.075 125);
+  --accent-strong: oklch(35% 0.07 125);
+  --accent-subtle: oklch(92% 0.045 125);
+  --accent-foreground: oklch(100% 0 0);
+  --control-on: var(--accent);
+  --control-glyph: oklch(100% 0 0);
+  --control-thumb-on: oklch(100% 0 0);
+  --control-fill: var(--control-on);
+}
+:root[data-theme="dark"][data-accent="green"] {
+  --background: oklch(19% 0.003 125);
+  --accent: oklch(82% 0.07 125);
+  --accent-strong: oklch(90% 0.055 125);
+  --accent-subtle: oklch(30% 0.035 125);
+  --accent-foreground: oklch(19% 0.015 125);
+  --control-on: oklch(47% 0.08 125);
+  --control-glyph: oklch(100% 0 0);
+  --control-thumb-on: oklch(100% 0 0);
+  --control-fill: var(--control-on);
+}

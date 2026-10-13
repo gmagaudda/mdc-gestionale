@@ -233,3 +233,9 @@ Log JSON con whitelist, senza email/link/token. Gli inviti in modalità log non 
 Prova di ripristino separa archivio PostgreSQL e byte Storage, poiché i [backup database Supabase](https://supabase.com/docs/guides/platform/backups) non includono i file. Clone dello stesso runtime nativo verificato; migrazione hosted fra piattaforme/versioni resta distinta, con chiavi/configurazione da preservare esternamente. Nessun reset del database principale.
 
 Ambienti Wrangler con binding asset ripetuti secondo le [regole Cloudflare](https://developers.cloudflare.com/workers/wrangler/environments/). Rilascio GitHub disattivato fino a DEPLOY_ENABLED, staging automatico dopo CI, produzione manuale con gate dell’ambiente. Migrazioni senza seed. Il checkout non ha remote e l’umano ha scelto di provare localmente: credenziali, dominio e prova della pipeline hosted rimangono gate esterni.
+
+## 2026-10-13: UI ERP e Better Icons
+
+Richiesta umana successiva a M9: prendere ispirazione dai tre esempi ERP Dribbble, con sidebar a icone e sottomenu, accento verdino e Better Icons. Questa decisione aggiorna l’accento neutro precedente per l’interfaccia del gestionale. Palette verde salvia in token semantici dedicati al prodotto, senza modificare la foundation Arc; superfici neutre, selezione chiara e testo con contrasto verificato. Nome MDC Gestionale confermato.
+
+Menu organizzato per attività e ruolo, disclosure native espandibili, contesto della pagina nell’intestazione, identità in fondo al menu. I blocchi sidebar Arc sono Pro: la composizione usa la navigazione nativa e i componenti gratuiti già disponibili, più breadcrumb gratuito dal registry. Nessuna ricostruzione di sorgenti Pro. Better Icons usato tramite la CLI della skill, versione pubblicata 1.0.4; solo SVG Tabler outline locali, con generatore e licenza. Le icone PWA neutre esistenti conservano la loro identità.

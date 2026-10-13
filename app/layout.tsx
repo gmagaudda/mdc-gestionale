@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import messages from "@/messages/it.json";
 import colors from "@/lib/pwa/colors.json";
 import "@/components/arc/foundation.css";
+import "@/lib/theme/sage.css";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
@@ -30,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="it" data-accent="neutral" suppressHydrationWarning>
+    <html lang="it" data-accent="green" suppressHydrationWarning>
       <body className={`${geist.variable} ${inter.variable} antialiased`}>
         <NextIntlClientProvider>
           <Providers>{children}</Providers>

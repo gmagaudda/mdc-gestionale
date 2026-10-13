@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Avatar } from "@/components/arc/avatar/avatar";
-import { AppNavigation } from "./app-navigation";
+import {
+  AppNavigation,
+  MobileNavigation,
+  WorkspacePath,
+} from "./app-navigation";
 import { ThemeControls } from "./theme-controls";
 import { LogoutForm } from "@/components/pwa/logout-form";
 import { PwaStatus, PwaInstall } from "@/components/pwa/pwa-status";
@@ -16,34 +20,43 @@ export async function SessionShell({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("common");
+  const identity = (
+    <div className="identity">
+      <Avatar name={user.full_name || user.email} />
+      <div className="identity-copy">
+        <span>{user.full_name || user.email}</span>
+        <span className="identity-role">{t(`role_${user.role}`)}</span>
+      </div>
+    </div>
+  );
   return (
     <>
       <Link href="#content" className="skip-link">
         {t("skip")}
       </Link>
       <div className="app-layout">
+        <AppNavigation role={user.role} footer={identity} />
         <div className="app-body">
           <header className="session-header">
-            <AppNavigation role={user.role} />
-            <div className="identity">
-              <Avatar name={user.full_name || user.email} />
-              <span>{user.full_name || user.email}</span>
+            <MobileNavigation role={user.role} footer={identity} />
+            <WorkspacePath role={user.role} />
+            <div className="session-actions">
+              <details className="user-preferences">
+                <summary className="text-link">{t("preferences")}</summary>
+                <ThemeControls />
+                <PwaInstall />
+                {user.role !== "brand" && (
+                  <PushSettings
+                    publicKey={
+                      process.env.NODE_ENV === "production"
+                        ? (pushConfig()?.publicKey ?? null)
+                        : null
+                    }
+                  />
+                )}
+              </details>
+              <LogoutForm />
             </div>
-            <details className="user-preferences">
-              <summary className="text-link">{t("preferences")}</summary>
-              <ThemeControls />
-              <PwaInstall />
-              {user.role !== "brand" && (
-                <PushSettings
-                  publicKey={
-                    process.env.NODE_ENV === "production"
-                      ? (pushConfig()?.publicKey ?? null)
-                      : null
-                  }
-                />
-              )}
-            </details>
-            <LogoutForm />
           </header>
           <main id="content" tabIndex={-1} className="page-container stack">
             <PwaStatus />

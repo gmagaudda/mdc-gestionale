@@ -4,7 +4,7 @@ Precedenza: WCAG AA, Arc, Web Interface Guidelines e Interface Cheat Sheet/skill
 
 ## Arc
 
-Componenti gratuiti dal registry ufficiale, interni immutati. Token semantici per colore, spazio, raggi e tipografia. Una sola gerarchia con titolo e azione principale; nessuna decorazione superflua. Tema tramite `data-theme`, accento neutro. Font Geist e Inter, pesi 400/500. Focus della foundation, controlli nativi etichettati, motion ridotta. Caricamento, vuoto, errore e conferma restano vicini ai dati. [Regole e checklist](https://uiarc.dev/r/skills/arc/SKILL.md).
+Componenti gratuiti dal registry ufficiale, interni immutati. Token semantici per colore, spazio, raggi e tipografia. Una sola gerarchia con titolo e azione principale; nessuna decorazione superflua. Tema tramite `data-theme`, accento verde salvia richiesto dall’umano il 13 ottobre 2026. Token del prodotto in `lib/theme/sage.css`, senza modificare la foundation Arc. Verde chiaro per la selezione, tinta scura leggibile per azioni e testi; tema scuro con valori dedicati. Raggi compatti condivisi per il gestionale. Font Geist e Inter, pesi 400/500. Focus della foundation, controlli nativi etichettati, motion ridotta. Caricamento, vuoto, errore e conferma restano vicini ai dati. [Regole e checklist](https://uiarc.dev/r/skills/arc/SKILL.md).
 
 ## Web Interface Guidelines
 
@@ -31,3 +31,7 @@ Fonte: [Lessons of Design](https://lessons.design), Fabricio Teixeira. Letta con
 ## Numeri animati
 
 Per indicazione dell’umano, i valori numerici che cambiano in tempo reale usano [Number Flow](https://number-flow.barvian.me). Wrapper AnimatedNumber/AnimatedMoney: formato italiano, numeri tabulari, tempi dai token Arc e respectMotionPreference attivo. Nessuna animazione nei controlli di immissione o nei documenti di stampa. Per anteprime monetarie fuori dal limite applicativo resta la formattazione BigInt esatta.
+
+## Shell del gestionale
+
+Ispirazione dai tre ERP indicati dall’umano: [VANTUS](https://dribbble.com/shots/26719780-ERP-Dashboard-Redesign-VANTUS-Manufacturing-Scheduling), [Catalyst](https://dribbble.com/shots/27613285-Catalyst-Certificate-Creation-for-Laboratory-ERP), [Sales Automation](https://dribbble.com/shots/26370765-ERP-Sales-Automation-Dashboard-Recent-Activity-Feed-Order-List). Sidebar persistente con gruppi nativi espandibili, icone e sottomenu; profilo in basso, percorso Arc nell’intestazione. Dialog responsive su telefono. Etichette e destinazioni rispettano il ruolo. Panoramica con metriche visibili e filtri espandibili, aperti quando un filtro è applicato. [Icone Better Icons](UI-ICONS.md).
