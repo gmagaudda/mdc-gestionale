@@ -134,7 +134,8 @@ export async function listOrders(
     })
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
-  if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);
+  if (query.q)
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   if (ids) request = request.in("id", ids);
   if (filters.status) request = request.eq("status", filters.status);
   if (filters.brand_id) request = request.eq("brand_id", filters.brand_id);

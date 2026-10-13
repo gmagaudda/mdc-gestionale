@@ -22,7 +22,7 @@ export default async function OrdersPage({
   const user = await requireRole(internalRoles);
   const t = await getTranslations("orders");
   const input = await searchParams;
-  const parsed = orderFiltersSchema.safeParse(input);
+  const parsed = orderFiltersSchema.safeParse({ ...input, from: "", to: "" });
   const query = orderListQuery(input);
   if (!parsed.success)
     return (
@@ -73,14 +73,9 @@ export default async function OrdersPage({
               ? { href: "/orders/new", label: t("create") }
               : undefined
           }
-          searchLabel={t("searchNumber")}
+
           filters={
-            <OrderFilters
-              key={JSON.stringify(filters) + query.q}
-              initial={filters}
-              query={query}
-              {...choices}
-            />
+            <OrderFilters initial={filters} query={query} {...choices} />
           }
           exportBase="/api/orders/export"
           query={query}

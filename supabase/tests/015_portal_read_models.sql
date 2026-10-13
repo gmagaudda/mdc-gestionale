@@ -1,6 +1,6 @@
 begin;
 set local request.jwt.claims='{"aal":"aal2"}';
-select plan(20);
+select plan(31);
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000601','reports-staff@example.test'),('00000000-0000-4000-8000-000000000609','reports-brand@example.test');
 update public.profiles set role='staff' where id='00000000-0000-4000-8000-000000000601';
 insert into public.brands(id,name,can_see_customer_names) values('00000000-0000-4000-8000-000000000602','Report A',false),('00000000-0000-4000-8000-000000000603','Report B',true);
@@ -45,4 +45,15 @@ select lives_ok($$select public.portal_sales_report(p_sort=>'customer_display_na
 select throws_ok($$select public.portal_orders_report(p_sort=>'customer_id')$$,'22023',null,'private portal sort key rejected');
 select throws_ok($$select public.portal_orders_report(p_sort=>'number; select 1')$$,'22023',null,'portal sort injection rejected');
 select throws_ok($$select public.portal_sales_report(p_direction=>'desc; select 1')$$,'22023',null,'portal direction injection rejected');
+select is(public.portal_orders_report(p_q=>'Private Report Customer')->>'count','0','search cannot infer the masked customer name');
+select is(public.portal_orders_report(p_q=>'riservato')->>'count','4','search includes visible masked name');
+select is(public.portal_orders_report(p_q=>'REPORT',p_limit=>1)->>'count','4','search count covers complete result before pagination');
+select is(jsonb_array_length(public.portal_orders_report(p_q=>'REPORT',p_limit=>1)->'rows'),1,'searched result still paginates');
+select is(public.portal_orders_report(p_q=>'Confermato')->>'count','2','search includes localized order status');
+select is(public.portal_orders_report(p_q=>'40,00')->>'count','1','search includes visible order money');
+select is(public.portal_sales_report(p_q=>'Private Report Customer')->>'count','0','sales search cannot infer masked customer name');
+select is(public.portal_sales_report(p_q=>'riservato')->>'count','1','sales search includes visible masked name');
+select is(public.portal_sales_report(p_q=>'30,00')->>'sold_cents','3000','sales search includes aggregated amount');
+select is(public.portal_sales_report(p_q=>'nonmatching')->>'sold_cents','0','filtered sales summary agrees with table');
+select throws_ok($$select public.portal_orders_report(p_q=>repeat('x',101))$$,'22023',null,'oversized search refused');
 select * from finish();rollback;

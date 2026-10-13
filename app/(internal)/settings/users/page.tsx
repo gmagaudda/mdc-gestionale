@@ -27,7 +27,8 @@ export default async function UsersPage({
     .order(query.sort, { ascending: query.direction === "asc" })
     .order("id")
     .range(offset, offset + query.size - 1);
-  if (query.q) request = request.ilike("email", `%${escapeLike(query.q)}%`);
+  if (query.q)
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   const result = await request;
   const columns = [
     { key: "full_name", label: t("full_name"), linkBase: "/settings/users" },
@@ -62,7 +63,6 @@ export default async function UsersPage({
           count={result.count ?? 0}
           columns={columns}
           title={t("title")}
-          searchLabel={t("search")}
         />
       )}
     </>

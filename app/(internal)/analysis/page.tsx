@@ -67,11 +67,6 @@ export default async function Analysis({
       <PageHeader
         title={t("analysisTitle")}
         description={t("historicalHint")}
-        action={
-          <Link className="text-link" href="/imports/new">
-            {t("new")}
-          </Link>
-        }
       />
       {batches.data.length > 1 && (
         <nav aria-label={t("datasets")} className="stack">
@@ -106,11 +101,19 @@ export default async function Analysis({
           <p className="wrap-value">
             {t("sourceFile", { name: result.data.file_name })}
           </p>
-          <PerformanceFiltersForm
-            key={JSON.stringify(parsed.data)}
-            initial={parsed.data}
-            report={result.data}
-          />
+          <PerformanceFiltersForm initial={parsed.data} report={result.data}>
+            <Link className="list-add-link" href="/imports/new">
+              {t("new")}
+            </Link>
+            <PerformanceExport
+              compact
+              params={new URLSearchParams(
+                Object.fromEntries(
+                  Object.entries(parsed.data).map(([k, v]) => [k, String(v)]),
+                ),
+              ).toString()}
+            />
+          </PerformanceFiltersForm>
           {result.data.totals.unnamed_rows > 0 && (
             <p>
               {t("unnamedRows", { count: result.data.totals.unnamed_rows })}
@@ -121,13 +124,6 @@ export default async function Analysis({
             totals={result.data.totals}
             count={result.data.group_count}
             dimension={parsed.data.dimension}
-          />
-          <PerformanceExport
-            params={new URLSearchParams(
-              Object.fromEntries(
-                Object.entries(parsed.data).map(([k, v]) => [k, String(v)]),
-              ),
-            ).toString()}
           />
           {result.data.group_count > 100 && (
             <nav className="report-actions" aria-label={t("pages")}>

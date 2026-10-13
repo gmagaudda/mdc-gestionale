@@ -27,7 +27,7 @@ export async function getPortalOrders(
   filters: z.infer<typeof portalOrderFiltersSchema>,
   offset = 0,
   limit = 25,
-  sorting?: Pick<ListQuery, "sort" | "direction">,
+  sorting?: Pick<ListQuery, "sort" | "direction"> & { q?: string },
 ) {
   const { data, error } = await (
     await createClient()
@@ -40,7 +40,11 @@ export async function getPortalOrders(
     p_offset: offset,
     p_limit: limit,
     ...(sorting
-      ? { p_sort: sorting.sort, p_direction: sorting.direction }
+      ? {
+          p_sort: sorting.sort,
+          p_direction: sorting.direction,
+          p_q: sorting.q ?? "",
+        }
       : {}),
   });
   const parsed = portalOrdersSchema.safeParse(data);
@@ -52,7 +56,7 @@ export async function getPortalSales(
   filters: DashboardFilters,
   offset = 0,
   limit = 25,
-  sorting?: Pick<ListQuery, "sort" | "direction">,
+  sorting?: Pick<ListQuery, "sort" | "direction"> & { q?: string },
 ) {
   const { data, error } = await (
     await createClient()
@@ -64,7 +68,11 @@ export async function getPortalSales(
     p_offset: offset,
     p_limit: limit,
     ...(sorting
-      ? { p_sort: sorting.sort, p_direction: sorting.direction }
+      ? {
+          p_sort: sorting.sort,
+          p_direction: sorting.direction,
+          p_q: sorting.q ?? "",
+        }
       : {}),
   });
   const parsed = portalSalesSchema.safeParse(data);

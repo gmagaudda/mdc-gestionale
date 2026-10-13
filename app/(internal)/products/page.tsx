@@ -63,7 +63,6 @@ export default async function ProductsPage({
           count={result.count ?? 0}
           columns={columns}
           title={t("products")}
-          searchLabel={t("search")}
         />
       )}
     </>

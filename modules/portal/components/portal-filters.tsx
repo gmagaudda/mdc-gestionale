@@ -6,9 +6,9 @@ import { Input } from "@/components/arc/input/input";
 import { Button } from "@/components/arc/button/button";
 import { Select } from "@/components/arc/select/select";
 import { SearchSelect } from "@/components/shared/search-select";
+import { TableFilter } from "@/components/shared/table-filter";
 import { Alert } from "@/components/arc/alert/alert";
 import { portalFiltersSchema } from "../schema";
-import { portalOrderFiltersSchema } from "../schema";
 import { orderStatuses } from "@/modules/orders/schema";
 import type { DashboardFilters } from "@/modules/dashboard/schema";
 function ChoiceField(props: React.ComponentProps<typeof Select>) {
@@ -48,6 +48,40 @@ export function PortalFilters({
     setSeen(key);
     setValue({ ...initial, status: status ?? "" });
   }
+  if (base !== "/portal/dashboard")
+    return (
+      <>
+        <TableFilter
+          base={base}
+          name="brand_id"
+          label={t("brand")}
+          value={initial.brand_id}
+          clearKeys={["season_id"]}
+          options={brands.map((b) => ({ value: b.id, label: b.name }))}
+        />
+        <TableFilter
+          base={base}
+          name="season_id"
+          label={t("season")}
+          value={initial.season_id}
+          options={seasons
+            .filter((s) => !initial.brand_id || s.brand_id === initial.brand_id)
+            .map((s) => ({ value: s.id, label: s.code }))}
+        />
+        {base === "/portal/orders" && (
+          <TableFilter
+            base={base}
+            name="status"
+            label={t("status")}
+            value={status}
+            options={orderStatuses.map((s) => ({
+              value: s,
+              label: t(`statuses.${s}`),
+            }))}
+          />
+        )}
+      </>
+    );
   const all = { value: "all", label: t("all") };
   return (
     <form
@@ -56,13 +90,7 @@ export function PortalFilters({
       aria-busy={pending}
       onSubmit={(event) => {
         event.preventDefault();
-        if (
-          !(
-            base === "/portal/orders"
-              ? portalOrderFiltersSchema
-              : portalFiltersSchema
-          ).safeParse(value).success
-        ) {
+        if (!portalFiltersSchema.safeParse(value).success) {
           setError(true);
           return;
         }
@@ -116,28 +144,6 @@ export function PortalFilters({
           value={value.from}
           onChange={(e) => setValue((v) => ({ ...v, from: e.target.value }))}
         />
-        {base === "/portal/orders" && (
-          <Select
-            label={t("status")}
-            placeholder={t("all")}
-            value={value.status || "all"}
-            disabled={pending}
-            options={[
-              all,
-              ...orderStatuses.map((s) => ({
-                value: s,
-                label: t(`statuses.${s}`),
-              })),
-            ]}
-            onValueChange={(s) =>
-              setValue((v) => ({
-                ...v,
-                status:
-                  s === "all" ? "" : (s as (typeof orderStatuses)[number]),
-              }))
-            }
-          />
-        )}
         <Input
           label={t("to")}
           type="date"

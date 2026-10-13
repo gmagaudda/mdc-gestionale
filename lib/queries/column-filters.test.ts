@@ -51,7 +51,7 @@ it("rejects unknown fields, repeated parameters and out-of-range values", () => 
     data: {},
   });
 });
-it("preserves column and domain filters in sort and page links", () => {
+it("preserves non-date column and domain filters in sort and page links", () => {
   const query = parseListQuery(
     { q: " invoice ", cf_gross_cents: "122,00", cf_due_date: "2026-01-31" },
     ["number"],
@@ -67,17 +67,16 @@ it("preserves column and domain filters in sort and page links", () => {
   ).searchParams;
   expect(Object.fromEntries(params)).toMatchObject({
     cf_gross_cents: "122,00",
-    cf_due_date: "2026-01-31",
     status: "issued",
     page: "2",
     direction: "desc",
   });
+  expect(params.has("cf_due_date")).toBe(false);
   expect(captureColumnFilters(Object.fromEntries(params))).toEqual(
     query.columnFilters,
   );
   expect(columnFilterParams(query.columnFilters)).toEqual({
     cf_gross_cents: "122,00",
-    cf_due_date: "2026-01-31",
   });
   expect(
     listHref("/invoices", query, { columnFilters: undefined }),

@@ -71,6 +71,7 @@ export const portalSalesSchema = z
   .strict();
 
 export const portalOrdersSortSchema = z.object({
+  q: z.string().trim().max(100).default(""),
   sort: z
     .enum([
       "order_date",
@@ -86,6 +87,7 @@ export const portalOrdersSortSchema = z.object({
   direction: z.enum(["asc", "desc"]).default("desc"),
 });
 export const portalSalesSortSchema = z.object({
+  q: z.string().trim().max(100).default(""),
   sort: z
     .enum([
       "net_cents",

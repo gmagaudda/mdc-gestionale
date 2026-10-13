@@ -53,7 +53,6 @@ export default async function CustomersPage({
           count={result.count ?? 0}
           columns={columns}
           title={t("title")}
-          searchLabel={t("search")}
         />
       )}
     </>

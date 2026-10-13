@@ -8,7 +8,6 @@ import { formatMoney } from "@/lib/money";
 import { Alert } from "@/components/arc/alert/alert";
 import { DataTable } from "@/components/shared/data-table";
 import { ListView } from "@/components/shared/list-view";
-import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { AnimatedMoney } from "@/components/shared/animated-number";
 import { searchBudgetBrands } from "@/modules/budgets/actions";
 import { DashboardFiltersForm } from "@/modules/dashboard/components/dashboard-filters";
@@ -22,7 +21,7 @@ export default async function CommissionsPage({
 }) {
   await requireRole(internalRoles);
   const t = await getTranslations("commissions"),
-    input = await searchParams,
+    input = { ...(await searchParams), from: "", to: "" },
     parsed = commissionsFiltersSchema.safeParse(input),
     filters = parsed.success ? parsed.data : commissionsFiltersSchema.parse({});
   const query = parseListQuery(input, ["order_date"], "order_date", "desc");
@@ -55,25 +54,16 @@ export default async function CommissionsPage({
         filters,
         (query.page - 1) * query.size,
         query.size,
+        query.q,
       )
     : null;
   const params = new URLSearchParams(
-    Object.entries(filters).filter(([, v]) => !!v),
+    Object.entries({ ...filters, q: query.q }).filter(([, v]) => !!v),
   ).toString();
   return (
     <>
       <h1>{t("title")}</h1>
       <p>{t("hint")}</p>
-      <DashboardFiltersForm
-        base="/commissions"
-        initial={filters}
-        brands={brands.data}
-        season={
-          season
-            ? { value: season.id, label: `${season.code} · ${season.name}` }
-            : undefined
-        }
-      />
       {!parsed.success ? (
         <Alert tone="danger" title={t("invalidFilters")} />
       ) : !report?.ok ? (
@@ -97,70 +87,85 @@ export default async function CommissionsPage({
               </div>
             </dl>
           </section>
-          <CommissionExportButton key={params} params={params} />
-          {!report.data.order_count ? (
-            <EmptyState title={t("empty")} description={t("emptyHint")} />
-          ) : (
-            <>
-              <section className="stack" aria-label={t("byBrand")}>
-                <h2>{t("byBrand")}</h2>
-                {report.data.brand_count > report.data.brands.length && (
-                  <p>
-                    {t("shownBrands", {
-                      shown: report.data.brands.length,
-                      total: report.data.brand_count,
-                    })}
-                  </p>
-                )}
-                <DataTable
-                  caption={t("byBrand")}
-                  emptyMessage={t("empty")}
-                  rows={report.data.brands.map((b) => ({
-                    id: b.brand_id,
-                    brand: b.brand_name,
-                    net: formatMoney(BigInt(b.net_cents)),
-                    commission: formatMoney(BigInt(b.commission_cents)),
-                    orders: String(b.order_count),
-                  }))}
-                  columns={[
-                    { key: "brand", label: t("brand") },
-                    { key: "net", label: t("net") },
-                    { key: "commission", label: t("total") },
-                    { key: "orders", label: t("orders") },
-                  ]}
+          <>
+            {report.data.order_count > 0 && (
+              <>
+                <section className="stack" aria-label={t("byBrand")}>
+                  <h2>{t("byBrand")}</h2>
+                  {report.data.brand_count > report.data.brands.length && (
+                    <p>
+                      {t("shownBrands", {
+                        shown: report.data.brands.length,
+                        total: report.data.brand_count,
+                      })}
+                    </p>
+                  )}
+                  <DataTable
+                    caption={t("byBrand")}
+                    emptyMessage={t("empty")}
+                    rows={report.data.brands.map((b) => ({
+                      id: b.brand_id,
+                      brand: b.brand_name,
+                      net: formatMoney(BigInt(b.net_cents)),
+                      commission: formatMoney(BigInt(b.commission_cents)),
+                      orders: String(b.order_count),
+                    }))}
+                    columns={[
+                      { key: "brand", label: t("brand") },
+                      { key: "net", label: t("net") },
+                      { key: "commission", label: t("total") },
+                      { key: "orders", label: t("orders") },
+                    ]}
+                  />
+                </section>
+              </>
+            )}
+            <h2>{t("orders")}</h2>
+            <ListView
+              filters={
+                <DashboardFiltersForm
+                  base="/commissions"
+                  initial={filters}
+                  brands={brands.data}
+                  season={
+                    season
+                      ? {
+                          value: season.id,
+                          label: `${season.code} · ${season.name}`,
+                        }
+                      : undefined
+                  }
                 />
-              </section>
-              <h2>{t("orders")}</h2>
-              <ListView
-                base="/commissions"
-                title={t("orders")}
-                query={query}
-                count={report.data.order_count}
-                filterParams={filters}
-                rows={report.data.orders.map((o) => ({
-                  id: o.id,
-                  number: o.number,
-                  date: new Intl.DateTimeFormat("it-IT", {
-                    timeZone: "UTC",
-                  }).format(new Date(`${o.order_date}T00:00:00Z`)),
-                  brand: o.brand_name,
-                  rate: `${new Intl.NumberFormat("it-IT").format(Number(o.commission_pct))}%`,
-                  source: t(o.has_override ? "override" : "brandRate"),
-                  net: formatMoney(BigInt(o.net_cents)),
-                  commission: formatMoney(BigInt(o.commission_cents)),
-                }))}
-                columns={[
-                  { key: "number", label: t("number"), linkBase: "/orders" },
-                  { key: "date", label: t("date") },
-                  { key: "brand", label: t("brand") },
-                  { key: "rate", label: t("rate") },
-                  { key: "source", label: t("source") },
-                  { key: "net", label: t("net") },
-                  { key: "commission", label: t("total") },
-                ]}
-              />
-            </>
-          )}
+              }
+              actions={<CommissionExportButton key={params} params={params} />}
+              base="/commissions"
+              title={t("orders")}
+              query={query}
+              count={report.data.order_count}
+              filterParams={filters}
+              rows={report.data.orders.map((o) => ({
+                id: o.id,
+                number: o.number,
+                date: new Intl.DateTimeFormat("it-IT", {
+                  timeZone: "UTC",
+                }).format(new Date(`${o.order_date}T00:00:00Z`)),
+                brand: o.brand_name,
+                rate: `${new Intl.NumberFormat("it-IT").format(Number(o.commission_pct))}%`,
+                source: t(o.has_override ? "override" : "brandRate"),
+                net: formatMoney(BigInt(o.net_cents)),
+                commission: formatMoney(BigInt(o.commission_cents)),
+              }))}
+              columns={[
+                { key: "number", label: t("number"), linkBase: "/orders" },
+                { key: "date", label: t("date") },
+                { key: "brand", label: t("brand") },
+                { key: "rate", label: t("rate") },
+                { key: "source", label: t("source") },
+                { key: "net", label: t("net") },
+                { key: "commission", label: t("total") },
+              ]}
+            />
+          </>
         </>
       )}
     </>

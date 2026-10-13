@@ -24,7 +24,8 @@ export async function listDocuments(query: ListQuery) {
     })
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
-  if (query.q) request = request.ilike("name", `%${escapeLike(query.q)}%`);
+  if (query.q)
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   const filters = parseColumnFilters(query.columnFilters, "documents");
   if (!filters.ok) return { data: [], count: 0, error: null };
   return applyColumnFilters(request, "documents", filters.data);

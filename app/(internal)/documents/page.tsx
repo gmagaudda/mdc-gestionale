@@ -73,7 +73,6 @@ export default async function DocumentsPage({
           }))}
           count={result.count ?? 0}
           title={t("title")}
-          searchLabel={t("search")}
         />
       )}
     </>

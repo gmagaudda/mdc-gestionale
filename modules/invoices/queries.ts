@@ -23,7 +23,8 @@ export async function listInvoices(
     })
     .order("id")
     .range((query.page - 1) * query.size, query.page * query.size - 1);
-  if (query.q) request = request.ilike("number", `%${escapeLike(query.q)}%`);
+  if (query.q)
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   if (status) request = request.eq("status", status);
   if (overdue) request = request.eq("overdue", true);
   const filters = parseColumnFilters(query.columnFilters, "invoices");

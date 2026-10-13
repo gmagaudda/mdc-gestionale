@@ -247,16 +247,24 @@ test("filters commissions and downloads an exact safe workbook", async ({
     page.getByRole("button", { name: "Esporta CSV", exact: true }).click(),
   ]);
   expect(csvDownload.suggestedFilename()).toBe("provvigioni.csv");
-  await page.getByLabel("Al", { exact: true }).fill("2032-01-31");
-  await page
-    .getByRole("button", { name: "Applica filtri", exact: true })
-    .click();
-  await expect(summary).toContainText("0,75");
-  await page.goto(
-    `/commissions?brand_id=${brandId}&from=2035-01-01&to=2035-01-31`,
-  );
   await expect(
-    page.getByRole("heading", { name: "Nessuna provvigione", exact: true }),
+    page.getByRole("main").locator('input[type="date"]'),
+  ).toHaveCount(0);
+  await page
+    .getByRole("main")
+    .getByRole("button", { name: "Cerca", exact: true })
+    .click();
+  const search = page.getByRole("main").getByRole("searchbox");
+  await search.fill("Percentuale brand");
+  await search.press("Enter");
+  await expect(summary).toContainText("0,75");
+  await search.fill("nonmatching");
+  await search.press("Enter");
+  await expect(
+    page
+      .getByRole("main")
+      .getByRole("status")
+      .filter({ hasText: /^Nessun elemento$/ }),
   ).toBeVisible();
   const invalid = await page.request.get(
     "/api/commissions/export?from=invalid",

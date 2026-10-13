@@ -15,7 +15,8 @@ export async function listBrands(query: ListQuery) {
     .order(query.sort, { ascending: query.direction === "asc" })
     .order("id")
     .range(offset, offset + query.size - 1);
-  if (query.q) request = request.ilike("name", `%${escapeLike(query.q)}%`);
+  if (query.q)
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   const filters = parseColumnFilters(query.columnFilters, "brands");
   if (!filters.ok) return { data: [], count: 0, error: null };
   return applyColumnFilters(request, "brands", filters.data);

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   if (!user || user.role === "brand")
     return new Response(null, { status: 403 });
   const input = Object.fromEntries(new URL(request.url).searchParams);
-  const parsed = orderFiltersSchema.safeParse(input);
+  const parsed = orderFiltersSchema.safeParse({ ...input, from: "", to: "" });
   const ids = exportSelectionSchema.safeParse(input.ids);
   const t = await getTranslations("orders");
   if (!parsed.success || !ids.success)

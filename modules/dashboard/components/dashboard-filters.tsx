@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/arc/input/input";
 import { Button } from "@/components/arc/button/button";
+import { TableFilter } from "@/components/shared/table-filter";
 import { Alert } from "@/components/arc/alert/alert";
 import { SearchSelect, type Choice } from "@/components/shared/search-select";
 import {
@@ -33,6 +34,32 @@ export function DashboardFiltersForm({
     setSeenFilterKey(filterKey);
     setValue(initial);
   }
+  if (base === "/commissions")
+    return (
+      <>
+        <TableFilter
+          base={base}
+          name="brand_id"
+          label={t("brand")}
+          value={initial.brand_id}
+          clearKeys={["season_id"]}
+          options={brands}
+          loadOptions={searchBudgetBrands}
+        />
+        <TableFilter
+          base={base}
+          name="season_id"
+          label={t("season")}
+          value={initial.season_id}
+          options={season ? [season] : []}
+          loadOptions={
+            initial.brand_id
+              ? (term) => searchBudgetSeasons(initial.brand_id, term)
+              : undefined
+          }
+        />
+      </>
+    );
   const all = { value: "all", label: t("all") };
   return (
     <form

@@ -58,7 +58,7 @@ export default async function BudgetsPage({
           }
           query={query}
           title={t("title")}
-          searchLabel={t("search")}
+
           count={result.count ?? 0}
           columns={[
             { key: "brand", label: t("brand"), linkBase: "/budgets" },

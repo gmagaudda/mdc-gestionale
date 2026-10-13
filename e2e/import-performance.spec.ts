@@ -142,15 +142,13 @@ test("historical preview, persistence, filters, duplicates and rollback", async 
   await expect(money.first()).toHaveText("120,25 €");
   await selectChoice(page, "Perimetro brand", "Tutti i brand del file");
   await selectChoice(page, "Raggruppa per", "Area");
-  await page
-    .getByRole("button", { name: "Applica filtri", exact: true })
-    .click();
+  await expect(page).toHaveURL(/dimension=area/);
   await expect(page).toHaveURL(/scope=all/);
   await expect(money.first()).toHaveText("1119,25 €");
   await page.reload();
   await expect(
-    page.getByRole("combobox", { name: "Raggruppa per", exact: true }),
-  ).toHaveValue("area");
+    page.getByRole("button", { name: "Raggruppa per: Area", exact: true }),
+  ).toBeVisible();
   for (const theme of ["Chiaro", "Scuro"]) {
     if (theme === "Chiaro")
       await page

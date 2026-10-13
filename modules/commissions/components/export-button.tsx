@@ -10,11 +10,11 @@ export function CommissionExportButton({ params }: { params: string }) {
     [error, setError] = useState(""),
     [ready, setReady] = useState(false);
   return (
-    <div className="stack">
-      <p>{t("exportHint")}</p>
+    <div className="table-export-actions">
       <div className="form-actions report-actions">
         <Button
           size="lg"
+          variant="secondary"
           loading={pending}
           onClick={async () => {
             setPending(true);

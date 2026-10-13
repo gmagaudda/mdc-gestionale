@@ -17,7 +17,7 @@ export default async function Sales({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const input = await searchParams,
+  const input = { ...(await searchParams), from: "", to: "" },
     c = await getPortalContext(input),
     t = await getTranslations("portal"),
     q = parseListQuery(
@@ -71,7 +71,7 @@ export default async function Sales({
                   filters={filters}
                   actions={
                     <ListCsvDownload
-                      href={`/api/portal/sales/export?${new URLSearchParams(Object.entries({ ...c.filters, sort: q.sort, direction: q.direction }).filter(([, value]) => !!value))}`}
+                      href={`/api/portal/sales/export?${new URLSearchParams(Object.entries({ ...c.filters, q: q.q, sort: q.sort, direction: q.direction }).filter(([, value]) => !!value))}`}
                       fileName="vendite-brand.csv"
                     />
                   }

@@ -3,15 +3,14 @@ import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
-import { parseListQuery, columnFilterParams } from "@/lib/queries/list";
+import { parseListQuery } from "@/lib/queries/list";
 import { formatMoney } from "@/lib/money";
 import { externalStatusSchema } from "@/lib/invoicing/types";
 import { listInvoices } from "@/modules/invoices/queries";
 import { PageHeader } from "@/components/shared/page-header";
 import { ListView } from "@/components/shared/list-view";
 import { AsyncReport } from "@/components/shared/async-report";
-import { Select } from "@/components/arc/select/select";
-import { Button } from "@/components/arc/button/button";
+import { TableFilter } from "@/components/shared/table-filter";
 import { Alert } from "@/components/arc/alert/alert";
 export default async function InvoicesPage({
   searchParams,
@@ -48,47 +47,25 @@ export default async function InvoicesPage({
         : undefined,
     overdue = filter.success && filter.data.overdue === "yes";
   const filters = (
-    <form action="/invoices" className="stack">
-      {Object.entries({
-        ...columnFilterParams(query.columnFilters),
-        sort: query.sort,
-        direction: query.direction,
-      }).map(([name, value]) => (
-        <input key={name} type="hidden" name={name} value={value} />
-      ))}
-      <fieldset className="form-grid">
-        <legend className="sr-only">{t("filters")}</legend>
-        <input type="hidden" name="q" value={query.q} />
-        <Select
-          key={status ?? "all"}
-          name="status"
-          label={t("status")}
-          defaultValue={status ?? "all"}
-          options={[
-            { value: "all", label: t("all") },
-            ...externalStatusSchema.options.map((value) => ({
-              value,
-              label: t(`statuses.${value}`),
-            })),
-          ]}
-        />
-        <Select
-          key={String(overdue)}
-          name="overdue"
-          label={t("dueFilter")}
-          defaultValue={overdue ? "yes" : "all"}
-          options={[
-            { value: "all", label: t("all") },
-            { value: "yes", label: t("onlyOverdue") },
-          ]}
-        />
-      </fieldset>
-      <div className="form-actions report-actions">
-        <Button variant="secondary" size="lg" type="submit">
-          {t("applyFilters")}
-        </Button>
-      </div>
-    </form>
+    <>
+      <TableFilter
+        base="/invoices"
+        name="status"
+        label={t("status")}
+        value={status ?? ""}
+        options={externalStatusSchema.options.map((value) => ({
+          value,
+          label: t(`statuses.${value}`),
+        }))}
+      />
+      <TableFilter
+        base="/invoices"
+        name="overdue"
+        label={t("dueFilter")}
+        value={overdue ? "yes" : ""}
+        options={[{ value: "yes", label: t("onlyOverdue") }]}
+      />
+    </>
   );
   const date = (value: string) =>
     new Intl.DateTimeFormat("it-IT", { timeZone: "UTC" }).format(
@@ -113,7 +90,7 @@ export default async function InvoicesPage({
             ) : (
               <ListView
                 base="/invoices"
-                searchLabel={t("search")}
+
                 filters={filters}
                 query={query}
                 title={t("title")}

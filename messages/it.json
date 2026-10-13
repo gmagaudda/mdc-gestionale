@@ -229,7 +229,11 @@
     "clearSelection": "Azzera selezione",
     "exportSelected": "Esporta selezione CSV",
     "sortAnnouncement": "Tabella ordinata per {field}, in ordine {direction}.",
-    "domainFilters": "Filtri"
+    "domainFilters": "Filtri",
+    "tableSearch": "Cerca nella tabella",
+    "tableSearchHint": "Cerca in tutti i dati",
+    "searchEnter": "Premi Invio per cercare. Esc chiude la ricerca.",
+    "allValues": "Tutti"
   },
   "audit": {
     "title": "Registro modifiche",

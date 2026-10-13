@@ -32,6 +32,8 @@ select is((public.performance_report('00000000-0000-4000-8000-000000000940')->>'
 select is((public.performance_report('00000000-0000-4000-8000-000000000940')->'totals'->>'unnamed_rows')::integer,1,'unnamed monetary row preserved');
 select is((public.performance_report('00000000-0000-4000-8000-000000000940','area')->'groups'->0->>'customers')::integer,1,'unnamed records not invented as stores');
 select is(public.performance_report('00000000-0000-4000-8000-000000000940','brand','{"search":"Brand escluso"}')->'totals'->>'orders_ss26','99900','search applies before aggregation');
+select is(public.performance_report('00000000-0000-4000-8000-000000000940','brand','{"search":"999,00"}')->'groups'->0->>'label','Brand escluso','general search includes displayed aggregate money');
+select ok(not(public.performance_report('00000000-0000-4000-8000-000000000940')->'groups'->0 ? 'source_match'),'internal search bookkeeping excluded from report payload');
 select is((public.performance_report('00000000-0000-4000-8000-000000000940','brand','{"area":"MISSING"}')->'totals'->'orders_ss26'),'null'::jsonb,'empty result not zero');
 select throws_ok($$select public.performance_report('00000000-0000-4000-8000-000000000940','unsafe')$$,'23514','INVALID_FILTERS','dimension whitelist');
 select throws_ok($$select public.performance_report('00000000-0000-4000-8000-000000000940','brand','{"unsafe":true}')$$,'23514','INVALID_FILTERS','filter whitelist');

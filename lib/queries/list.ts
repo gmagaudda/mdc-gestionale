@@ -54,7 +54,16 @@ export function escapeLike(value: string) {
 export function captureColumnFilters(input: Record<string, unknown>) {
   return Object.fromEntries(
     Object.entries(input)
-      .filter(([key]) => key.startsWith("cf_"))
+      .filter(
+        ([key]) =>
+          key.startsWith("cf_") &&
+          ![
+            "cf_period_start",
+            "cf_period_end",
+            "cf_issue_date",
+            "cf_due_date",
+          ].includes(key),
+      )
       .map(([key, value]) => [key.slice(3), value]),
   );
 }

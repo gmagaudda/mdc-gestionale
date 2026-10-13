@@ -3,7 +3,7 @@ import { Alert } from "@/components/arc/alert/alert";
 import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { parseListQuery } from "@/lib/queries/list";
+import { parseListQuery, escapeLike } from "@/lib/queries/list";
 import { ListView } from "@/components/shared/list-view";
 export default async function Documents({
   searchParams,
@@ -19,16 +19,16 @@ export default async function Documents({
       "created_at",
       "desc",
     );
-  const load = Promise.resolve(
-    (await createClient())
-      .from("portal_documents")
-      .select("id,name,kind,brand_name,size_bytes,created_at", {
-        count: "exact",
-      })
-      .order(q.sort, { ascending: q.direction === "asc" })
-      .order("id")
-      .range((q.page - 1) * q.size, q.page * q.size - 1),
-  );
+  let request = (await createClient())
+    .from("portal_documents")
+    .select("id,name,kind,brand_name,size_bytes,created_at", {
+      count: "exact",
+    })
+    .order(q.sort, { ascending: q.direction === "asc" })
+    .order("id")
+    .range((q.page - 1) * q.size, q.page * q.size - 1);
+  if (q.q) request = request.ilike("table_search", `%${escapeLike(q.q)}%`);
+  const load = Promise.resolve(request);
 
   return (
     <>

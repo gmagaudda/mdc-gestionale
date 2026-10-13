@@ -6,6 +6,7 @@ export async function getCommissionsReport(
   filters: DashboardFilters,
   offset = 0,
   limit = 25,
+  q = "",
 ) {
   const { data, error } = await (
     await createClient()
@@ -16,6 +17,7 @@ export async function getCommissionsReport(
     ...(filters.to ? { p_end: filters.to } : {}),
     p_offset: offset,
     p_limit: limit,
+    p_q: q,
   });
   const parsed = commissionsReportSchema.safeParse(data);
   return error || !parsed.success

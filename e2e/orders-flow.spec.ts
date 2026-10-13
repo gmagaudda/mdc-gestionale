@@ -199,6 +199,63 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
+  const toolbar = page.getByRole("main").locator(".list-toolbar");
+  await expect(toolbar.getByRole("searchbox")).toHaveCount(0);
+  await expect(toolbar.locator("details")).toHaveCount(0);
+  await expect(
+    page.getByRole("main").locator('input[type="date"]'),
+  ).toHaveCount(0);
+  const statusFilter = toolbar.getByRole("button", {
+    name: "Stato",
+    exact: true,
+  });
+  expect((await statusFilter.boundingBox())!.width).toBeLessThan(180);
+  await statusFilter.focus();
+  await statusFilter.press("Enter");
+  const picker = page
+    .getByRole("dialog", { name: "Stato", exact: true })
+    .getByRole("combobox");
+  await expect(picker).toBeFocused();
+  await picker.fill("Bozza");
+  await picker.press("ArrowDown");
+  await picker.press("Enter");
+  await expect(page).toHaveURL(/status=draft/);
+  await expect(
+    toolbar.getByRole("button", { name: "Stato: Bozza", exact: true }),
+  ).toBeFocused();
+  await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  const search = toolbar.getByRole("searchbox");
+  await expect(search).toBeFocused();
+  await expect(toolbar.locator(".table-filter-trigger")).toHaveCount(0);
+  await search.fill("48,78");
+  await search.press("Enter");
+  await expect(
+    page.getByRole("main").getByText("1 elemento", { exact: true }),
+  ).toBeVisible();
+  await search.press("Escape");
+  await expect(
+    toolbar.getByRole("button", { name: "Cerca", exact: true }),
+  ).toBeFocused();
+  await expect(
+    toolbar.getByRole("button", { name: "Stato: Bozza", exact: true }),
+  ).toBeVisible();
+  expect(
+    await toolbar.locator(".table-filter-trigger").evaluateAll((buttons) =>
+      buttons.every((button) => {
+        const box = button.getBoundingClientRect();
+        return [...button.querySelectorAll(".table-filter-copy, svg")].every(
+          (child) => {
+            const bounds = child.getBoundingClientRect();
+            return bounds.left >= box.left && bounds.right <= box.right;
+          },
+        );
+      }),
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: testInfo.outputPath("order-inline-filters.png"),
+    fullPage: true,
+  });
   const csvResponse = await page.request.get(
     `/api/orders/export?brand_id=${brandId}&status=draft`,
   );

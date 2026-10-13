@@ -18,15 +18,20 @@ export async function GET(request: Request) {
   const parsed = commissionsFiltersSchema.safeParse(
     Object.fromEntries(new URL(request.url).searchParams),
   );
+  const q = z
+    .string()
+    .trim()
+    .max(100)
+    .safeParse(new URL(request.url).searchParams.get("q") ?? "");
   const format = z
     .enum(["xlsx", "csv"])
     .safeParse(new URL(request.url).searchParams.get("format") ?? "xlsx");
-  if (!parsed.success || !format.success)
+  if (!parsed.success || !format.success || !q.success)
     return new Response(t("invalidFilters"), { status: 400, headers });
   try {
     // One SQL snapshot: summary and complete order export cannot disagree because
     // an order changes between separate page requests.
-    const report = await getCommissionsReport(parsed.data, 0, 10000);
+    const report = await getCommissionsReport(parsed.data, 0, 10000, q.data);
     if (!report.ok)
       return new Response(t("loadError"), { status: 503, headers });
     if (report.data.order_count > 10000 || report.data.brand_count > 500)

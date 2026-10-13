@@ -1,6 +1,6 @@
 begin;
 set local request.jwt.claims='{"aal":"aal2"}';
-select plan(22);
+select plan(25);
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000614','commission-guard@example.test');
 update public.profiles set role='admin' where id='00000000-0000-4000-8000-000000000614';
 insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000601','reports-staff@example.test'),('00000000-0000-4000-8000-000000000609','reports-brand@example.test');
@@ -32,6 +32,9 @@ select is((select commission_pct from public.v_commissions where id=(select id f
 select is((select commission_cents from public.v_commissions where id=(select id from report_orders where seq=2)),'245','override commission exact');
 select is((select commission_cents from public.v_commissions where id=(select id from report_orders where seq=5)),'1','half-cent rounds up');
 select is((select count(*) from public.v_commissions where brand_id='00000000-0000-4000-8000-000000000602'),3::bigint,'draft and cancelled excluded');
+select is(public.commissions_report(p_q=>'Percentuale ordine')->>'order_count','2','general search includes commission source');
+select is(public.commissions_report(p_q=>'12,25%')->>'order_count','1','general search includes commission percentage');
+select is(public.commissions_report(p_q=>'secret')->>'order_count','0','general search excludes internal order notes');
 select is(public.commissions_report('00000000-0000-4000-8000-000000000602')->>'commission_cents','321','report sum of rounded orders');
 select is(public.commissions_report('00000000-0000-4000-8000-000000000602')->>'net_cents','3001','report net exact');
 select is(public.commissions_report('00000000-0000-4000-8000-000000000602')->'brands'->0->>'commission_cents','321','brand summary exact');

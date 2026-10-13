@@ -3,7 +3,13 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
 import { Alert } from "@/components/arc/alert/alert";
-export function PerformanceExport({ params }: { params: string }) {
+export function PerformanceExport({
+  params,
+  compact = false,
+}: {
+  params: string;
+  compact?: boolean;
+}) {
   const t = useTranslations("imports"),
     [pending, setPending] = useState(false),
     [error, setError] = useState(""),
@@ -37,9 +43,16 @@ export function PerformanceExport({ params }: { params: string }) {
     }
   }
   return (
-    <section className="stack" aria-label={t("exportTitle")}>
-      <h2>{t("exportTitle")}</h2>
-      <p>{t("exportHint")}</p>
+    <section
+      className={compact ? "table-export-actions" : "stack"}
+      aria-label={t("exportTitle")}
+    >
+      {!compact && (
+        <>
+          <h2>{t("exportTitle")}</h2>
+          <p>{t("exportHint")}</p>
+        </>
+      )}
       <div className="report-actions">
         <Button
           variant="secondary"

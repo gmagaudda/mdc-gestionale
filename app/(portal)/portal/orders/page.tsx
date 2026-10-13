@@ -14,7 +14,7 @@ export default async function Orders({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const input = await searchParams,
+  const input = { ...(await searchParams), from: "", to: "" },
     c = await getPortalContext(input),
     t = await getTranslations("orders"),
     p = await getTranslations("portal"),
@@ -66,7 +66,7 @@ export default async function Orders({
                   actions={
                     <a
                       className="text-link"
-                      href={`/api/portal/orders/export?${new URLSearchParams(Object.entries({ ...parsed.data, sort: query.sort, direction: query.direction }).filter(([, v]) => !!v))}`}
+                      href={`/api/portal/orders/export?${new URLSearchParams(Object.entries({ ...parsed.data, q: query.q, sort: query.sort, direction: query.direction }).filter(([, v]) => !!v))}`}
                     >
                       {p("exportOrders")}
                     </a>

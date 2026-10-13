@@ -16,7 +16,7 @@ export async function listCustomers(query: ListQuery) {
     .order("id")
     .range(offset, offset + query.size - 1);
   if (query.q)
-    request = request.ilike("legal_name", `%${escapeLike(query.q)}%`);
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   const filters = parseColumnFilters(query.columnFilters, "customers");
   if (!filters.ok) return { data: [], count: 0, error: null };
   return applyColumnFilters(request, "customers", filters.data);

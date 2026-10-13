@@ -21,6 +21,14 @@ export async function selectChoice(
   option: string,
   partial = false,
 ) {
+  const trigger = page.getByRole("button", {
+    name: new RegExp(`^${label}(?::|$)`),
+  });
+  if (
+    !(await page.getByRole("combobox", { name: label, exact: true }).count()) &&
+    (await trigger.count())
+  )
+    await trigger.click();
   const control = page.getByRole("combobox", { name: label, exact: true });
   if (await control.evaluate((element) => element.tagName === "SELECT")) {
     const item = partial

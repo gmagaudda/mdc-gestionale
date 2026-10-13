@@ -52,7 +52,6 @@ export default async function BrandsPage({
           count={result.count ?? 0}
           columns={columns}
           title={t("title")}
-          searchLabel={t("search")}
         />
       )}
     </>

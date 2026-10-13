@@ -58,7 +58,6 @@ export default async function SeasonsPage({
           count={result.count ?? 0}
           columns={columns}
           title={t("seasons")}
-          searchLabel={t("search")}
         />
       )}
     </>

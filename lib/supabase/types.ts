@@ -209,8 +209,9 @@ export type Database = {
           legal_name: string;
           name: string;
           updated_at: string;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           can_see_customer_names?: boolean;
           created_at?: string;
@@ -310,8 +311,9 @@ export type Database = {
           period_start: string;
           season_id: string | null;
           updated_at: string;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           amount_cents: number;
           brand_id: string;
@@ -444,8 +446,9 @@ export type Database = {
           trade_name: string;
           updated_at: string;
           vat_number: string;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           area?: string;
           billing_address?: NonNullable<Json>;
@@ -527,8 +530,9 @@ export type Database = {
           storage_path: string;
           updated_at: string;
           uploaded_by: string;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           brand_id: string;
           created_at?: string;
@@ -1566,8 +1570,9 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"];
           updated_at: string;
           vat_total_cents: number;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           brand_id: string;
           created_at?: string;
@@ -1805,8 +1810,9 @@ export type Database = {
           updated_at: string;
           vat_rate: number;
           wholesale_price_cents: number;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           brand_id: string;
           created_at?: string;
@@ -1877,8 +1883,9 @@ export type Database = {
           is_active: boolean;
           role: Database["public"]["Enums"]["app_role"];
           updated_at: string;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           created_at?: string;
           email: string;
@@ -2014,8 +2021,9 @@ export type Database = {
           import_batch_id: string | null;
           name: string;
           updated_at: string;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Insert: {
           brand_id: string;
           campaign_end?: string | null;
@@ -2079,8 +2087,9 @@ export type Database = {
           kind: Database["public"]["Enums"]["document_kind"] | null;
           name: string | null;
           size_bytes: number | null;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Relationships: [
           {
             foreignKeyName: "documents_brand_id_fkey";
@@ -2208,8 +2217,9 @@ export type Database = {
           created_at: string | null;
           id: string | null;
           table_name: string | null;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Relationships: [];
       };
       v_budget_vs_actual: {
@@ -2302,8 +2312,9 @@ export type Database = {
           number: string | null;
           order_date: string | null;
           season_id: string | null;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Relationships: [
           {
             foreignKeyName: "orders_brand_id_fkey";
@@ -2353,8 +2364,9 @@ export type Database = {
           provider: string | null;
           status: Database["public"]["Enums"]["invoice_status"] | null;
           vat_cents: number | null;
+          table_search: string | null;
         };
-        ComputedFields: never;
+        ComputedFields: "table_search";
         Relationships: [
           {
             foreignKeyName: "invoices_brand_id_fkey";
@@ -2564,6 +2576,7 @@ export type Database = {
           p_end?: string;
           p_limit?: number;
           p_offset?: number;
+          p_q?: string;
           p_season_id?: string;
           p_start?: string;
         };
@@ -2756,6 +2769,7 @@ export type Database = {
           p_end?: string;
           p_limit?: number;
           p_offset?: number;
+          p_q?: string;
           p_season_id?: string;
           p_sort?: string;
           p_start?: string;
@@ -2770,6 +2784,7 @@ export type Database = {
           p_end?: string;
           p_limit?: number;
           p_offset?: number;
+          p_q?: string;
           p_season_id?: string;
           p_sort?: string;
           p_start?: string;
@@ -2900,6 +2915,87 @@ export type Database = {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
         Returns: undefined;
       };
+      table_filter_options: {
+        Args: { p_column: string; p_entity: string; p_q?: string };
+        Returns: Json;
+      };
+      table_search:
+        | {
+            Args: { "": Database["public"]["Tables"]["brands"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["budgets"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["customers"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["documents"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["orders"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: {
+              "": Database["public"]["Views"]["portal_documents"]["Row"];
+            };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["products"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["profiles"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Tables"]["seasons"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Views"]["v_audit_list"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: { "": Database["public"]["Views"]["v_commissions"]["Row"] };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          }
+        | {
+            Args: {
+              "": Database["public"]["Views"]["v_invoice_balances"]["Row"];
+            };
+            Returns: {
+              error: true;
+            } & "the function public.table_search with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache";
+          };
       write_audit: {
         Args: {
           p_action: string;

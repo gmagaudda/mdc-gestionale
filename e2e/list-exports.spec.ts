@@ -136,17 +136,26 @@ test("column filters and page selection stay aligned with CSV and reset on navig
       path: info.outputPath(`list-toolbar-${theme}.png`),
       fullPage: true,
     });
-    const summary = main
-      .locator("summary")
-      .filter({ hasText: "Filtri per colonna" });
-    await summary.focus();
-    await summary.press("Enter");
-    await main.getByLabel("Città (filtro)", { exact: true }).fill("Roma");
-    await main
-      .getByRole("button", { name: "Applica filtri per colonna", exact: true })
-      .click();
+    await toolbar.getByRole("searchbox").press("Escape");
+    await expect(toolbar.getByRole("searchbox")).toHaveCount(0);
+    const cityFilter = toolbar.getByRole("button", {
+      name: "Città",
+      exact: true,
+    });
+    await cityFilter.focus();
+    await cityFilter.press("Enter");
+    const choices = page.getByRole("dialog", { name: "Città", exact: true });
+    await expect(choices.getByRole("combobox")).toBeFocused();
+    await choices.getByRole("combobox").fill("Roma");
+    await expect(
+      choices.getByRole("option", { name: "Roma", exact: true }),
+    ).toBeVisible();
+    await choices.getByRole("combobox").press("ArrowDown");
+    await choices.getByRole("combobox").press("Enter");
     await expect(page).toHaveURL(/cf_city=Roma/);
     await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+    await expect(toolbar.getByRole("searchbox")).toBeFocused();
+    await toolbar.getByRole("searchbox").press("Enter");
     await expect(page).toHaveURL(/cf_city=Roma/);
     await expect(page).toHaveURL(/direction=desc/);
     await expect(main.getByText("31 elementi", { exact: true })).toBeVisible();
@@ -258,9 +267,15 @@ test("column filters and page selection stay aligned with CSV and reset on navig
     await expect(
       main.getByRole("button", { name: "Esporta selezione CSV", exact: true }),
     ).toHaveCount(0);
-    await main
-      .getByRole("link", { name: "Azzera filtri per colonna", exact: true })
+    await main.getByRole("searchbox").press("Escape");
+    await toolbar
+      .getByRole("button", { name: "Città: Roma", exact: true })
       .click();
+    await page
+      .getByRole("dialog", { name: "Città", exact: true })
+      .getByRole("combobox")
+      .fill("Tutti");
+    await page.getByRole("option", { name: "Tutti", exact: true }).click();
     await expect(main.getByText("32 elementi", { exact: true })).toBeVisible();
     await expect(page).not.toHaveURL(/cf_city/);
   }
@@ -370,18 +385,62 @@ test("column filters and page selection stay aligned with CSV and reset on navig
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(320);
+  await page.getByRole("main").getByRole("searchbox").press("Escape");
   await page
     .getByRole("main")
-    .getByLabel("Città (filtro)", { exact: true })
-    .focus();
-  await page.keyboard.type("a");
+    .getByRole("button", { name: "Città: Roma", exact: true })
+    .click();
+  const picker = page
+    .getByRole("dialog", { name: "Città", exact: true })
+    .getByRole("combobox");
+  await expect(picker).toBeFocused();
+  await picker.fill("Roma");
+  await expect(
+    page.getByRole("option", { name: "Roma", exact: true }),
+  ).toBeVisible();
   expect(
-    await page
-      .getByRole("main")
-      .getByLabel("Città (filtro)", { exact: true })
-      .inputValue(),
-  ).toContain("a");
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(320);
+  await picker.press("Escape");
+  await page.keyboard.press("Escape");
   await page.evaluate(() => (document.documentElement.style.fontSize = ""));
+});
+test("general table search matches an off-page city and exported rows", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Esci", exact: true }),
+  ).toBeVisible();
+  await page.goto(`/customers?cf_legal_name=${prefix}&direction=desc`);
+  const main = page.getByRole("main"),
+    toolbar = main.locator(".list-toolbar");
+  await expect(main.getByText("32 elementi", { exact: true })).toBeVisible();
+  await expect(toolbar.getByRole("searchbox")).toHaveCount(0);
+  await expect(
+    main.getByRole("link", { name: `=${prefix} formula`, exact: true }),
+  ).toHaveCount(0);
+  await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  await expect(toolbar.locator(".table-filter-trigger")).toHaveCount(0);
+  await toolbar.getByRole("searchbox").fill("Milano");
+  await toolbar.getByRole("searchbox").press("Enter");
+  await expect(main.getByText("1 elemento", { exact: true })).toBeVisible();
+  await expect(
+    main.getByRole("link", { name: `=${prefix} formula`, exact: true }),
+  ).toBeVisible();
+  const response = await page.request.get(
+    `/api/lists/customers/export?${new URL(page.url()).searchParams}`,
+  );
+  expect(response.status()).toBe(200);
+  const rows = Papa.parse<string[]>(await response.text(), {
+    delimiter: ";",
+    skipEmptyLines: true,
+  }).data;
+  expect(rows).toHaveLength(2);
+  expect(rows[1][2]).toBe("Milano");
 });
 test.afterAll(async () => {
   if (invoiceId) await admin().from("invoices").delete().eq("id", invoiceId);

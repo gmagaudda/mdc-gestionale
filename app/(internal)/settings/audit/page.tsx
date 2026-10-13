@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { parseListQuery } from "@/lib/queries/list";
+import { parseListQuery, escapeLike } from "@/lib/queries/list";
 import { ListView } from "@/components/shared/list-view";
 import { Alert } from "@/components/arc/alert/alert";
 
@@ -31,36 +31,8 @@ export default async function AuditPage({
     .order(query.sort, { ascending: query.direction === "asc" })
     .order("id")
     .range(offset, offset + query.size - 1);
-  const resourceNames = [
-    "profiles",
-    "brands",
-    "brand_private",
-    "brand_users",
-    "brand_contacts",
-    "customers",
-    "customer_contacts",
-    "seasons",
-    "products",
-    "product_variants",
-    "orders",
-    "order_lines",
-    "order_private",
-    "order_status_history",
-    "events",
-    "ical_tokens",
-    "event_reminders",
-    "documents",
-    "budgets",
-    "budget_private",
-  ];
-  if (query.q) {
-    const resource = resourceNames.find(
-      (key) =>
-        t(`resources.${key}`).toLocaleLowerCase("it") ===
-        query.q.toLocaleLowerCase("it"),
-    );
-    request = request.eq("table_name", resource ?? query.q);
-  }
+  if (query.q)
+    request = request.ilike("table_search", `%${escapeLike(query.q)}%`);
   const result = await request;
   const columns = [
     { key: "created_at", label: t("date"), linkBase: "/settings/audit" },
@@ -105,7 +77,6 @@ export default async function AuditPage({
           count={result.count ?? 0}
           columns={columns}
           title={t("title")}
-          searchLabel={t("search")}
         />
       )}
     </>
