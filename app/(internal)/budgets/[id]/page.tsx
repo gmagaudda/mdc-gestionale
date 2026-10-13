@@ -5,7 +5,9 @@ import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth";
 import { internalRoles } from "@/lib/auth/roles";
 import { formatMoney } from "@/lib/money";
-import { getBudget } from "@/modules/budgets/queries";
+import { getBudget, getBudgetRecommendation } from "@/modules/budgets/queries";
+import { RecommendationSummary } from "@/modules/budgets/components/recommendation-summary";
+import { LoadError } from "@/components/shared/load-error";
 import { archiveBudget } from "@/modules/budgets/actions";
 import { ConfirmAction } from "@/components/shared/confirm-action";
 import { Alert } from "@/components/arc/alert/alert";
@@ -21,6 +23,8 @@ export default async function BudgetPage({
   if (!z.uuid().safeParse(id).success) notFound();
   const { data } = await getBudget(id);
   if (!data) notFound();
+  const provenance = await getBudgetRecommendation(id);
+  const rt = await getTranslations("budgetRecommendation");
   const t = await getTranslations("budgets"),
     date = (value: string) =>
       new Intl.DateTimeFormat("it-IT", { timeZone: "UTC" }).format(
@@ -73,6 +77,55 @@ export default async function BudgetPage({
           </dd>
         </div>
       </dl>
+      {!provenance.ok ? (
+        <LoadError title={rt("provenanceError")} />
+      ) : (
+        provenance.data && (
+          <section className="stack">
+            <h2>{rt("provenanceTitle")}</h2>
+            <p>
+              {rt("appliedValue", {
+                amount: formatMoney(provenance.data.applied_cents),
+                date: new Intl.DateTimeFormat("it-IT", {
+                  timeZone: "Europe/Rome",
+                }).format(new Date(provenance.data.created_at)),
+              })}
+            </p>
+            {provenance.data.adjustment_reason && (
+              <p>
+                {rt("adjustmentValue", {
+                  reason: provenance.data.adjustment_reason,
+                })}
+              </p>
+            )}
+            {provenance.data.settings.profile !== "auto" && (
+              <p>
+                {rt("profileReasonValue", {
+                  reason: provenance.data.settings.profile_reason,
+                })}
+              </p>
+            )}
+            <p>
+              {rt("growthValue", {
+                growth: new Intl.NumberFormat("it-IT", {
+                  maximumFractionDigits: 2,
+                }).format(provenance.data.settings.growth_bps / 100),
+              })}
+            </p>
+            <RecommendationSummary snapshot={provenance.data.snapshot} />
+            {provenance.data.snapshot.rows
+              .filter((r) => r.reason)
+              .map((r) => (
+                <p key={r.code}>
+                  {rt("seasonReasonValue", {
+                    season: r.code,
+                    reason: r.reason,
+                  })}
+                </p>
+              ))}
+          </section>
+        )
+      )}
       {user.role !== "staff" && (
         <ConfirmAction
           label={t("archive")}

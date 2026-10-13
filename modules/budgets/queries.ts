@@ -5,6 +5,16 @@ import {
 } from "@/lib/queries/column-filters";
 import { createClient } from "@/lib/supabase/server";
 import { escapeLike, type ListQuery } from "@/lib/queries/list";
+import { recommendationProvenanceSchema } from "./recommendation-schema";
+export async function getBudgetRecommendation(id: string) {
+  const result = await (
+    await createClient()
+  ).rpc("budget_recommendation_provenance", { p_id: id });
+  const parsed = recommendationProvenanceSchema.safeParse(result.data);
+  return result.error || !parsed.success
+    ? { ok: false as const }
+    : { ok: true as const, data: parsed.data };
+}
 export async function listBudgets(query: ListQuery) {
   let request = (await createClient())
     .from("budgets")

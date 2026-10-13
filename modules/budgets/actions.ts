@@ -8,6 +8,7 @@ import { escapeLike } from "@/lib/queries/list";
 import type { ActionResult } from "@/lib/errors";
 import type { Choice } from "@/components/shared/search-select";
 import { budgetSchema } from "./schema";
+import { recommendationSettingsSchema } from "./recommendation-schema";
 export async function searchBudgetBrands(
   input: unknown,
 ): Promise<ActionResult<Choice[]>> {
@@ -62,6 +63,7 @@ export async function saveBudget(
   id: string | null,
   input: unknown,
   updatedAt: string | null = null,
+  recommendation?: unknown,
 ): Promise<ActionResult<string>> {
   await requireRole(["admin", "accounting"]);
   const parsed = budgetSchema.safeParse(input);
@@ -72,24 +74,44 @@ export async function saveBudget(
         !z.iso.datetime({ offset: true }).safeParse(updatedAt).success))
   )
     return { ok: false, error: "validation" };
-  const { data, error } = await (
-    await createClient()
-  ).rpc("save_budget", {
-    p_id: id as string,
-    p_data: parsed.data,
-    ...(updatedAt ? { p_updated_at: updatedAt } : {}),
-  });
+  const provenance = z
+    .object({
+      settings: recommendationSettingsSchema,
+      expected: z.string().regex(/^[a-f0-9]{32}$/),
+      adjustment_reason: z.string().trim().max(500),
+    })
+    .strict()
+    .safeParse(recommendation);
+  if (recommendation !== undefined && (id !== null || !provenance.success))
+    return { ok: false, error: "validation" };
+  const db = await createClient();
+  const { data, error } = provenance.success
+    ? await db.rpc("apply_budget_recommendation", {
+        p_data: parsed.data,
+        p_settings: provenance.data.settings,
+        p_expected: provenance.data.expected,
+        p_adjustment_reason: provenance.data.adjustment_reason,
+      })
+    : await db.rpc("save_budget", {
+        p_id: id as string,
+        p_data: parsed.data,
+        ...(updatedAt ? { p_updated_at: updatedAt } : {}),
+      });
   if (error || !data)
     return {
       ok: false,
       error:
-        error?.code === "23P01"
-          ? "overlap"
-          : error?.code === "P0002"
-            ? "conflict"
-            : error?.code === "23514" || error?.code === "23503"
-              ? "validation"
-              : "saveError",
+        error?.code === "40001"
+          ? "recommendationStale"
+          : error?.message === "REASON_REQUIRED"
+            ? "adjustmentRequired"
+            : error?.code === "23P01"
+              ? "overlap"
+              : error?.code === "P0002"
+                ? "conflict"
+                : error?.code === "23514" || error?.code === "23503"
+                  ? "validation"
+                  : "saveError",
     };
   revalidatePath("/budgets");
   revalidatePath(`/budgets/${data}`);

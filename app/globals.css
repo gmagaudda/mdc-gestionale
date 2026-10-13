@@ -753,3 +753,27 @@ summary {
   max-inline-size: 100%;
   block-size: auto;
 }
+
+.budget-recommendation {
+  min-width: 0;
+  container-type: inline-size;
+}
+.budget-recommendation summary {
+  min-block-size: var(--control-height-lg);
+  padding-block: var(--space-3);
+}
+.theme-options {
+  min-width: 0;
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+.budget-recommendation > details > details {
+  margin-block-start: var(--space-4);
+}
+.budget-recommendation h2 {
+  overflow-wrap: anywhere;
+}
+.recommendation-summary summary {
+  min-block-size: var(--control-height-lg);
+  padding-block: var(--space-3);
+}

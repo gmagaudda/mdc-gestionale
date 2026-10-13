@@ -16,6 +16,10 @@ import {
   searchBudgetBrands,
   searchBudgetSeasons,
 } from "../actions";
+import {
+  BudgetRecommendationPanel,
+  type AcceptedRecommendation,
+} from "./budget-recommendation";
 export function BudgetForm({
   brands,
   existing,
@@ -50,8 +54,28 @@ export function BudgetForm({
     existing ? centsToDecimal(existing.amount_cents) : "",
   );
   const [pending, start] = useTransition();
-  const set = <K extends keyof typeof value>(key: K, data: (typeof value)[K]) =>
-    setValue((current) => ({ ...current, [key]: data }));
+  const [recommendation, setRecommendation] =
+    useState<AcceptedRecommendation | null>(null);
+  const [adjustmentReason, setAdjustmentReason] = useState("");
+  const [recommendationStale, setRecommendationStale] = useState(false);
+  const set = <K extends keyof typeof value>(
+    key: K,
+    data: (typeof value)[K],
+  ) => {
+    if (["brand_id", "season_id", "customer_id"].includes(key)) {
+      if (recommendation) setAmount("");
+      setRecommendation(null);
+      setRecommendationStale(false);
+    }
+    setValue((current) => ({
+      ...current,
+      [key]: data,
+      ...(["brand_id", "season_id", "customer_id"].includes(key) &&
+      recommendation
+        ? { amount_cents: null }
+        : {}),
+    }));
+  };
   const none = { value: "none", label: t("none") };
   return (
     <form
@@ -63,7 +87,24 @@ export function BudgetForm({
         event.preventDefault();
         setError("");
         setFields({});
+        if (recommendation && recommendationStale) {
+          setError(t("recommendationStale"));
+          return;
+        }
         const parsed = budgetSchema.safeParse(value);
+        if (
+          recommendation &&
+          value.amount_cents !== recommendation.snapshot.suggested_cents &&
+          !adjustmentReason.trim()
+        ) {
+          setFields({ adjustment_reason: t("adjustmentRequired") });
+          requestAnimationFrame(() =>
+            form.current
+              ?.querySelector<HTMLElement>('[aria-invalid="true"]')
+              ?.focus(),
+          );
+          return;
+        }
         if (!parsed.success) {
           setFields(
             Object.fromEntries(
@@ -86,6 +127,13 @@ export function BudgetForm({
               existing?.id ?? null,
               parsed.data,
               existing?.updated_at ?? null,
+              recommendation
+                ? {
+                    settings: recommendation.settings,
+                    expected: recommendation.snapshot.fingerprint,
+                    adjustment_reason: adjustmentReason,
+                  }
+                : undefined,
             );
             if (!result.ok) setError(t(result.error));
             else {
@@ -99,7 +147,9 @@ export function BudgetForm({
       }}
     >
       <p>{t("scopeHint")}</p>
-      <Alert open={!!error} tone="danger" title={error} />
+      <Alert open={!!error} tone="danger" title={t("errorTitle")}>
+        <span className="wrap-value">{error}</span>
+      </Alert>
       <fieldset className="form-grid" disabled={pending}>
         <legend className="sr-only">{t(existing ? "edit" : "create")}</legend>
         <SearchSelect
@@ -109,13 +159,17 @@ export function BudgetForm({
           error={fields.brand_id}
           disabled={!!existing}
           loadOptions={searchBudgetBrands}
-          onValueChange={(brand) =>
+          onValueChange={(brand) => {
+            if (recommendation) setAmount("");
+            setRecommendation(null);
+            setRecommendationStale(false);
             setValue((current) => ({
               ...current,
               brand_id: brand,
               season_id: "",
-            }))
-          }
+              ...(recommendation ? { amount_cents: null } : {}),
+            }));
+          }}
         />
         <Input
           label={t("amount")}
@@ -176,6 +230,7 @@ export function BudgetForm({
         <Input
           label={t("start")}
           type="date"
+          style={{ minWidth: 0 }}
           value={value.period_start}
           onChange={(e) => set("period_start", e.target.value)}
           error={fields.period_start}
@@ -184,6 +239,7 @@ export function BudgetForm({
         <Input
           label={t("end")}
           type="date"
+          style={{ minWidth: 0 }}
           value={value.period_end}
           onChange={(e) => set("period_end", e.target.value)}
           error={fields.period_end}
@@ -197,6 +253,54 @@ export function BudgetForm({
           error={fields.notes}
         />
       </fieldset>
+      {!existing && value.brand_id && value.season_id && value.customer_id && (
+        <BudgetRecommendationPanel
+          key={`${value.brand_id}:${value.season_id}:${value.customer_id}`}
+          brandId={value.brand_id}
+          seasonId={value.season_id}
+          customerId={value.customer_id}
+          disabled={pending}
+          onInvalidate={() => {
+            if (recommendation) setRecommendationStale(true);
+          }}
+          onAccept={(accepted) => {
+            setRecommendation(accepted);
+            setRecommendationStale(false);
+            setError("");
+            setAdjustmentReason("");
+            setFields({});
+            setAmount(centsToDecimal(accepted.snapshot.suggested_cents!));
+            set("amount_cents", accepted.snapshot.suggested_cents!);
+          }}
+        />
+      )}
+      {recommendation && recommendationStale && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="lg"
+          disabled={pending}
+          onClick={() => {
+            setRecommendation(null);
+            setRecommendationStale(false);
+            setError("");
+          }}
+        >
+          <span className="list-button-copy">{t("useManual")}</span>
+        </Button>
+      )}
+      {recommendation &&
+        value.amount_cents !== recommendation.snapshot.suggested_cents && (
+          <Input
+            label={t("adjustmentReason")}
+            value={adjustmentReason}
+            maxLength={500}
+            required
+            disabled={pending}
+            error={fields.adjustment_reason}
+            onChange={(e) => setAdjustmentReason(e.target.value)}
+          />
+        )}
       <div className="form-actions">
         <WriteButton
           type="submit"

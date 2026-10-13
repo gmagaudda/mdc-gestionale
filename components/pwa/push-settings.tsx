@@ -214,7 +214,7 @@ export function PushSettings({ publicKey }: { publicKey: string | null }) {
         disabled={pending}
         onClick={() => void revokeAll()}
       >
-        {t("revokeAll")}
+        <span className="list-button-copy">{t("revokeAll")}</span>
       </WriteButton>
       {state === "on" && (
         <WriteButton

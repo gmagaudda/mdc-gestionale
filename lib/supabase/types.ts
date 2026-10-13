@@ -2461,6 +2461,15 @@ export type Database = {
       };
     };
     Functions: {
+      apply_budget_recommendation: {
+        Args: {
+          p_adjustment_reason?: string;
+          p_data: Json;
+          p_expected: string;
+          p_settings: Json;
+        };
+        Returns: string;
+      };
       apply_invoice_webhook: {
         Args: {
           p_event_id: string;
@@ -2477,6 +2486,15 @@ export type Database = {
           p_season_id?: string;
           p_start?: string;
         };
+        Returns: Json;
+      };
+      budget_history_sources: { Args: { p_q?: string }; Returns: Json };
+      budget_recommendation_provenance: {
+        Args: { p_id: string };
+        Returns: Json;
+      };
+      calculate_budget_recommendation: {
+        Args: { p_settings: Json };
         Returns: Json;
       };
       calendar_assignees: {

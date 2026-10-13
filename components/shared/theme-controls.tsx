@@ -17,16 +17,18 @@ export function ThemeControls() {
   const t = useTranslations("common");
   return (
     <div className="theme-controls" aria-label={t("theme")}>
-      <SegmentedControl
-        label={t("theme")}
-        value={mounted ? (theme ?? "system") : "system"}
-        onValueChange={setTheme}
-        options={[
-          { value: "system", label: t("system") },
-          { value: "light", label: t("light") },
-          { value: "dark", label: t("dark") },
-        ]}
-      />
+      <div className="theme-options">
+        <SegmentedControl
+          label={t("theme")}
+          value={mounted ? (theme ?? "system") : "system"}
+          onValueChange={setTheme}
+          options={[
+            { value: "system", label: t("system") },
+            { value: "light", label: t("light") },
+            { value: "dark", label: t("dark") },
+          ]}
+        />
+      </div>
       <span className="theme-toggle">
         <ThemeSwitch
           iconOnly

@@ -45,3 +45,11 @@ Dal dettaglio brand o dalla panoramica filtrata per brand scarica il riepilogo v
 ## Come leggere i confronti
 
 Il venduto comprende ordini confermati e successivi, escludendo bozze e annullati. Il fatturato comprende fatture emesse/inviate/pagate. Gli importi sono in euro, conservati in centesimi interi. Uno scostamento percentuale rispetto a zero o a dati mancanti non è calcolabile. I dati storici importati sono distinti dai movimenti operativi; nei report controlla stagione e filtri prima di confrontare totali.
+
+## Budget suggerito per la stagione successiva
+
+In **Budget → Crea budget**, seleziona brand, cliente e stagione e usa **Calcola suggerimento**. Il confronto usa solo stagioni omologhe (SS con SS, FW con FW). Verifica le stagioni senza date, gli zeri e le eventuali eccezioni; poi ricalcola e seleziona **Usa importo suggerito**. Completa il periodo e salva il budget. Se cambi l’importo, indica il motivo.
+
+Lo storico Excel è utilizzato solo da lotti completati. Celle vuote, stagioni aperte e conflitti fra fonti non diventano automaticamente zero. Puoi configurare pesi, crescita, profilo e fonte storica. Un cambiamento dopo l’accettazione richiede una nuova conferma oppure **Continua con budget manuale**. L’origine rimane consultabile nel dettaglio.
+
+Regole, formula ed esempi: [Budget suggerito per stagione](BUDGET-RECOMMENDATIONS.md).
