@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/supabase/config";
 import { homeForRole, safeNext } from "@/lib/auth/roles";
-import { getSessionUser } from "@/lib/auth";
 import type { ActionResult } from "@/lib/errors";
 import { emailSchema, loginSchema, passwordSchema } from "./schema";
 
@@ -118,9 +117,4 @@ export async function logout(): Promise<ActionResult> {
   }
   (await cookies()).delete("auth-flow");
   redirect("/login");
-}
-
-export async function currentHome() {
-  const user = await getSessionUser();
-  return user ? homeForRole(user.role) : "/login";
 }

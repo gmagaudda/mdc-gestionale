@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { LoadError } from "@/components/shared/load-error";
 import { DataTable } from "@/components/shared/data-table";
 import { ConfirmAction } from "@/components/shared/confirm-action";
-import { EmptyState } from "@/components/shared/empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { matchingReportSchema } from "@/modules/imports/match-schema";
 import { MatchEditor } from "@/modules/imports/components/match-editor";
 import { operationalPreviewSchema } from "@/modules/imports/preview-schema";

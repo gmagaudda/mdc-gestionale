@@ -5,7 +5,7 @@ import { Button } from "@/components/arc/button/button";
 import { Input } from "@/components/arc/input/input";
 import { Alert } from "@/components/arc/alert/alert";
 import { Skeleton } from "@/components/arc/skeleton/skeleton";
-import { EmptyState } from "@/components/shared/empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { NativeSelectField } from "@/components/shared/native-select-field";
 import { SearchSelect } from "@/components/shared/search-select";
 import {
@@ -55,15 +55,13 @@ export function BudgetRecommendationPanel({
     overrides: [],
   });
   const [snapshot, setSnapshot] = useState<BudgetRecommendation | null>(null);
-  const [current, setCurrent] = useState(false),
-    [accepted, setAccepted] = useState(false),
-    [error, setError] = useState("");
+  const [status, setStatus] = useState<"stale" | "ready" | "accepted">("stale");
+  const [error, setError] = useState("");
   const [fields, setFields] = useState<Record<string, string>>({});
   const [pending, start] = useTransition();
   const update = (next: RecommendationSettings) => {
     setSettings(next);
-    setCurrent(false);
-    setAccepted(false);
+    setStatus("stale");
     onInvalidate();
     setFields({});
     setError("");
@@ -237,8 +235,7 @@ export function BudgetRecommendationPanel({
           onClick={() => {
             setError("");
             onInvalidate();
-            setAccepted(false);
-            setCurrent(false);
+            setStatus("stale");
             const parsed = recommendationSettingsSchema.safeParse(settings);
             if (!parsed.success) {
               setFields(
@@ -274,7 +271,7 @@ export function BudgetRecommendationPanel({
                 if (!result.ok) setError(t(result.error));
                 else {
                   setSnapshot(result.data);
-                  setCurrent(true);
+                  setStatus("ready");
                   setFields({});
                 }
               } catch {
@@ -297,7 +294,7 @@ export function BudgetRecommendationPanel({
               <span className="wrap-value">{t("ambiguous")}</span>
             </Alert>
           )}
-          {!current && (
+          {status === "stale" && (
             <Alert title={t("reviewTitle")}>
               <span className="wrap-value">{t("stalePreview")}</span>
             </Alert>
@@ -396,20 +393,19 @@ export function BudgetRecommendationPanel({
               variant="secondary"
               size="lg"
               disabled={
-                !current ||
+                status !== "ready" ||
                 snapshot.suggested_cents === null ||
-                disabled ||
-                accepted
+                disabled
               }
               onClick={() => {
                 onAccept({ settings, snapshot });
-                setAccepted(true);
+                setStatus("accepted");
               }}
             >
               <span className="list-button-copy">{t("use")}</span>
             </Button>
           </div>
-          <div role="status">{accepted ? t("accepted") : ""}</div>
+          <div role="status">{status === "accepted" ? t("accepted") : ""}</div>
         </>
       ) : !pending ? (
         <EmptyState title={t("ready")} description={t("readyHint")} />

@@ -353,6 +353,14 @@ test("brand summary download preserves date filters, privacy and recoverable err
         exact: true,
       }),
     ).toBeVisible();
+    // Success text precedes the end of the loading label's CSS fade.
+    await button.evaluate(async (element) => {
+      await Promise.allSettled(
+        element
+          .getAnimations({ subtree: true })
+          .map((animation) => animation.finished),
+      );
+    });
     expect(
       (
         await new AxeBuilder({ page })

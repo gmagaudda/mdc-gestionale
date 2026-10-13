@@ -2,7 +2,7 @@ import { uuid, enum as enumeration } from "zod";
 import { getTranslations } from "next-intl/server";
 import { getSessionUser } from "@/lib/auth";
 import { getPdfModel } from "@/lib/pdf/models";
-import { PrintPdfRenderer, UnsupportedPdfCharacters } from "@/lib/pdf/renderer";
+import { renderPdf, UnsupportedPdfCharacters } from "@/lib/pdf/renderer";
 import { pdfFont } from "@/lib/pdf/font";
 import { dashboardFiltersSchema } from "@/modules/dashboard/schema";
 import { PdfSummaryTooLarge } from "@/lib/pdf/summary-schema";
@@ -38,8 +38,7 @@ export async function GET(
       input.success ? input.data : undefined,
     );
     if (!model) return new Response(null, { status: 404 });
-    const renderer = new PrintPdfRenderer(await pdfFont());
-    const bytes = await renderer.render(parsed.data, model);
+    const bytes = await renderPdf(model, await pdfFont());
     return new Response(new Uint8Array(bytes), {
       headers: {
         "Content-Type": "application/pdf",

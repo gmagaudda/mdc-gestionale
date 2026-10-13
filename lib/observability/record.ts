@@ -19,13 +19,8 @@ const metricsSchema = z
   })
   .strip();
 export function operationalLog(
-  event:
-    | "email.logged"
-    | "reminders.finished"
-    | "push.finished"
-    | "invoicing.finished"
-    | "retention.finished",
-  status: "ok" | "retry" | "error",
+  event: z.infer<typeof eventSchema>,
+  status: z.infer<typeof statusSchema>,
   metrics: z.input<typeof metricsSchema> = {},
 ) {
   return {

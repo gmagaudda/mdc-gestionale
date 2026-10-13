@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { MockInvoicingProvider, MemoryMockInvoiceStore } from "./mock";
+import { MockInvoicingProvider } from "./mock";
 import { FattureInCloudProvider } from "./fic/provider";
 import { FicHttpClient } from "./fic/http";
-import { invoiceFixture } from "./test-fixtures";
+import { invoiceFixture, MemoryMockInvoiceStore } from "./test-fixtures";
 import {
   MemoryFicInvoiceStore,
   FicHttpRecording,

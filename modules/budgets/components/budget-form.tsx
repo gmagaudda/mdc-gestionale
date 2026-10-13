@@ -62,7 +62,8 @@ export function BudgetForm({
     key: K,
     data: (typeof value)[K],
   ) => {
-    if (["brand_id", "season_id", "customer_id"].includes(key)) {
+    const changesScope = ["brand_id", "season_id", "customer_id"].includes(key);
+    if (changesScope) {
       if (recommendation) setAmount("");
       setRecommendation(null);
       setRecommendationStale(false);
@@ -70,10 +71,7 @@ export function BudgetForm({
     setValue((current) => ({
       ...current,
       [key]: data,
-      ...(["brand_id", "season_id", "customer_id"].includes(key) &&
-      recommendation
-        ? { amount_cents: null }
-        : {}),
+      ...(changesScope && recommendation ? { amount_cents: null } : {}),
     }));
   };
   const none = { value: "none", label: t("none") };

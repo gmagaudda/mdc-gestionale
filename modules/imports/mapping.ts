@@ -1,6 +1,5 @@
 import {
   canonicalFields,
-  importEntities,
   mappingProfileSchema,
   suggestMapping,
   type ImportEntity,
@@ -9,7 +8,7 @@ import {
 import type { ParsedSheet } from "./parser";
 export function inferMappingProfile(
   sheet: ParsedSheet,
-  allowed: readonly ImportEntity[] = importEntities,
+  allowed: readonly ImportEntity[],
 ): MappingProfile {
   if (!allowed.length) throw Error("noEntities");
   let best = {

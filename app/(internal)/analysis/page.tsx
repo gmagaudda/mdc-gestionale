@@ -4,7 +4,7 @@ import { getSessionUser } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shared/page-header";
-import { EmptyState } from "@/components/shared/empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { LoadError } from "@/components/shared/load-error";
 import { Alert } from "@/components/arc/alert/alert";
 import { performanceFilterSchema } from "@/modules/imports/report-schema";

@@ -19,15 +19,13 @@ export const listExports: Record<
   ListExportEntity,
   {
     namespace: string;
-    sort: readonly string[];
-    defaultSort: string;
+    sort: readonly [string, ...string[]];
     columns: Column[];
   }
 > = {
   brands: {
     namespace: "brands",
     sort: ["name", "legal_name"],
-    defaultSort: "name",
     columns: [
       { key: "name", label: "name" },
       { key: "legal_name", label: "legal_name" },
@@ -36,7 +34,6 @@ export const listExports: Record<
   customers: {
     namespace: "customers",
     sort: ["legal_name", "trade_name", "city"],
-    defaultSort: "legal_name",
     columns: [
       { key: "legal_name", label: "legal_name" },
       { key: "trade_name", label: "trade_name" },
@@ -46,7 +43,6 @@ export const listExports: Record<
   seasons: {
     namespace: "catalog",
     sort: ["code", "name"],
-    defaultSort: "code",
     columns: [
       { key: "code", label: "code" },
       { key: "name", label: "name" },
@@ -56,7 +52,6 @@ export const listExports: Record<
   products: {
     namespace: "catalog",
     sort: ["name", "sku_base", "wholesale_price_cents"],
-    defaultSort: "name",
     columns: [
       { key: "name", label: "name" },
       { key: "sku_base", label: "sku_base" },
@@ -72,7 +67,6 @@ export const listExports: Record<
   budgets: {
     namespace: "budgets",
     sort: ["period_start", "amount_cents", "created_at"],
-    defaultSort: "period_start",
     columns: [
       { key: "brand", label: "brand" },
       { key: "season", label: "season" },
@@ -84,8 +78,7 @@ export const listExports: Record<
   },
   documents: {
     namespace: "documents",
-    sort: ["name", "created_at"],
-    defaultSort: "created_at",
+    sort: ["created_at", "name"],
     columns: [
       { key: "name", label: "name" },
       { key: "brand", label: "brand" },
@@ -97,7 +90,6 @@ export const listExports: Record<
   invoices: {
     namespace: "invoices",
     sort: ["due_date", "issue_date", "number"],
-    defaultSort: "due_date",
     columns: [
       { key: "number", label: "number" },
       { key: "brand", label: "supplier" },

@@ -7,7 +7,7 @@ import { Button } from "@/components/arc/button/button";
 import { DataTable, type ListColumn, type ListRow } from "./data-table";
 import { ListCsvDownload } from "./list-csv-download";
 import { AnimatedNumber } from "./animated-number";
-import { EmptyState } from "./empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 
 export function SelectableListTable({
   rows,

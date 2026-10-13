@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { LineChart } from "@/components/arc/line-chart/line-chart";
 import { DataTable } from "@/components/shared/data-table";
-import { EmptyState } from "@/components/shared/empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { formatMoney } from "@/lib/money";
 import { chartCents, type DashboardReport } from "../schema";
 const format = (value: number) => formatMoney(BigInt(Math.round(value)));

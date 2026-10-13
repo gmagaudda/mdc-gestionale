@@ -8,7 +8,7 @@ import { formatMoney } from "@/lib/money";
 import { Alert } from "@/components/arc/alert/alert";
 import { DataTable } from "@/components/shared/data-table";
 import { ListView } from "@/components/shared/list-view";
-import { EmptyState } from "@/components/shared/empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { AnimatedMoney } from "@/components/shared/animated-number";
 import { searchBudgetBrands } from "@/modules/budgets/actions";
 import { DashboardFiltersForm } from "@/modules/dashboard/components/dashboard-filters";

@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/arc/skeleton/skeleton";
 import { Alert } from "@/components/arc/alert/alert";
-import { EmptyState } from "@/components/shared/empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { getPortalContext } from "@/modules/portal/context";
 import { getPortalDashboard } from "@/modules/portal/queries";
 import { PortalFilters } from "@/modules/portal/components/portal-filters";

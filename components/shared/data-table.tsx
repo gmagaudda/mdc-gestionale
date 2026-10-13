@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
 import { Copy } from "lucide-react";
 import { SortableDataTable } from "@/components/arc/sortable-data-table/sortable-data-table";
-import { EmptyState } from "./empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { Checkbox } from "@/components/arc/checkbox/checkbox";
 
 export type ListRow = { id: string; [key: string]: string | number | null };

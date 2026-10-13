@@ -16,19 +16,3 @@ export const budgetSchema = z
     message: "dateRange",
   });
 export type BudgetInput = z.infer<typeof budgetSchema>;
-/** Inclusive dates. NULL season/customer form a distinct scope, not a wildcard. */
-export function budgetsOverlap(
-  a: Pick<
-    BudgetInput,
-    "brand_id" | "season_id" | "customer_id" | "period_start" | "period_end"
-  >,
-  b: typeof a,
-) {
-  return (
-    a.brand_id === b.brand_id &&
-    a.season_id === b.season_id &&
-    a.customer_id === b.customer_id &&
-    a.period_start <= b.period_end &&
-    b.period_start <= a.period_end
-  );
-}

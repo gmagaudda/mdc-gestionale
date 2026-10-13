@@ -1,15 +1,15 @@
 import { describe, it, expect, vi } from "vitest";
-import {
-  MockInvoicingProvider,
-  MemoryMockInvoiceStore,
-  canTransitionInvoice,
-} from "./mock";
+import { MockInvoicingProvider } from "./mock";
 import {
   externalStatusSchema,
   invoiceInputSchema,
   InvoicingError,
 } from "./types";
-import { invoiceFixture } from "./test-fixtures";
+import {
+  invoiceFixture,
+  MemoryMockInvoiceStore,
+  canTransitionInvoice,
+} from "./test-fixtures";
 import { signMockWebhook } from "./webhook";
 const secret = "synthetic-invoicing-secret-for-tests-only-42";
 const factory = () =>
@@ -46,22 +46,26 @@ describe("mock provider contract", () => {
     const first = new MockInvoicingProvider(store, { webhookSecret: secret });
     const result = await first.createInvoice(invoiceFixture());
     const second = new MockInvoicingProvider(store, { webhookSecret: secret });
-    await second.simulateStatus(result.externalId, "sent");
+    await store.transition(result.externalId, "sent");
+    expect(await second.getStatus(result.externalId)).toBe("sent");
     expect(await first.getStatus(result.externalId)).toBe("sent");
-    await second.simulateStatus(result.externalId, "paid");
+    await store.transition(result.externalId, "paid");
     await expect(first.cancelInvoice(result.externalId)).rejects.toMatchObject({
       code: "invalid_transition",
     });
   });
   it("supports cancellation and rejection while terminal states cannot regress", async () => {
+    const rejectedStore = new MemoryMockInvoiceStore();
     const cancelled = factory(),
-      rejected = factory();
+      rejected = new MockInvoicingProvider(rejectedStore, {
+        webhookSecret: secret,
+      });
     const a = await cancelled.createInvoice(invoiceFixture());
     const b = await rejected.createInvoice(invoiceFixture());
     await cancelled.cancelInvoice(a.externalId);
     expect(await cancelled.getStatus(a.externalId)).toBe("cancelled");
     await cancelled.cancelInvoice(a.externalId);
-    await rejected.simulateStatus(b.externalId, "rejected");
+    await rejectedStore.transition(b.externalId, "rejected");
     expect(await rejected.getStatus(b.externalId)).toBe("rejected");
     for (const from of ["paid", "cancelled", "rejected"] as const)
       for (const to of externalStatusSchema.options)

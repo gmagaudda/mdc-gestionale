@@ -2,11 +2,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { PDFDocument } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import {
-  PrintPdfRenderer,
-  wrapPdfText,
-  UnsupportedPdfCharacters,
-} from "./renderer";
+import { renderPdf, wrapPdfText, UnsupportedPdfCharacters } from "./renderer";
 import type { OrderPdf, BrandSummaryPdf } from "./types";
 import messages from "@/messages/it.json";
 const fontBytes = new Uint8Array(
@@ -78,10 +74,7 @@ describe("print PDF", () => {
         })),
       },
     };
-    const bytes = await new PrintPdfRenderer(fontBytes).render(
-      summary.type,
-      summary,
-    );
+    const bytes = await renderPdf(summary, fontBytes);
     const doc = await PDFDocument.load(bytes);
     expect(doc.getPageCount()).toBeGreaterThan(1);
     expect(doc.getTitle()).toBe(summary.title);
@@ -94,17 +87,20 @@ describe("print PDF", () => {
       writeFileSync("tmp/pdfs/brand-summary-many.pdf", bytes);
     }
     const empty = await PDFDocument.load(
-      await new PrintPdfRenderer(fontBytes).render(summary.type, {
-        ...summary,
-        report: {
-          count: 0,
-          order_count: 0,
-          net_cents: "0",
-          vat_cents: "0",
-          gross_cents: "0",
-          rows: [],
+      await renderPdf(
+        {
+          ...summary,
+          report: {
+            count: 0,
+            order_count: 0,
+            net_cents: "0",
+            vat_cents: "0",
+            gross_cents: "0",
+            rows: [],
+          },
         },
-      }),
+        fontBytes,
+      ),
     );
     expect(empty.getPageCount()).toBe(1);
   });
@@ -123,10 +119,7 @@ describe("print PDF", () => {
     );
   });
   it("creates an embedded-font A4 order and paginates many rows", async () => {
-    const renderer = new PrintPdfRenderer(fontBytes);
-    const single = await PDFDocument.load(
-      await renderer.render(order.type, order),
-    );
+    const single = await PDFDocument.load(await renderPdf(order, fontBytes));
     expect(single.getPageCount()).toBe(1);
     expect(single.getTitle()).toBe(order.title);
     expect(single.getPages()[0].getWidth()).toBeCloseTo(595.28);
@@ -137,7 +130,7 @@ describe("print PDF", () => {
         sku: `CAMICIA-${i}`,
       })),
     };
-    const bytes = await renderer.render(many.type, many);
+    const bytes = await renderPdf(many, fontBytes);
     if (process.env.PDF_LAYOUT_CHECK) {
       mkdirSync("tmp/pdfs", { recursive: true });
       writeFileSync("tmp/pdfs/many-rows.pdf", bytes);

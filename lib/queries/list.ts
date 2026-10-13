@@ -13,11 +13,7 @@ export function parseListQuery(
   defaultDirection: "asc" | "desc" = "asc",
 ): ListQuery {
   const page = Number(input.page);
-  const columnFilters = Object.fromEntries(
-    Object.entries(input)
-      .filter(([key]) => key.startsWith("cf_"))
-      .map(([key, value]) => [key.slice(3), value]),
-  );
+  const columnFilters = captureColumnFilters(input);
   return {
     ...(Object.keys(columnFilters).length ? { columnFilters } : {}),
     page: Number.isInteger(page) && page > 0 && page <= 100000 ? page : 1,
@@ -48,14 +44,24 @@ export function listHref(
     q: next.q,
     sort: next.sort,
     direction: next.direction,
-    ...Object.fromEntries(
-      Object.entries(next.columnFilters ?? {})
-        .filter(([, value]) => typeof value === "string")
-        .map(([key, value]) => [`cf_${key}`, value as string]),
-    ),
+    ...columnFilterParams(next.columnFilters),
   });
   return `${base}?${params}`;
 }
 export function escapeLike(value: string) {
   return value.replace(/[\\%_]/g, "\\$&");
+}
+export function captureColumnFilters(input: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(input)
+      .filter(([key]) => key.startsWith("cf_"))
+      .map(([key, value]) => [key.slice(3), value]),
+  );
+}
+export function columnFilterParams(input?: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(input ?? {})
+      .filter(([, value]) => typeof value === "string")
+      .map(([key, value]) => [`cf_${key}`, value as string]),
+  );
 }

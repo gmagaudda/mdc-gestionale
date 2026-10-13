@@ -57,7 +57,10 @@ describe("historical totals keep their original perimeter", () => {
       row({ brand: "AB", customer: "A", city: "B/C" }),
     ];
     expect(aggregatePerformance(rows)).toHaveLength(2);
-    expect(aggregatePerformance(rows, "country")[0].customers).toBe(2);
+    expect(
+      aggregatePerformance(rows.map((r) => ({ ...r, brand: "Same brand" })))[0]
+        .customers,
+    ).toBe(2);
   });
   it("adds integer cents beyond safe numeric aggregate range", () => {
     const rows = Array.from({ length: 10000 }, () =>

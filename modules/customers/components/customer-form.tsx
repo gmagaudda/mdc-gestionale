@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm, type Path } from "react-hook-form";
-import { FormField as Input } from "@/components/shared/form-field";
+import { Input } from "@/components/arc/input/input";
 import { Textarea } from "@/components/arc/textarea/textarea";
 import { Button } from "@/components/arc/button/button";
 import { Alert } from "@/components/arc/alert/alert";

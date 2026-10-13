@@ -2,14 +2,15 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Input } from "@/components/arc/input/input";
 import { Button } from "@/components/arc/button/button";
-import { EmptyState } from "./empty-state";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
 import { DataTable, type ListRow, type ListColumn } from "./data-table";
-import { listHref, type ListQuery } from "@/lib/queries/list";
-import { listExportEntitySchema } from "@/lib/exports/lists";
 import {
+  listHref,
   columnFilterParams,
-  parseColumnFilters,
-} from "@/lib/queries/column-filters";
+  type ListQuery,
+} from "@/lib/queries/list";
+import { listExportEntitySchema } from "@/lib/exports/lists";
+import { parseColumnFilters } from "@/lib/queries/column-filters";
 import { ListColumnFilters } from "./list-column-filters";
 import { SelectableListTable } from "./selectable-list-table";
 import { Alert } from "@/components/arc/alert/alert";
@@ -50,9 +51,12 @@ export async function ListView({
     (exportEntity.success
       ? `/api/lists/${exportEntity.data}/export`
       : undefined);
-  const parameters = {
+  const hiddenFilters = {
     ...filterParams,
     ...columnFilterParams(query.columnFilters),
+  };
+  const parameters = {
+    ...hiddenFilters,
     q: query.q,
     sort: query.sort,
     direction: query.direction,
@@ -71,10 +75,7 @@ export async function ListView({
         <form action={base} className="list-search">
           <input type="hidden" name="sort" value={query.sort} />
           <input type="hidden" name="direction" value={query.direction} />
-          {Object.entries({
-            ...filterParams,
-            ...columnFilterParams(query.columnFilters),
-          }).map(([name, value]) => (
+          {Object.entries(hiddenFilters).map(([name, value]) => (
             <input key={name} type="hidden" name={name} value={value} />
           ))}
           <Input

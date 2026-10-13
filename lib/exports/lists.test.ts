@@ -6,7 +6,6 @@ test("export column labels exist and financial filters reject invalid values", (
   for (const config of Object.values(listExports)) {
     for (const column of config.columns)
       expect(typeof text[config.namespace][column.label]).toBe("string");
-    expect(config.sort).toContain(config.defaultSort);
   }
   expect(
     listExportFiltersSchema.safeParse({ q: "x".repeat(101) }).success,

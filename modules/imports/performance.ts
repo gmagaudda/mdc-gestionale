@@ -54,15 +54,12 @@ export function comparePerformance(
 export function sumPerformance(rows: PerformanceRow[]) {
   return Object.fromEntries(
     performanceMetrics.map((m) => {
-      const amounts = rows
-        .map((r) => r.values[m.key])
-        .filter((v): v is number => v !== null);
-      return [
-        m.key,
-        amounts.length
-          ? amounts.reduce((sum, v) => sum + BigInt(v), 0n).toString()
-          : null,
-      ];
+      let total: bigint | null = null;
+      for (const row of rows) {
+        const amount = row.values[m.key];
+        if (amount !== null) total = (total ?? 0n) + BigInt(amount);
+      }
+      return [m.key, total?.toString() ?? null];
     }),
   ) as Record<PerformanceMetric, string | null>;
 }
@@ -200,42 +197,28 @@ function readPivot(sheet?: ParsedSheet) {
   }
   return { expected, pivotBrands };
 }
-export function aggregatePerformance(
-  rows: PerformanceRow[],
-  dimension:
-    | "brand"
-    | "area"
-    | "representative"
-    | "country"
-    | "region"
-    | "customer" = "brand",
-) {
+export function aggregatePerformance(rows: PerformanceRow[]) {
   const groups = new Map<
     string,
     {
       label: string;
       rows: number;
       customers: Set<string>;
-      values: Record<PerformanceMetric, bigint>;
-      counts: Record<PerformanceMetric, number>;
+      values: Record<PerformanceMetric, bigint | null>;
     }
   >();
   for (const row of rows) {
-    const label = row[dimension],
-      key = label;
-    if (!groups.has(key))
-      groups.set(key, {
+    const label = row.brand;
+    if (!groups.has(label))
+      groups.set(label, {
         label,
         rows: 0,
         customers: new Set(),
         values: Object.fromEntries(
-          performanceMetrics.map((m) => [m.key, 0n]),
-        ) as Record<PerformanceMetric, bigint>,
-        counts: Object.fromEntries(
-          performanceMetrics.map((m) => [m.key, 0]),
-        ) as Record<PerformanceMetric, number>,
+          performanceMetrics.map((m) => [m.key, null]),
+        ) as Record<PerformanceMetric, bigint | null>,
       });
-    const group = groups.get(key)!;
+    const group = groups.get(label)!;
     group.rows++;
     if (row.customer)
       group.customers.add(
@@ -245,8 +228,8 @@ export function aggregatePerformance(
       );
     for (const m of performanceMetrics)
       if (row.values[m.key] !== null) {
-        group.values[m.key] += BigInt(row.values[m.key]!);
-        group.counts[m.key]++;
+        group.values[m.key] =
+          (group.values[m.key] ?? 0n) + BigInt(row.values[m.key]!);
       }
   }
   return Array.from(groups.values())
@@ -258,7 +241,7 @@ export function aggregatePerformance(
       values: Object.fromEntries(
         performanceMetrics.map((m) => [
           m.key,
-          g.counts[m.key] ? g.values[m.key].toString() : null,
+          g.values[m.key]?.toString() ?? null,
         ]),
       ) as Record<PerformanceMetric, string | null>,
     }))

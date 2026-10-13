@@ -19,6 +19,7 @@ export function RecommendationSummary({
       r.historical_cents !== null,
   );
   const older = snapshot.rows.filter((r) => !recent.includes(r));
+  const totalWeight = snapshot.rows.reduce((sum, row) => sum + row.weight, 0);
   const table = (rows: BudgetRecommendation["rows"], caption: string) => (
     <DataTable
       caption={caption}
@@ -42,7 +43,7 @@ export function RecommendationSummary({
         weight: r.used
           ? t("weightValue", {
               weight: r.weight,
-              total: snapshot.rows.reduce((sum, row) => sum + row.weight, 0),
+              total: totalWeight,
             })
           : t("notUsed"),
       }))}

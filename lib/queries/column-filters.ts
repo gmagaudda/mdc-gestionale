@@ -94,17 +94,3 @@ export function applyColumnFilters<T extends FilterQuery<T>>(
         : request.eq(key, value);
   return request;
 }
-export function captureColumnFilters(input: Record<string, unknown>) {
-  return Object.fromEntries(
-    Object.entries(input)
-      .filter(([key]) => key.startsWith("cf_"))
-      .map(([key, value]) => [key.slice(3), value]),
-  );
-}
-export function columnFilterParams(input?: Record<string, unknown>) {
-  return Object.fromEntries(
-    Object.entries(input ?? {})
-      .filter(([, value]) => typeof value === "string")
-      .map(([key, value]) => [`cf_${key}`, value as string]),
-  );
-}

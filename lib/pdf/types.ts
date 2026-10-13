@@ -53,6 +53,3 @@ export type BrandSummaryPdf = {
   labels: Record<string, string>;
 };
 export type PdfData = OrderPdf | LineSheetPdf | BrandSummaryPdf;
-export interface PdfRenderer {
-  render(type: PdfType, data: PdfData): Promise<Uint8Array>;
-}

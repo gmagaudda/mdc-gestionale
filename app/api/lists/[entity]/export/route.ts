@@ -5,10 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { exportCsv } from "@/lib/csv";
 import { centsToDecimal } from "@/lib/money";
 import { exportSelectionSchema } from "@/lib/exports/selection";
-import {
-  captureColumnFilters,
-  parseColumnFilters,
-} from "@/lib/queries/column-filters";
+import { parseColumnFilters } from "@/lib/queries/column-filters";
+import { captureColumnFilters } from "@/lib/queries/list";
 import {
   listExports,
   listExportEntitySchema,
@@ -47,7 +45,7 @@ export async function GET(
   ).rpc("export_business_list", {
     p_entity: entity.data,
     p_q: filters.data.q,
-    p_sort: filters.data.sort ?? config.defaultSort,
+    p_sort: filters.data.sort ?? config.sort[0],
     p_direction: filters.data.direction,
     p_status: filters.data.status,
     p_overdue: filters.data.overdue === "yes",

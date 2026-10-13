@@ -60,7 +60,7 @@ export function PerformanceImport() {
       )
     : [];
   const blocking = dataset?.issues.some((i) => i.severity === "error");
-  const step = pending ? (dataset ? 1 : 0) : dataset ? 1 : 0;
+  const step = dataset ? 1 : 0;
   const translate = (code: string) => (t.has(code) ? t(code) : t("parseError"));
   async function read(selected: File) {
     abort.current?.abort();
