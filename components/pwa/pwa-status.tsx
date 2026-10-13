@@ -61,11 +61,10 @@ export function PwaStatus() {
     </>
   );
 }
-export function PwaInstall() {
+export function PwaInstall({ onInstall }: { onInstall: () => void }) {
   const t = useTranslations("pwa"),
     pwa = usePwa(),
     online = useOnlineStatus();
-  const [open, setOpen] = useState(false);
   if (pwa.installed) return <p role="status">{t("installed")}</p>;
   if (pwa.installEvent)
     return (
@@ -74,27 +73,11 @@ export function PwaInstall() {
         size="lg"
         disabled={!online}
         onClick={() => {
-          void pwa.install();
+          void pwa.install().then(onInstall);
         }}
       >
         {t("install")}
       </Button>
     );
-  return (
-    <ResponsiveDialog
-      open={open}
-      onOpenChange={setOpen}
-      title={t("install")}
-      trigger={
-        <Button variant="secondary" size="lg" disabled={!online}>
-          {t("install")}
-        </Button>
-      }
-    >
-      <p>{t(pwa.ios ? "installIOS" : "installBrowser")}</p>
-      <Button variant="secondary" size="lg" onClick={() => setOpen(false)}>
-        {t("close")}
-      </Button>
-    </ResponsiveDialog>
-  );
+  return <p>{t(pwa.ios ? "installIOS" : "installBrowser")}</p>;
 }

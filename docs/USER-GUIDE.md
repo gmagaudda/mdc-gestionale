@@ -4,7 +4,7 @@
 
 Accedi con email e password. Il recupero invia un link da aprire nello stesso browser. Gli amministratori configurano un’app di autenticazione al primo accesso e inseriscono il codice a sei cifre ad ogni nuova sessione. Conserva privatamente la chiave di configurazione. Se perdi l’app, contatta il responsabile: il recupero password non elimina il secondo fattore.
 
-Preferenze utente permette di scegliere tema, installare l’app e attivare/revocare notifiche. I salvataggi richiedono connessione. Salva le bozze prima di chiudere il tab o aggiornare l’app.
+Il menu utente, aperto dall’avatar in alto a destra, contiene Aspetto, Installa app, Notifiche ed Esci. Ogni impostazione apre il proprio pannello; le notifiche sono disponibili agli utenti interni. I salvataggi richiedono connessione. Salva le bozze prima di chiudere il tab o aggiornare l’app.
 
 ## Admin
 

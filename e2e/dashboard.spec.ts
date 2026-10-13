@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -159,7 +160,7 @@ test("reports exact seed totals filters and accessible charts", async ({
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -194,12 +195,7 @@ test("reports exact seed totals filters and accessible charts", async ({
       .toBeGreaterThan(0);
   }
   for (const theme of ["Chiaro", "Scuro"]) {
-    if (theme === "Chiaro")
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
 
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>

@@ -1,3 +1,4 @@
+import { signOut } from "./helpers/account";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -118,7 +119,7 @@ test("admin enrolls, wrong code fails, aal1 is denied and re-login needs TOTP", 
     .click();
   await expect(page).toHaveURL(/\/orders$/);
   expect((await page.request.get("/api/imports/template")).status()).toBe(200);
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await login();
   await expect(

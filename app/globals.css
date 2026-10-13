@@ -397,24 +397,12 @@ textarea,
   padding: var(--space-4);
   border-top: 1px solid var(--border);
 }
-.user-preferences {
-  position: relative;
+.account-menu-trigger {
+  min-block-size: var(--control-height-md);
+  min-inline-size: var(--control-height-md);
 }
-.user-preferences > summary {
-  min-height: var(--control-height-md);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-}
-.user-preferences > summary::after {
-  content: "▾";
-}
-.user-preferences[open] > summary::after {
-  content: "▴";
-}
-.user-preferences .theme-controls {
-  padding-block: var(--space-3);
+.account-menu-error {
+  max-inline-size: 24rem;
 }
 .page-header {
   display: flex;

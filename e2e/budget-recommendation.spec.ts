@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -128,7 +129,7 @@ test("suggests homologous seasons handles exceptions and preserves adjustment pr
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/budgets/new");
@@ -215,8 +216,7 @@ test("suggests homologous seasons handles exceptions and preserves adjustment pr
     .getByRole("button", { name: "Usa importo suggerito", exact: true })
     .click();
   for (const theme of ["Chiaro", "Scuro"]) {
-    await open(page, "Preferenze utente");
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
         ["serious", "critical"].includes(v.impact ?? ""),
@@ -228,10 +228,7 @@ test("suggests homologous seasons handles exceptions and preserves adjustment pr
       ),
     ).toBe(true);
   }
-  await page
-    .locator("summary")
-    .filter({ hasText: /^Preferenze utente$/ })
-    .click();
+
   await page.screenshot({
     path: info.outputPath("recommendation.png"),
     fullPage: true,

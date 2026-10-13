@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -102,11 +103,7 @@ test("navigation search pagination keyboard modal and themes remain accessible",
   ).toEqual([]);
   await page.keyboard.press("Escape");
   await expect(archive).toBeFocused();
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Scuro", exact: true }).click();
+  await setAppearance(page, "Scuro");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(
     (

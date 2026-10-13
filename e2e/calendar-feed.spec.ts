@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -126,7 +127,7 @@ test("subscribes rotates and revokes a private feed and processes local reminder
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -170,12 +171,9 @@ test("subscribes rotates and revokes a private feed and processes local reminder
   await expect(
     page.getByRole("button", { name: "Copia link", exact: true }),
   ).toBeVisible();
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
+
   for (const theme of ["Chiaro", "Scuro"]) {
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     const axe = await new AxeBuilder({ page }).analyze();
     expect(
       axe.violations.filter((v) =>

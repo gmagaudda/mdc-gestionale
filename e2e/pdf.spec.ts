@@ -1,3 +1,4 @@
+import { signOut } from "./helpers/account";
 import { selectChoice } from "./helpers/navigation";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
@@ -171,7 +172,7 @@ test("generates print PDFs and enforces brand isolation and customer privacy", a
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
     await completeAdminMfa(page);
     await expect(
-      page.getByRole("button", { name: "Esci", exact: true }),
+      page.getByRole("button", { name: /^Menu utente di / }),
     ).toBeVisible();
     await expect(page).toHaveURL(/dashboard$/);
   };
@@ -232,7 +233,7 @@ test("generates print PDFs and enforces brand isolation and customer privacy", a
     .from("brand_users")
     .insert({ brand_id: brandId, user_id: userId });
   await page.goto("/dashboard");
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await login();
   await download("order-confirmation", orderId, "order-confirmation-demo.pdf");
@@ -273,7 +274,7 @@ test("brand summary download preserves date filters, privacy and recoverable err
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
     await expect(
-      page.getByRole("button", { name: "Esci", exact: true }),
+      page.getByRole("button", { name: /^Menu utente di / }),
     ).toBeVisible();
   };
   const save = async (path: string, name: string) => {
@@ -322,7 +323,7 @@ test("brand summary download preserves date filters, privacy and recoverable err
     (await page.request.get(`${url}?from=2026-10-13&to=2026-10-12`)).status(),
   ).toBe(400);
   await save(`${url}?from=2026-10-13`, "brand-summary-empty.pdf");
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await admin().from("profiles").update({ role: "brand" }).eq("id", userId);
   await admin()
@@ -511,7 +512,7 @@ test("manually sends a confirmation in log mode with durable history and recipie
       fullPage: true,
     });
   }
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await admin()
     .from("profiles")

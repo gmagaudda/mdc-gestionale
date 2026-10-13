@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -140,7 +141,7 @@ async function login(page: Page) {
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
 }
 async function saveMatch(
@@ -347,9 +348,8 @@ test("complete operational flow with review, exact totals, duplicate hash and ro
     resume: false,
   });
   for (const theme of ["Chiaro", "Scuro"]) {
-    await page.getByText("Preferenze utente", { exact: true }).click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
-    await page.getByText("Preferenze utente", { exact: true }).click();
+    await setAppearance(page, theme);
+
     expect(
       (
         await new AxeBuilder({ page })

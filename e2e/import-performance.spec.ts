@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -55,7 +56,7 @@ async function login(page: Page) {
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
 }
 async function choose(page: Page) {
@@ -150,12 +151,7 @@ test("historical preview, persistence, filters, duplicates and rollback", async 
     page.getByRole("button", { name: "Raggruppa per: Area", exact: true }),
   ).toBeVisible();
   for (const theme of ["Chiaro", "Scuro"]) {
-    if (theme === "Chiaro")
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
         ["serious", "critical"].includes(v.impact ?? ""),

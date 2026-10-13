@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -391,18 +392,7 @@ test("brand reads orders sales documents calendar and private downloads", async 
   for (const route of ["orders", "sales", "documents", "calendar"]) {
     await page.goto(`/portal/${route}`);
     for (const theme of ["Chiaro", "Scuro"]) {
-      if (theme === "Chiaro") {
-        const preferences = page
-          .locator("summary")
-          .filter({ hasText: "Preferenze utente" });
-        if (
-          !(await page
-            .getByRole("button", { name: "Chiaro", exact: true })
-            .isVisible())
-        )
-          await preferences.click();
-      }
-      await page.getByRole("button", { name: theme, exact: true }).click();
+      await setAppearance(page, theme);
       expect(
         (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
           ["serious", "critical"].includes(v.impact ?? ""),

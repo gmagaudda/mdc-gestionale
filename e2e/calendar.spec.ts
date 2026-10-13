@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -51,7 +52,7 @@ test("creates edits moves filters and archives events with accessible mobile con
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   const browserErrors: string[] = [];
   page.on("pageerror", (error) => browserErrors.push(error.message));
@@ -230,11 +231,7 @@ test("creates edits moves filters and archives events with accessible mobile con
   expect(Date.parse(allDay.ends_at) - Date.parse(allDay.starts_at)).toBe(
     86400000,
   );
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Scuro", exact: true }).click();
+  await setAppearance(page, "Scuro");
   expect(
     (
       await new AxeBuilder({ page })

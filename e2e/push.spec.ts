@@ -1,3 +1,4 @@
+import { openAccountSettings, setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -131,10 +132,7 @@ for (const denied of [false, true])
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
     await completeAdminMfa(page);
     await expect(page).toHaveURL(/dashboard$/);
-    await page
-      .locator("summary")
-      .filter({ hasText: "Preferenze utente" })
-      .click();
+    await openAccountSettings(page, "Notifiche");
     await expect(
       page.getByRole("region", { name: "Notifiche degli appuntamenti" }),
     ).toBeVisible();
@@ -198,10 +196,7 @@ for (const denied of [false, true])
       );
       expect(counts).toMatchObject({ permissionCalls: 1, subscribeCalls: 1 });
       await page.reload();
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
+      await openAccountSettings(page, "Notifiche");
       await expect(
         page.getByText("Notifiche attive su questo dispositivo.", {
           exact: true,
@@ -243,7 +238,12 @@ for (const denied of [false, true])
     expect(JSON.stringify(audit.data)).not.toContain(fixture.endpoint);
     expect(JSON.stringify(audit.data)).not.toContain(fixture.keys.auth);
     for (const scheme of ["Chiaro", "Scuro"]) {
-      await page.getByRole("button", { name: scheme, exact: true }).click();
+      await page
+        .getByRole("dialog")
+        .getByRole("button", { name: "Chiudi", exact: true })
+        .click();
+      await setAppearance(page, scheme);
+      await openAccountSettings(page, "Notifiche");
       expect(
         (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
           ["serious", "critical"].includes(v.impact ?? ""),

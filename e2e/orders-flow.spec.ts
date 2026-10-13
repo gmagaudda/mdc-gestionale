@@ -1,3 +1,4 @@
+import { setAppearance, signOut } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -396,7 +397,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
     .click();
   await expect(page).toHaveURL(/\/orders$/);
   await page.goto("/dashboard");
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await page.getByLabel("Email", { exact: true }).fill(accountEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);
@@ -420,11 +421,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await expect(
     page.getByRole("button", { name: "Segna come fatturato", exact: true }),
   ).toHaveCount(0);
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Scuro", exact: true }).click();
+  await setAppearance(page, "Scuro");
   expect(
     (
       await new AxeBuilder({ page })
@@ -436,7 +433,7 @@ test("lists filters transitions history duplicate and CSV with role restrictions
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await admin().from("profiles").update({ role: "brand" }).eq("id", accountId);
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await page.getByLabel("Email", { exact: true }).fill(accountEmail);
   await page.getByLabel("Password", { exact: true }).fill(password);

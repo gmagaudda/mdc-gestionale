@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -254,12 +255,7 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
   await expect(page.locator("#content")).toContainText("24,40");
   await expect(page.locator("#content")).toContainText("Fattura simulata");
   for (const theme of ["Chiaro", "Scuro"]) {
-    if (theme === "Chiaro")
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     await page.waitForTimeout(400);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
@@ -500,12 +496,9 @@ test("delivered order to simulated invoice, signed webhook and two payments", as
         exact: false,
       }),
   ).toBeVisible();
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
+
   for (const theme of ["Chiaro", "Scuro"]) {
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     await page.waitForTimeout(400);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>

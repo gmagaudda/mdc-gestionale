@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
@@ -108,15 +109,7 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
   await login(page, "admin");
   await expect(page.locator("html")).toHaveAttribute("data-accent", "green");
   await noOverflow(page);
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Chiaro", exact: true }).click();
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
+  await setAppearance(page, "Chiaro");
   await axe(page);
   await info.attach("sage-light-contrast", {
     body: JSON.stringify(await paletteContrast(page)),
@@ -235,11 +228,7 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
     nav.getByRole("link", { name: "Brand", exact: true }),
   ).toHaveAttribute("aria-current", "page");
   if (mobile) await page.keyboard.press("Escape");
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Scuro", exact: true }).click();
+  await setAppearance(page, "Scuro");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await info.attach("sage-dark-contrast", {
     body: JSON.stringify(await paletteContrast(page)),
@@ -247,10 +236,6 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
   });
   await axe(page);
   await noOverflow(page);
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
   await page.screenshot({
     path: info.outputPath("workspace-dark.png"),
     fullPage: true,

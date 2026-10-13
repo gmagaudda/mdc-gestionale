@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -209,12 +210,7 @@ test("portal dashboard isolates brands and preserves customer privacy", async ({
   );
   await expect(page.locator("#content")).not.toContainText("Fatturato netto");
   for (const theme of ["Chiaro", "Scuro"]) {
-    if (theme === "Chiaro")
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
         ["serious", "critical"].includes(v.impact ?? ""),

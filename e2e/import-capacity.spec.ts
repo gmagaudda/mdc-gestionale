@@ -58,7 +58,7 @@ test("20,000 physical rows are validated and staged within one minute", async ({
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   await page.goto("/imports/operational");
   const csv = [

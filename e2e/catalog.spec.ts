@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -135,11 +136,7 @@ test("staff creates a season and fifteen variants with exact prices and archives
   await expect(
     page.getByRole("heading", { name: "Camicia aggiornata", exact: true }),
   ).toBeVisible();
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Scuro", exact: true }).click();
+  await setAppearance(page, "Scuro");
   expect(
     (
       await new AxeBuilder({ page })

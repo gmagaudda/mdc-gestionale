@@ -1,3 +1,4 @@
+import { openAccountSettings, signOut } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -165,11 +166,8 @@ test("install entry explains iOS and honors a deferred browser prompt", async ({
     }),
   );
   await login(page);
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Installa app", exact: true }).click();
+
+  await openAccountSettings(page, "Installa app");
   const dialog = page.getByRole("dialog", {
     name: "Installa app",
     exact: true,
@@ -193,10 +191,12 @@ test("install entry explains iOS and honors a deferred browser prompt", async ({
     "data-prompt-deferred",
     "true",
   );
+  await openAccountSettings(page, "Installa app");
   await page.getByRole("button", { name: "Installa app", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-prompt-calls", "1");
   await expect(dialog).toHaveCount(0);
   await page.evaluate(() => window.dispatchEvent(new Event("appinstalled")));
+  await openAccountSettings(page, "Installa app");
   await expect(page.getByText("App installata", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Installa app", exact: true }),
@@ -241,7 +241,7 @@ test("production service worker falls back offline and keeps business data out o
       await caches.open("mdc-public-v1")
     ).put("/orders", new Response("private"));
   });
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/login$/);
   expect(
     await page.evaluate(() => [

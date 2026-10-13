@@ -6,10 +6,8 @@ import {
   MobileNavigation,
   WorkspacePath,
 } from "./app-navigation";
-import { ThemeControls } from "./theme-controls";
-import { LogoutForm } from "@/components/pwa/logout-form";
-import { PwaStatus, PwaInstall } from "@/components/pwa/pwa-status";
-import { PushSettings } from "@/components/pwa/push-settings";
+import { AccountMenu } from "./account-menu";
+import { PwaStatus } from "@/components/pwa/pwa-status";
 import { pushConfig } from "@/lib/pwa/push-config";
 import { type Role } from "@/lib/auth/roles";
 export async function SessionShell({
@@ -41,21 +39,14 @@ export async function SessionShell({
             <MobileNavigation role={user.role} footer={identity} />
             <WorkspacePath role={user.role} />
             <div className="session-actions">
-              <details className="user-preferences">
-                <summary className="text-link">{t("preferences")}</summary>
-                <ThemeControls />
-                <PwaInstall />
-                {user.role !== "brand" && (
-                  <PushSettings
-                    publicKey={
-                      process.env.NODE_ENV === "production"
-                        ? (pushConfig()?.publicKey ?? null)
-                        : null
-                    }
-                  />
-                )}
-              </details>
-              <LogoutForm />
+              <AccountMenu
+                user={user}
+                publicKey={
+                  process.env.NODE_ENV === "production"
+                    ? (pushConfig()?.publicKey ?? null)
+                    : null
+                }
+              />
             </div>
           </header>
           <main id="content" tabIndex={-1} className="page-container stack">

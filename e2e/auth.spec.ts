@@ -1,3 +1,4 @@
+import { openUserMenu, signOut } from "./helpers/account";
 import type { Database } from "@/lib/supabase/types";
 import { test, expect } from "@playwright/test";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -67,7 +68,7 @@ test("staff signs in and out with no horizontal overflow", async ({ page }) => {
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
-  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/login$/);
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login/);
@@ -80,6 +81,19 @@ test("brand cannot enter internal routes", async ({ page }) => {
   await expect(page).toHaveURL(/\/portal\/dashboard$/);
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/portal\/dashboard$/);
+  await openUserMenu(page);
+  await expect(
+    page.getByRole("menuitem", {
+      name: "Notifiche",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("menuitem")).toHaveText([
+    "Aspetto",
+    "Installa app",
+    "Esci",
+  ]);
+  await page.keyboard.press("Escape");
 });
 test("inactive account is denied", async ({ page }) => {
   await admin.from("profiles").update({ is_active: false }).eq("id", id);

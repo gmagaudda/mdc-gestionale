@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { selectChoice } from "./helpers/navigation";
 import { test, expect, type Page } from "@playwright/test";
@@ -82,7 +83,7 @@ async function login(page: Page, email: string) {
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
 }
 async function fill(page: Page, start: string, end: string) {
@@ -191,12 +192,7 @@ test("accounting validates periods writes cents and archives while staff reads",
     ).data?.amount_cents,
   ).toBe(432110);
   for (const theme of ["Chiaro", "Scuro"]) {
-    if (theme === "Chiaro")
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
         ["serious", "critical"].includes(v.impact ?? ""),

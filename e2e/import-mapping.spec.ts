@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -53,7 +54,7 @@ async function login(page: Page) {
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
 }
 test("three sheets, profile persistence, deliberate errors and bounded staging", async ({
@@ -85,12 +86,9 @@ test("three sheets, profile persistence, deliberate errors and bounded staging",
   const overflow = () =>
     page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   expect(await overflow()).toBe(false);
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
+
   for (const theme of ["Chiaro", "Scuro"]) {
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     await expect(page.locator("html")).toHaveAttribute(
       "data-theme",
       theme === "Scuro" ? "dark" : "light",

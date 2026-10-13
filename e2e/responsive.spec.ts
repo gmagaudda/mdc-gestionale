@@ -1,3 +1,4 @@
+import { openAccountSettings } from "./helpers/account";
 import { completeAdminMfa, enrollFixtureMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -426,17 +427,14 @@ test("text resize, 320px reflow and keyboard focus remain usable", async ({
   }
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/dashboard");
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
+  await openAccountSettings(page, "Aspetto");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
   await page.screenshot({
-    path: info.outputPath("preferences-320-dark.png"),
+    path: info.outputPath("account-320-dark.png"),
     fullPage: true,
   });
 });

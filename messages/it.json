@@ -20,7 +20,6 @@
     "customers": "Clienti",
     "menu": "Menu",
     "close": "Chiudi",
-    "preferences": "Preferenze utente",
     "seasons": "Stagioni",
     "products": "Prodotti",
     "copyValue": "Copia {value}",
@@ -69,7 +68,9 @@
     "sidebarSearchClose": "Chiudi ricerca sidebar",
     "sidebarSearchEmpty": "Nessuna sezione trovata. Prova un altro nome.",
     "sidebarSearchCount": "{count, plural, =0 {Nessuna sezione trovata} one {# sezione trovata} other {# sezioni trovate}}",
-    "sidebarSearchClear": "Azzera ricerca sezioni"
+    "sidebarSearchClear": "Azzera ricerca sezioni",
+    "userMenu": "Menu utente di {name}",
+    "signingOut": "Uscita in corso"
   },
   "design": {
     "title": "Verifica interfaccia",
@@ -994,7 +995,8 @@
     "testMessage": "Questa è una notifica di prova di MDC Gestionale.",
     "testSent": "Notifica accettata dal servizio. Verifica che sia arrivata sul dispositivo.",
     "testWait": "Attendi un minuto prima di inviare un’altra prova. Verifica che le notifiche siano attive su questo dispositivo.",
-    "testError": "Il servizio non ha confermato la notifica. Controlla i permessi e riprova tra un minuto."
+    "testError": "Il servizio non ha confermato la notifica. Controlla i permessi e riprova tra un minuto.",
+    "menuLabel": "Notifiche"
   },
   "imports": {
     "analysisTitle": "Analisi stagioni",

@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { selectChoice } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
@@ -93,7 +94,7 @@ test("uploads validates downloads shares and archives a private document", async
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await completeAdminMfa(page);
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (message) => {
@@ -292,7 +293,7 @@ test("uploads validates downloads shares and archives a private document", async
   await brandPage.getByLabel("Password", { exact: true }).fill(password);
   await brandPage.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(
-    brandPage.getByRole("button", { name: "Esci", exact: true }),
+    brandPage.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   expect(
     (
@@ -305,12 +306,7 @@ test("uploads validates downloads shares and archives a private document", async
     403,
   );
   for (const theme of ["Chiaro", "Scuro"]) {
-    if (theme === "Chiaro")
-      await page
-        .locator("summary")
-        .filter({ hasText: "Preferenze utente" })
-        .click();
-    await page.getByRole("button", { name: theme, exact: true }).click();
+    await setAppearance(page, theme);
     expect(
       (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
         ["serious", "critical"].includes(v.impact ?? ""),

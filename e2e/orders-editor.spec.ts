@@ -1,3 +1,4 @@
+import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { writeFileSync } from "node:fs";
 import { selectChoice } from "./helpers/navigation";
@@ -286,11 +287,7 @@ test("saves a three-product matrix atomically with discounts and exact server to
       exact: true,
     }),
   ).toContainText("225,56");
-  await page
-    .locator("summary")
-    .filter({ hasText: "Preferenze utente" })
-    .click();
-  await page.getByRole("button", { name: "Scuro", exact: true }).click();
+  await setAppearance(page, "Scuro");
   expect(
     (
       await new AxeBuilder({ page })

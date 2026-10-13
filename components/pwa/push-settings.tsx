@@ -172,7 +172,6 @@ export function PushSettings({ publicKey }: { publicKey: string | null }) {
   }
   return (
     <section className="stack" aria-label={t("title")}>
-      <h3>{t("title")}</h3>
       <p>{t("description")}</p>
       {!publicKey ? (
         <p>{t("unconfigured")}</p>

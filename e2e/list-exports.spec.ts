@@ -117,7 +117,7 @@ test("column filters and page selection stay aligned with CSV and reset on navig
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   for (const theme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
@@ -413,7 +413,7 @@ test("general table search matches an off-page city and exported rows", async ({
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   await page.goto(`/customers?cf_legal_name=${prefix}&direction=desc`);
   const main = page.getByRole("main"),
@@ -462,7 +462,7 @@ test("filtered CSV exports include all pages, exact cents and safe cells with ro
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   const response = await page.request.get(url);
   expect(response.status(), await response.text()).toBe(200);
@@ -586,7 +586,7 @@ test("every list column sorts on the server and its CSV follows the same sort", 
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Esci", exact: true }),
+    page.getByRole("button", { name: /^Menu utente di / }),
   ).toBeVisible();
   for (const entity of [
     "brands",
