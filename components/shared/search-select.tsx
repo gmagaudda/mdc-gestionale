@@ -17,7 +17,7 @@ export function SearchSelect({
   id?: string;
   label: string;
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string, choice?: Choice) => void;
   options: Choice[];
   disabled?: boolean;
   error?: string;
@@ -93,7 +93,10 @@ export function SearchSelect({
         onValueChange={(next) => {
           ++request.current;
           setChosen(shown.find((item) => item.value === next));
-          onValueChange(next);
+          onValueChange(
+            next,
+            shown.find((item) => item.value === next),
+          );
         }}
         placeholder={t("searchOrSelect")}
         emptyMessage={pending ? t("loadingChoices") : t("noChoices")}

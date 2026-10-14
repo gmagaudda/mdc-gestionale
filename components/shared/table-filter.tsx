@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/arc/button/button";
@@ -9,7 +9,6 @@ import {
   PopoverTrigger,
 } from "@/components/arc/popover/popover";
 import { SearchSelect, type Choice } from "./search-select";
-import { TableFilterNavigation } from "./list-toolbar";
 import { ErpIcon } from "./erp-icon";
 import type { ActionResult } from "@/lib/errors";
 
@@ -34,7 +33,6 @@ export function TableFilter({
   required?: boolean;
 }) {
   const t = useTranslations("lists");
-  const navigate = useContext(TableFilterNavigation);
   const router = useRouter();
   const params = useSearchParams();
   const content = useRef<HTMLDivElement>(null);
@@ -96,10 +94,6 @@ export function TableFilter({
             }
             setChosen(options.find((option) => option.value === next));
             setOpen(false);
-            if (navigate) {
-              navigate(name, next, clearKeys);
-              return;
-            }
             const nextParams = new URLSearchParams(params.toString());
             nextParams.delete("page");
             nextParams.delete("from");

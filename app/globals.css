@@ -737,7 +737,7 @@ summary {
 }
 .list-toolbar-fields {
   display: flex;
-  flex: 1;
+  flex: 1 1 32rem;
   align-items: end;
   gap: var(--space-2);
   min-width: 0;
@@ -751,6 +751,42 @@ summary {
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
+}
+/* The Arc toolbar owns its surface and chip/menu styles. */
+.table-filter-toolbar {
+  --control-height-sm: var(--control-height-md);
+  flex: 1 1 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.table-filter-toolbar[data-compact] {
+  --space-3: var(--space-1);
+  --space-4: var(--space-2);
+}
+/* Closed Arc menus stay mounted for their morph. Keep that invisible panel
+   from extending the document; an open menu retains its floating surface. */
+.table-filter-toolbar:not(:has(button[aria-expanded="true"])) {
+  overflow-x: clip;
+}
+.table-filter-feedback {
+  flex: 1 1 100%;
+  min-inline-size: 0;
+}
+.table-filter-details {
+  display: grid;
+  flex: 1 1 100%;
+  min-inline-size: 0;
+  margin: 0;
+  gap: var(--space-2);
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+}
+.table-filter-details dt {
+  font-weight: 500;
+}
+.table-filter-details dd {
+  margin: 0;
+  color: var(--text-secondary);
 }
 .table-filter-trigger {
   width: fit-content;
@@ -777,6 +813,12 @@ summary {
 }
 @media (max-width: 48rem) {
   .list-toolbar-fields {
+    flex-basis: 100%;
+  }
+  .list-toolbar-fields:has(.table-filter-toolbar) {
+    display: contents;
+  }
+  .table-inline-filters {
     flex-basis: 100%;
   }
 }

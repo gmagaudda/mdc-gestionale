@@ -1,3 +1,4 @@
+import { selectChoice } from "./helpers/navigation";
 import { setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
@@ -181,7 +182,9 @@ test("filters commissions and downloads an exact safe workbook", async ({
   });
   await expect(summary).toContainText("30,00");
   await expect(summary).toContainText("3,20");
-  const orders = page.getByRole("region", { name: "Ordini", exact: true });
+  const orders = page
+    .getByRole("region", { name: "Ordini", exact: true })
+    .and(page.locator(".list-controls"));
   await expect(orders).toContainText("12,25%");
   await expect(orders).toContainText("Percentuale brand");
   await expect(orders).toContainText("Percentuale ordine");
@@ -198,6 +201,14 @@ test("filters commissions and downloads an exact safe workbook", async ({
       ),
     ).toBe(true);
   }
+  await selectChoice(page, "Stagione", "REPORT", true);
+  await expect(page).toHaveURL(new RegExp(`season_id=${seasonId}`));
+  await expect(orders).toContainText("12,25%");
+  await page.getByRole("button", { name: /^Rimuovi Stagione: REPORT/ }).click();
+  await expect
+    .poll(() => new URL(page.url()).searchParams.has("season_id"))
+    .toBe(false);
+  expect(new URL(page.url()).searchParams.get("brand_id")).toBe(brandId);
   const [download] = await Promise.all([
     page.waitForEvent("download"),
     page.getByRole("button", { name: "Esporta Excel", exact: true }).click(),

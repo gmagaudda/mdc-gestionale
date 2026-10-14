@@ -7,7 +7,7 @@ import { formatMoney } from "@/lib/money";
 import { PageHeader } from "@/components/shared/page-header";
 import { ListView } from "@/components/shared/list-view";
 import { Alert } from "@/components/arc/alert/alert";
-import { OrderFilters } from "@/modules/orders/components/order-filters";
+import { getOrderFilterFields } from "@/modules/orders/components/order-filters";
 import { listOrders, orderFilterChoices } from "@/modules/orders/queries";
 import {
   orderFiltersSchema,
@@ -74,9 +74,7 @@ export default async function OrdersPage({
               : undefined
           }
 
-          filters={
-            <OrderFilters initial={filters} query={query} {...choices} />
-          }
+          filters={await getOrderFilterFields({ initial: filters, ...choices })}
           exportBase="/api/orders/export"
           query={query}
           filterParams={params}

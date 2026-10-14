@@ -46,27 +46,23 @@ export default async function InvoicesPage({
         ? filter.data.status
         : undefined,
     overdue = filter.success && filter.data.overdue === "yes";
-  const filters = (
-    <>
-      <TableFilter
-        base="/invoices"
-        name="status"
-        label={t("status")}
-        value={status ?? ""}
-        options={externalStatusSchema.options.map((value) => ({
-          value,
-          label: t(`statuses.${value}`),
-        }))}
-      />
-      <TableFilter
-        base="/invoices"
-        name="overdue"
-        label={t("dueFilter")}
-        value={overdue ? "yes" : ""}
-        options={[{ value: "yes", label: t("onlyOverdue") }]}
-      />
-    </>
-  );
+  const filters = [
+    {
+      name: "status",
+      label: t("status"),
+      value: status ?? "",
+      options: externalStatusSchema.options.map((value) => ({
+        value,
+        label: t(`statuses.${value}`),
+      })),
+    },
+    {
+      name: "overdue",
+      label: t("dueFilter"),
+      value: overdue ? "yes" : "",
+      options: [{ value: "yes", label: t("onlyOverdue") }],
+    },
+  ];
   const date = (value: string) =>
     new Intl.DateTimeFormat("it-IT", { timeZone: "UTC" }).format(
       new Date(`${value}T00:00:00Z`),
@@ -77,7 +73,9 @@ export default async function InvoicesPage({
       <p>{t("listHint")}</p>
       {!filter.success ? (
         <>
-          {filters}
+          {filters.map((field) => (
+            <TableFilter key={field.name} base="/invoices" {...field} />
+          ))}
           <Alert tone="danger" title={t("validation")} />
         </>
       ) : (

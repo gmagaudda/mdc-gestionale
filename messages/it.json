@@ -244,7 +244,21 @@
     "allValues": "Tutti",
     "currentPage": "Pagina {page}, attuale",
     "goToPage": "Vai a pagina {page}",
-    "loadingMetrics": "Caricamento del riepilogo della tabella"
+    "loadingMetrics": "Caricamento del riepilogo della tabella",
+    "addFilter": "Aggiungi filtro",
+    "activeFilters": "Filtri della tabella",
+    "noFilters": "Nessun filtro applicato",
+    "clearAllFilters": "Rimuovi tutti",
+    "backToFields": "Torna ai filtri",
+    "removeFilter": "Rimuovi {field}: {value}",
+    "filterCount": "{count, plural, =0 {Nessun filtro applicato} one {Un filtro applicato} other {# filtri applicati}}",
+    "searchFilterValues": "Cerca altri valori…",
+    "filterValueHint": "Cerca e seleziona un valore per questo filtro.",
+    "loadingFilterValues": "Caricamento valori dei filtri…",
+    "filterValueError": "Alcuni valori non sono disponibili. Puoi riprovare o cercare un valore.",
+    "retryFilterValues": "Riprova",
+    "addFilterCompact": "Filtro",
+    "clearAllFiltersCompact": "Rimuovi"
   },
   "audit": {
     "title": "Registro modifiche",

@@ -21,6 +21,44 @@ export async function selectChoice(
   option: string,
   partial = false,
 ) {
+  const toolbar = page.locator(".list-toolbar");
+  if (await toolbar.locator(".table-filter-toolbar").count()) {
+    await toolbar
+      .getByRole("button", { name: "Aggiungi filtro", exact: true })
+      .click();
+    await page
+      .getByRole("menuitem", { name: new RegExp(`^${label}(?:$|\\s)`) })
+      .click();
+    const item = partial
+      ? page.getByRole("menuitemradio").filter({ hasText: option })
+      : page.getByRole("menuitemradio", { name: option, exact: true });
+    if (
+      await page
+        .getByRole("menuitemradio", {
+          name: "Cerca altri valori…",
+          exact: true,
+        })
+        .count()
+    ) {
+      await page
+        .getByRole("menuitemradio", {
+          name: "Cerca altri valori…",
+          exact: true,
+        })
+        .click();
+      const input = page
+        .getByRole("dialog", { name: label, exact: true })
+        .getByRole("combobox");
+      await input.fill(option.split(" · ")[0]);
+      await page
+        .getByRole("option", {
+          name: partial ? new RegExp(option) : option,
+          exact: !partial,
+        })
+        .click();
+    } else await item.click();
+    return;
+  }
   const trigger = page.getByRole("button", {
     name: new RegExp(`^${label}(?::|$)`),
   });

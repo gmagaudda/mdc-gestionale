@@ -4,6 +4,7 @@ import { parseListQuery } from "@/lib/queries/list";
 import { formatMoney } from "@/lib/money";
 import { Alert } from "@/components/arc/alert/alert";
 import { ListView } from "@/components/shared/list-view";
+import { getPortalFilterFields } from "@/modules/portal/filter-fields";
 import { PortalFilters } from "@/modules/portal/components/portal-filters";
 import { getPortalContext } from "@/modules/portal/context";
 import { getPortalOrders } from "@/modules/portal/queries";
@@ -34,6 +35,12 @@ export default async function Orders({
       status={parsed.success ? parsed.data.status : ""}
     />
   );
+  const tableFilters = await getPortalFilterFields({
+    initial: c.filters,
+    brands: c.brands,
+    seasons: c.seasons,
+    status: parsed.success ? parsed.data.status : "",
+  });
   return (
     <>
       <h1>{t("title")}</h1>
@@ -62,7 +69,7 @@ export default async function Orders({
             ) : (
               <>
                 <ListView
-                  filters={filters}
+                  filters={tableFilters}
                   actions={
                     <a
                       className="text-link"

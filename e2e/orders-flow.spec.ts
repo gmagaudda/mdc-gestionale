@@ -1,3 +1,4 @@
+import { selectChoice } from "./helpers/navigation";
 import { setAppearance, signOut } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
@@ -206,28 +207,41 @@ test("lists filters transitions history duplicate and CSV with role restrictions
   await expect(
     page.getByRole("main").locator('input[type="date"]'),
   ).toHaveCount(0);
-  const statusFilter = toolbar.getByRole("button", {
+  await toolbar.getByRole("button", { name: /^Rimuovi Brand:/ }).click();
+  await expect(page).not.toHaveURL(/brand_id=/);
+  await expect(page).not.toHaveURL(/season_id=/);
+  await expect(page).toHaveURL(new RegExp(`customer_id=${customerId}`));
+  const fixtureBrand = await admin()
+    .from("brands")
+    .select("name")
+    .eq("id", brandId)
+    .single();
+  if (fixtureBrand.error) throw fixtureBrand.error;
+  await selectChoice(page, "Brand", fixtureBrand.data.name, true);
+  await expect(page).toHaveURL(new RegExp(`brand_id=${brandId}`));
+  await selectChoice(page, "Stagione", "FW26-EDITOR");
+  await expect(page).toHaveURL(new RegExp(`season_id=${seasonId}`));
+  const filterTrigger = toolbar.getByRole("button", {
+    name: "Aggiungi filtro",
+    exact: true,
+  });
+  await filterTrigger.focus();
+  await filterTrigger.press("Enter");
+  const statusField = page.getByRole("menuitem", {
     name: "Stato",
     exact: true,
   });
-  expect((await statusFilter.boundingBox())!.width).toBeLessThan(180);
-  await statusFilter.focus();
-  await statusFilter.press("Enter");
-  const picker = page
-    .getByRole("dialog", { name: "Stato", exact: true })
-    .getByRole("combobox");
-  await expect(picker).toBeFocused();
-  await picker.fill("Bozza");
-  await picker.press("ArrowDown");
-  await picker.press("Enter");
+  await statusField.focus();
+  await statusField.press("Enter");
+  const draft = page.getByRole("menuitemradio", { name: "Bozza", exact: true });
+  await draft.focus();
+  await draft.press("Enter");
   await expect(page).toHaveURL(/status=draft/);
-  await expect(
-    toolbar.getByRole("button", { name: "Stato: Bozza", exact: true }),
-  ).toBeFocused();
+  await expect(filterTrigger).toBeFocused();
   await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
   const search = toolbar.getByRole("searchbox");
   await expect(search).toBeFocused();
-  await expect(toolbar.locator(".table-filter-trigger")).toHaveCount(0);
+  await expect(toolbar.locator(".table-filter-toolbar")).toHaveCount(0);
   await search.fill("48,78");
   await search.press("Enter");
   await expect(
@@ -238,21 +252,11 @@ test("lists filters transitions history duplicate and CSV with role restrictions
     toolbar.getByRole("button", { name: "Cerca", exact: true }),
   ).toBeFocused();
   await expect(
-    toolbar.getByRole("button", { name: "Stato: Bozza", exact: true }),
+    toolbar.getByRole("button", { name: "Rimuovi Stato: Bozza", exact: true }),
   ).toBeVisible();
   expect(
-    await toolbar.locator(".table-filter-trigger").evaluateAll((buttons) =>
-      buttons.every((button) => {
-        const box = button.getBoundingClientRect();
-        return [...button.querySelectorAll(".table-filter-copy, svg")].every(
-          (child) => {
-            const bounds = child.getBoundingClientRect();
-            return bounds.left >= box.left && bounds.right <= box.right;
-          },
-        );
-      }),
-    ),
-  ).toBe(true);
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.screenshot({
     path: testInfo.outputPath("order-inline-filters.png"),
     fullPage: true,

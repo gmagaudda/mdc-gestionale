@@ -7,6 +7,7 @@ import { formatMoney } from "@/lib/money";
 import { Alert } from "@/components/arc/alert/alert";
 import { ListView } from "@/components/shared/list-view";
 import { AnimatedMoney } from "@/components/shared/animated-number";
+import { getPortalFilterFields } from "@/modules/portal/filter-fields";
 import { PortalFilters } from "@/modules/portal/components/portal-filters";
 import { getPortalContext } from "@/modules/portal/context";
 import { getPortalSales } from "@/modules/portal/queries";
@@ -37,6 +38,11 @@ export default async function Sales({
       seasons={c.seasons}
     />
   );
+  const tableFilters = await getPortalFilterFields({
+    initial: c.filters,
+    brands: c.brands,
+    seasons: c.seasons,
+  });
   return (
     <>
       <h1>{t("salesTitle")}</h1>
@@ -75,7 +81,7 @@ export default async function Sales({
                 </p>
                 <ListView
                   showMetrics={false}
-                  filters={filters}
+                  filters={tableFilters}
                   actions={
                     <ListCsvDownload
                       href={`/api/portal/sales/export?${new URLSearchParams(Object.entries({ ...c.filters, q: q.q, sort: q.sort, direction: q.direction }).filter(([, value]) => !!value))}`}

@@ -14,11 +14,12 @@ import {
 } from "@/lib/queries/list";
 import { listExportEntitySchema } from "@/lib/exports/lists";
 import { parseColumnFilters } from "@/lib/queries/column-filters";
-import { ListColumnFilters } from "./list-column-filters";
+import { getListColumnFilters } from "./list-column-filters";
 import { SelectableListTable } from "./selectable-list-table";
 import { ListCsvDownload } from "./list-csv-download";
 import { ErpIcon } from "./erp-icon";
 import { ListToolbar } from "./list-toolbar";
+import type { TableFilterField } from "./table-filter-toolbar";
 import { Alert } from "@/components/arc/alert/alert";
 
 export async function ListView({
@@ -46,7 +47,7 @@ export async function ListView({
   emptyDescription?: string;
   exportBase?: string;
   createAction?: { href: string; label: string };
-  filters?: ReactNode;
+  filters?: TableFilterField[];
   actions?: ReactNode;
   showMetrics?: boolean;
 }) {
@@ -90,18 +91,12 @@ export async function ListView({
         base={base}
         query={query.q}
         parameters={parameters}
-        filters={
-          <>
-            {filters}
-            {exportEntity.success && (
-              <ListColumnFilters
-                entity={exportEntity.data}
-                base={base}
-                query={query}
-              />
-            )}
-          </>
-        }
+        filters={[
+          ...(filters ?? []),
+          ...(exportEntity.success
+            ? await getListColumnFilters(exportEntity.data, query)
+            : []),
+        ]}
       >
         {createAction && (
           <Link className="list-add-link" href={createAction.href}>

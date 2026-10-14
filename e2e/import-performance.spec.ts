@@ -171,7 +171,10 @@ test("historical preview, persistence, filters, duplicates and rollback", async 
   await expect(money.first()).toHaveText("1119,25 €");
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Raggruppa per: Area", exact: true }),
+    page.getByRole("button", {
+      name: "Rimuovi Raggruppa per: Area",
+      exact: true,
+    }),
   ).toBeVisible();
   for (const theme of ["Chiaro", "Scuro"]) {
     await setAppearance(page, theme);

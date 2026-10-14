@@ -1,7 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { TableFilter } from "@/components/shared/table-filter";
 import { ListToolbar } from "@/components/shared/list-toolbar";
 import type { PerformanceFilters, PerformanceReport } from "../report-schema";
 export function PerformanceFiltersForm({
@@ -29,49 +28,41 @@ export function PerformanceFiltersForm({
       parameters={Object.fromEntries(
         Object.entries(initial).map(([key, value]) => [key, String(value)]),
       )}
-      filters={
-        <>
-          <TableFilter
-            base="/analysis"
-            name="scope"
-            label={t("scope")}
-            value={initial.scope}
-            required
-            options={[
-              { value: "pivot", label: t("pivotScope") },
-              { value: "all", label: t("allBrands") },
-            ]}
-          />
-          <TableFilter
-            base="/analysis"
-            name="dimension"
-            label={t("groupBy")}
-            value={initial.dimension}
-            required
-            options={[
-              "brand",
-              "area",
-              "representative",
-              "country",
-              "region",
-              "customer",
-            ].map((value) => ({ value, label: t(`dimensions.${value}`) }))}
-          />
-          {fields.map(([field, choices]) => (
-            <TableFilter
-              key={field}
-              base="/analysis"
-              name={field}
-              label={t(`dimensions.${field}`)}
-              value={initial[field]}
-              options={report.choices[choices].map((value) => ({
-                value,
-                label: value,
-              }))}
-            />
-          ))}
-        </>
-      }
+      filters={[
+        {
+          name: "scope",
+          label: t("scope"),
+          value: initial.scope,
+          defaultValue: "pivot",
+          options: [
+            { value: "pivot", label: t("pivotScope") },
+            { value: "all", label: t("allBrands") },
+          ],
+        },
+        {
+          name: "dimension",
+          label: t("groupBy"),
+          value: initial.dimension,
+          defaultValue: "brand",
+          options: [
+            "brand",
+            "area",
+            "representative",
+            "country",
+            "region",
+            "customer",
+          ].map((value) => ({ value, label: t(`dimensions.${value}`) })),
+        },
+        ...fields.map(([field, choices]) => ({
+          name: field,
+          label: t(`dimensions.${field}`),
+          value: initial[field],
+          options: report.choices[choices].map((value) => ({
+            value,
+            label: value,
+          })),
+        })),
+      ]}
     >
       {children}
     </ListToolbar>

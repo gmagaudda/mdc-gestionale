@@ -10,8 +10,11 @@ import { Alert } from "@/components/arc/alert/alert";
 import { DataTable } from "@/components/shared/data-table";
 import { ListView } from "@/components/shared/list-view";
 import { AnimatedMoney } from "@/components/shared/animated-number";
-import { searchBudgetBrands } from "@/modules/budgets/actions";
-import { DashboardFiltersForm } from "@/modules/dashboard/components/dashboard-filters";
+import {
+  searchBudgetBrands,
+  searchBudgetSeasons,
+} from "@/modules/budgets/actions";
+
 import { commissionsFiltersSchema } from "@/modules/commissions/schema";
 import { getCommissionsReport } from "@/modules/commissions/queries";
 import { CommissionExportButton } from "@/modules/commissions/components/export-button";
@@ -22,6 +25,7 @@ export default async function CommissionsPage({
 }) {
   await requireRole(internalRoles);
   const t = await getTranslations("commissions"),
+    d = await getTranslations("dashboard"),
     input = { ...(await searchParams), from: "", to: "" },
     parsed = commissionsFiltersSchema.safeParse(input),
     filters = parsed.success ? parsed.data : commissionsFiltersSchema.parse({});
@@ -129,21 +133,32 @@ export default async function CommissionsPage({
             <h2>{t("orders")}</h2>
             <ListView
               showMetrics={false}
-              filters={
-                <DashboardFiltersForm
-                  base="/commissions"
-                  initial={filters}
-                  brands={brands.data}
-                  season={
-                    season
-                      ? {
+              filters={[
+                {
+                  name: "brand_id",
+                  label: d("brand"),
+                  value: filters.brand_id,
+                  options: brands.data,
+                  loadOptions: searchBudgetBrands,
+                  clearKeys: ["season_id"],
+                },
+                {
+                  name: "season_id",
+                  label: d("season"),
+                  value: filters.season_id,
+                  options: season
+                    ? [
+                        {
                           value: season.id,
                           label: `${season.code} · ${season.name}`,
-                        }
-                      : undefined
-                  }
-                />
-              }
+                        },
+                      ]
+                    : [],
+                  loadOptions: filters.brand_id
+                    ? searchBudgetSeasons.bind(null, filters.brand_id)
+                    : undefined,
+                },
+              ]}
               actions={<CommissionExportButton key={params} params={params} />}
               base="/commissions"
               title={t("orders")}

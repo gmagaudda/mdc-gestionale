@@ -36,7 +36,9 @@ Consulta dashboard, ordini, vendite, calendario e documenti dei soli brand assoc
 
 Le liste principali hanno «Esporta CSV»: il file comprende tutte le pagine con ricerca, ordinamento e filtri correnti. Il limite è 10.000 righe; oltre il limite restringi i filtri. Importi in formato italiano, separatore punto e virgola. Le provvigioni offrono anche Excel.
 
-In Brand, Negozi, Stagioni, Prodotti, Budget, Documenti e Fatture apri «Filtri per colonna» per affinare la ricerca sui campi disponibili. I filtri si combinano: il testo cerca anche dentro al valore, mentre euro, date e dimensioni in byte devono coincidere esattamente. Inserisci gli importi senza separatori delle migliaia, ad esempio `123,45`. «Azzera filtri per colonna» conserva la ricerca e i filtri di dominio.
+Sopra le tabelle usa «Aggiungi filtro» (in poco spazio, «Filtro»), scegli il campo e poi un valore. I filtri applicati diventano etichette rimovibili: la × toglie quel filtro; «Rimuovi tutti» conserva ricerca e ordinamento. Negli elenchi lunghi «Cerca altri valori…» consente di trovare anche valori oltre le prime 50 proposte. L’anteprima accorcia i valori lunghi; il nome completo è disponibile nel menu e nel suggerimento dell’etichetta. Le liste non espongono filtri per data.
+
+L’icona «Cerca» apre la ricerca generale al posto dei filtri. Premi Invio per cercare nei dati della tabella, anche nelle altre pagine; Esc torna ai filtri. Creazione ed esportazione restano accanto alla ricerca. Cambiando brand viene rimossa anche la stagione selezionata. Nell’analisi storica «Rimuovi tutti» ripristina il perimetro della pivot e il raggruppamento per brand, conservando il file scelto.
 
 Nelle stesse liste e in Ordini, seleziona le caselle delle righe oppure tutte quelle della pagina e usa «Esporta selezione CSV». Il file rispetta anche i filtri correnti. La selezione riguarda la pagina visibile e viene azzerata cambiando pagina, filtri o ordinamento; «Esporta CSV» continua a comprendere tutte le pagine.
 

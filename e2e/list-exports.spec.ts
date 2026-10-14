@@ -1,3 +1,5 @@
+import { setAppearance } from "./helpers/account";
+import { selectChoice } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import Papa from "papaparse";
@@ -136,20 +138,7 @@ test("column filters and page selection stay aligned with CSV and reset on navig
     });
     await toolbar.getByRole("searchbox").press("Escape");
     await expect(toolbar.getByRole("searchbox")).toHaveCount(0);
-    const cityFilter = toolbar.getByRole("button", {
-      name: "Città",
-      exact: true,
-    });
-    await cityFilter.focus();
-    await cityFilter.press("Enter");
-    const choices = page.getByRole("dialog", { name: "Città", exact: true });
-    await expect(choices.getByRole("combobox")).toBeFocused();
-    await choices.getByRole("combobox").fill("Roma");
-    await expect(
-      choices.getByRole("option", { name: "Roma", exact: true }),
-    ).toBeVisible();
-    await choices.getByRole("combobox").press("ArrowDown");
-    await choices.getByRole("combobox").press("Enter");
+    await selectChoice(page, "Città", "Roma");
     await expect(page).toHaveURL(/cf_city=Roma/);
     await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
     await expect(toolbar.getByRole("searchbox")).toBeFocused();
@@ -267,13 +256,8 @@ test("column filters and page selection stay aligned with CSV and reset on navig
     ).toHaveCount(0);
     await main.getByRole("searchbox").press("Escape");
     await toolbar
-      .getByRole("button", { name: "Città: Roma", exact: true })
+      .getByRole("button", { name: "Rimuovi Città: Roma", exact: true })
       .click();
-    await page
-      .getByRole("dialog", { name: "Città", exact: true })
-      .getByRole("combobox")
-      .fill("Tutti");
-    await page.getByRole("option", { name: "Tutti", exact: true }).click();
     await expect(main.getByText("32 elementi", { exact: true })).toBeVisible();
     await expect(page).not.toHaveURL(/cf_city/);
   }
@@ -386,7 +370,11 @@ test("column filters and page selection stay aligned with CSV and reset on navig
   await page.getByRole("main").getByRole("searchbox").press("Escape");
   await page
     .getByRole("main")
-    .getByRole("button", { name: "Città: Roma", exact: true })
+    .getByRole("button", { name: "Aggiungi filtro", exact: true })
+    .click();
+  await page.getByRole("menuitem", { name: /^Città/ }).click();
+  await page
+    .getByRole("menuitemradio", { name: "Cerca altri valori…", exact: true })
     .click();
   const picker = page
     .getByRole("dialog", { name: "Città", exact: true })
@@ -420,7 +408,7 @@ test("general table search matches an off-page city and exported rows", async ({
     main.getByRole("link", { name: `=${prefix} formula`, exact: true }),
   ).toHaveCount(0);
   await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
-  await expect(toolbar.locator(".table-filter-trigger")).toHaveCount(0);
+  await expect(toolbar.locator(".table-filter-toolbar")).toHaveCount(0);
   await toolbar.getByRole("searchbox").fill("Milano");
   await toolbar.getByRole("searchbox").press("Enter");
   await expect(main.getByText("1 elemento", { exact: true })).toBeVisible();
@@ -437,6 +425,278 @@ test("general table search matches an off-page city and exported rows", async ({
   }).data;
   expect(rows).toHaveLength(2);
   expect(rows[1][2]).toBe("Milano");
+});
+test("Arc filter toolbar finds values beyond fifty, removes chips and preserves search/actions", async ({
+  page,
+}, info) => {
+  test.setTimeout(120000);
+  const remotePrefix = `ZZZ ${prefix} remote`;
+  const city = `Terni ${prefix}`;
+  const inserted = await admin()
+    .from("customers")
+    .insert(
+      Array.from({ length: 56 }, (_, index) => ({
+        legal_name: `${remotePrefix} ${String(index).padStart(2, "0")}`,
+        city,
+      })),
+    )
+    .select("id");
+  if (inserted.error) throw inserted.error;
+  customerIds.push(...inserted.data.map((row) => row.id));
+  const target = `${remotePrefix} 55`;
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(page.locator(".app-layout")).toBeVisible();
+  await page.goto("/customers?sort=city&direction=desc&page=2");
+  const toolbar = page.locator(".list-toolbar");
+  const add = toolbar.getByRole("button", {
+    name: "Aggiungi filtro",
+    exact: true,
+  });
+  await add.focus();
+  await add.press("Enter");
+  const field = page.getByRole("menuitem", {
+    name: "Ragione sociale",
+    exact: true,
+  });
+  await field.focus();
+  await field.press("Enter");
+  await expect(toolbar.locator(".table-filter-toolbar")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  await expect(
+    page.getByRole("menuitemradio", { name: target, exact: true }),
+  ).toHaveCount(0);
+  const find = page.getByRole("menuitemradio", {
+    name: "Cerca altri valori…",
+    exact: true,
+  });
+  await find.focus();
+  await find.press("Enter");
+  const picker = page
+    .getByRole("dialog", { name: "Ragione sociale", exact: true })
+    .getByRole("combobox");
+  await expect(picker).toBeFocused();
+  await picker.fill(target);
+  await page.getByRole("option", { name: target, exact: true }).click();
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("cf_legal_name"))
+    .toBe(target);
+  await expect(add).toBeFocused();
+  await expect(
+    toolbar.getByRole("button", {
+      name: `Rimuovi Ragione sociale: ${target}`,
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page).not.toHaveURL(/page=/);
+  await selectChoice(page, "Città", city);
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("cf_city"))
+    .toBe(city);
+  await expect(
+    page.getByRole("main").getByText("1 elemento", { exact: true }),
+  ).toBeVisible();
+  const actionPositions = await toolbar
+    .locator("a.list-add-link, .stack > button")
+    .evaluateAll((nodes) =>
+      nodes.map((node) => node.getBoundingClientRect().x),
+    );
+  for (const theme of ["Chiaro", "Scuro"]) {
+    await setAppearance(page, theme);
+    await toolbar.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        toolbar.locator("button[data-chip-remove]").evaluateAll((buttons) =>
+          buttons.every((button) => {
+            const rect = button.getBoundingClientRect();
+            return [
+              rect.left + 1,
+              rect.left + rect.width / 2,
+              rect.right - 1,
+            ].every((x) => {
+              const hit = document.elementFromPoint(
+                x,
+                rect.top + rect.height / 2,
+              );
+              return hit === button || button.contains(hit);
+            });
+          }),
+        ),
+      )
+      .toBe(true);
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(page.viewportSize()!.width);
+    await page.screenshot({
+      path: info.outputPath(`arc-filter-${theme}.png`),
+      fullPage: true,
+    });
+  }
+  await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  await expect(toolbar.locator(".table-filter-toolbar")).toHaveCount(0);
+  if (info.project.name === "desktop")
+    expect(
+      await toolbar
+        .locator("a.list-add-link, .stack > button")
+        .evaluateAll((nodes) =>
+          nodes.map((node) => node.getBoundingClientRect().x),
+        ),
+    ).toEqual(actionPositions);
+  await toolbar.getByRole("searchbox").fill(city);
+  await toolbar.getByRole("searchbox").press("Enter");
+  await expect(page).toHaveURL(/sort=city/);
+  await expect(page).toHaveURL(/direction=desc/);
+  const exported = await page.request.get(
+    `/api/lists/customers/export?${new URL(page.url()).searchParams}`,
+  );
+  expect(exported.status()).toBe(200);
+  const csv = Papa.parse<string[]>(await exported.text(), {
+    delimiter: ";",
+    skipEmptyLines: true,
+  }).data;
+  expect(csv).toHaveLength(2);
+  expect(csv[1][0]).toBe(target);
+  await toolbar.getByRole("searchbox").press("Escape");
+  await toolbar
+    .getByRole("button", { name: `Rimuovi Città: ${city}`, exact: true })
+    .click();
+  await expect(page).not.toHaveURL(/cf_city/);
+  await toolbar
+    .getByRole("button", { name: "Rimuovi tutti", exact: true })
+    .click();
+  await expect(page).not.toHaveURL(/cf_/);
+  await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe(city);
+  await expect(
+    page.getByRole("main").getByText("56 elementi", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    toolbar.getByRole("button", { name: "Aggiungi filtro", exact: true }),
+  ).toBeFocused();
+  if (info.project.name === "desktop") {
+    await selectChoice(page, "Ragione sociale", target);
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("cf_legal_name"))
+      .toBe(target);
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.evaluate(
+      () => (document.documentElement.style.fontSize = "200%"),
+    );
+    await toolbar.scrollIntoViewIfNeeded();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(320);
+    for (const button of await toolbar
+      .locator("button[data-chip-remove], button[data-filter-trigger]")
+      .all()) {
+      await button.focus();
+      await expect(button).toBeFocused();
+      await expect
+        .poll(() =>
+          button.evaluate((button) => {
+            const rect = button.getBoundingClientRect();
+            const hit = document.elementFromPoint(
+              rect.left + rect.width / 2,
+              rect.top + rect.height / 2,
+            );
+            return hit === button || button.contains(hit);
+          }),
+        )
+        .toBe(true);
+    }
+    await expect(
+      toolbar.getByRole("button", {
+        name: `Rimuovi Ragione sociale: ${target}`,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.screenshot({
+      path: info.outputPath("arc-filter-zoom.png"),
+      fullPage: true,
+    });
+  }
+});
+test("Arc filter values recover after a request error and keep keyboard focus", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(page.locator(".app-layout")).toBeVisible();
+  await page.goto(`/customers?q=${prefix}`);
+  const toolbar = page.locator(".list-toolbar");
+  await toolbar.getByRole("searchbox").press("Escape");
+  await page.route("**/customers*", (route) =>
+    route.request().method() === "POST" &&
+    route.request().headers()["next-action"]
+      ? route.fulfill({
+          status: 500,
+          contentType: "text/plain",
+          body: "Local fixture request failure",
+        })
+      : route.continue(),
+  );
+  const trigger = toolbar.getByRole("button", {
+    name: "Aggiungi filtro",
+    exact: true,
+  });
+  await trigger.focus();
+  await trigger.press("Enter");
+  await expect(
+    page.getByText(
+      "Alcuni valori non sono disponibili. Puoi riprovare o cercare un valore.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.unroute("**/customers*");
+  await toolbar.getByRole("button", { name: "Riprova", exact: true }).click();
+  await expect(toolbar.locator(".table-filter-toolbar")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  await expect(toolbar.getByRole("alert")).toHaveCount(0);
+  await trigger.focus();
+  await trigger.press("Enter");
+  const city = page.getByRole("menuitem", { name: "Città", exact: true });
+  await city.focus();
+  await city.press("Enter");
+  const back = page.getByRole("button", {
+    name: "Torna ai filtri",
+    exact: true,
+  });
+  await back.focus();
+  await back.press("Enter");
+  await expect(city).toBeFocused();
+  await city.press("Escape");
+  await expect(trigger).toBeFocused();
+  await trigger.press("Enter");
+  await city.focus();
+  await city.press("Enter");
+  const roma = page.getByRole("menuitemradio", { name: "Roma", exact: true });
+  await roma.focus();
+  await roma.press("Enter");
+  await expect(page).toHaveURL(/cf_city=Roma/);
+  await expect(
+    page.getByRole("main").getByText("31 elementi", { exact: true }),
+  ).toBeVisible();
+  const remove = toolbar.getByRole("button", {
+    name: "Rimuovi Città: Roma",
+    exact: true,
+  });
+  await remove.focus();
+  await remove.press("Enter");
+  await expect(trigger).toBeFocused();
 });
 test.afterAll(async () => {
   if (invoiceId) await admin().from("invoices").delete().eq("id", invoiceId);
