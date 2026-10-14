@@ -881,6 +881,10 @@ summary {
   gap: var(--space-4);
 }
 .table-metric {
+  min-width: 0;
+  container-type: inline-size;
+}
+.table-metric-seasonal {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
@@ -975,4 +979,81 @@ summary {
   .metric-money-static {
     display: inline;
   }
+}
+
+.metric-period-control {
+  display: inline-block;
+  max-width: 100%;
+}
+.metric-split-touch {
+  display: flex;
+  gap: var(--space-1);
+}
+.metric-split-touch > button {
+  min-inline-size: var(--control-height-md);
+}
+.metric-period-menu {
+  z-index: 80;
+  padding: var(--space-1);
+  background: var(--surface-raised);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-floating);
+}
+.metric-period-option {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--control-height-md);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+.metric-period-option[data-highlighted] {
+  background: var(--surface-muted);
+}
+.accent-popover[role="dialog"] {
+  z-index: 101;
+  min-inline-size: 0;
+  inline-size: min(14rem, calc(100vw - var(--space-6)));
+}
+.accent-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.accent-options {
+  border: 0;
+  padding: 0;
+  margin: var(--space-2) 0 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.accent-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--control-height-md);
+  cursor: pointer;
+}
+.accent-choice input {
+  accent-color: var(--accent);
+  width: var(--space-4);
+  height: var(--space-4);
+  flex-shrink: 0;
+}
+.accent-swatch {
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--accent-preview);
+}
+.account-menu-feedback {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.account-menu-feedback p {
+  margin: 0;
 }

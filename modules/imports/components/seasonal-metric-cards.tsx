@@ -45,7 +45,7 @@ function SeasonalMetric({
       ? metricChange(amount, previous)
       : null;
   return (
-    <section className="table-metric" aria-label={label}>
+    <section className="table-metric table-metric-seasonal" aria-label={label}>
       <div className="metric-content">
         <MoneyMetric
           label={label}

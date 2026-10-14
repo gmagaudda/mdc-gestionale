@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "./providers";
 import messages from "@/messages/it.json";
 import colors from "@/lib/pwa/colors.json";
+import { accentScript } from "@/lib/theme/accents";
 import "@/components/arc/foundation.css";
 import "@/lib/theme/sage.css";
 import "./globals.css";
@@ -32,6 +33,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it" data-accent="green" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: accentScript }} />
+      </head>
       <body className={`${geist.variable} ${inter.variable} antialiased`}>
         <NextIntlClientProvider>
           <Providers>{children}</Providers>

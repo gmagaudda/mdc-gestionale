@@ -13,6 +13,7 @@ export async function openUserMenu(page: Page) {
   // Wait for the exiting surface before interacting with the replacement.
   await expect(page.getByRole("menu")).toHaveCount(1);
   await expect(page.getByRole("menu")).toBeVisible();
+  await page.getByRole("menu").focus();
 }
 
 export async function openAccountSettings(page: Page, label: string) {
@@ -29,11 +30,16 @@ export async function setAppearance(
   theme: string,
   keepNavigationOpen = false,
 ) {
-  await openAccountSettings(page, "Aspetto");
-  const dialog = page.getByRole("dialog", { name: "Aspetto", exact: true });
-  await dialog.getByRole("button", { name: theme, exact: true }).click();
-  await dialog.getByRole("button", { name: "Chiudi", exact: true }).click();
-  await expect(dialog).toHaveCount(0);
+  await openUserMenu(page);
+  const mode = theme === "Scuro" ? "dark" : "light";
+  if ((await page.locator("html").getAttribute("data-theme")) !== mode)
+    await page
+      .getByRole("menuitemcheckbox", { name: "Aspetto", exact: true })
+      .click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
+  await page.getByRole("menu").focus();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu")).toHaveCount(0);
   const navigation = page.getByRole("dialog", { name: "Menu", exact: true });
   if (!keepNavigationOpen && (await navigation.isVisible()))
     await navigation

@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { MetricCard } from "@/components/arc/metric-card/metric-card";
-import { Button } from "@/components/arc/button/button";
+import { MetricPeriod } from "./metric-period";
 import { MoneyMetric } from "./money-metric";
 import { formatMoney } from "@/lib/money";
 import { metricChange, type TableMetricData } from "@/lib/metrics/schema";
@@ -21,25 +20,14 @@ function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
   return (
     <section className="table-metric" aria-label={label}>
       <div className="metric-content">
-        {card.format === "number" && value < 1000n ? (
-          <MetricCard
-            label={label}
-            value={Number(value)}
-            context={t("lastDays", { days })}
-          />
-        ) : card.format === "money" ? (
-          <MoneyMetric
-            label={label}
-            value={value}
-            context={t("lastDays", { days })}
-          />
-        ) : (
-          <article className="money-metric">
-            <p className="metric-label">{label}</p>
-            <div className="metric-money">{format(values.value)}</div>
-            <p className="metric-context">{t("lastDays", { days })}</p>
-          </article>
-        )}
+        <MoneyMetric
+          label={label}
+          value={value}
+          format={card.format}
+          context={
+            <MetricPeriod label={label} days={days} onChange={setDays} />
+          }
+        />
         <p
           className="metric-comparison"
           role="status"
@@ -54,23 +42,6 @@ function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
             {t("previousValue", { value: format(values.previous) })}
           </span>
         </p>
-      </div>
-      <div
-        className="metric-periods"
-        role="group"
-        aria-label={t("periodFor", { label })}
-      >
-        {([7, 30, 90] as const).map((period) => (
-          <Button
-            key={period}
-            variant="secondary"
-            aria-pressed={days === period}
-            className="metric-period"
-            onClick={() => setDays(period)}
-          >
-            {t("days", { days: period })}
-          </Button>
-        ))}
       </div>
     </section>
   );

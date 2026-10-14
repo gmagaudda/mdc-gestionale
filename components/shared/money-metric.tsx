@@ -1,17 +1,26 @@
 "use client";
 import { formatMoney } from "@/lib/money";
-import { AnimatedMoney } from "./animated-number";
-// MetricCard has no decimals/locale/value slot. Keep amounts exact in an
-// app-owned surface; the Arc registry files remain unchanged.
+import type { ReactNode } from "react";
+import { AnimatedMoney, AnimatedNumber } from "./animated-number";
+// MetricCard has no value/footer slot. Compose exact values and controls in
+// an app-owned surface, without changing Arc registry files.
 export function MoneyMetric({
   label,
   value,
   context,
+  format = "money",
 }: {
   label: string;
   value: bigint | null;
-  context: string;
+  context: ReactNode;
+  format?: "money" | "number";
 }) {
+  const formatted =
+    value === null
+      ? null
+      : format === "money"
+        ? formatMoney(value)
+        : new Intl.NumberFormat("it-IT").format(value);
   return (
     <article className="money-metric">
       <p className="metric-label">{label}</p>
@@ -21,13 +30,19 @@ export function MoneyMetric({
         ) : (
           <>
             <span className="metric-money-animated">
-              <AnimatedMoney cents={value} />
+              {format === "money" ? (
+                <AnimatedMoney cents={value} />
+              ) : value <= BigInt(Number.MAX_SAFE_INTEGER) ? (
+                <AnimatedNumber value={Number(value)} />
+              ) : (
+                formatted
+              )}
             </span>
-            <span className="metric-money-static">{formatMoney(value)}</span>
+            <span className="metric-money-static">{formatted}</span>
           </>
         )}
       </div>
-      <p className="metric-context">{context}</p>
+      <div className="metric-context">{context}</div>
     </article>
   );
 }

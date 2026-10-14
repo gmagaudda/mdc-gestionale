@@ -98,7 +98,9 @@ async function login(page: Page) {
 }
 const metric = (page: Page, label: string) =>
   page.locator(".table-metric").filter({
-    has: page.locator(`.metric-periods[aria-label="Periodo per ${label}"]`),
+    has: page.locator(
+      `.metric-period-control[aria-label="Periodo per ${label}"]`,
+    ),
   });
 async function noOverflow(page: Page) {
   expect(
@@ -124,14 +126,15 @@ test("complete filtered metrics, independent periods and numbered navigation pre
     /\+7\.?450%/,
   );
   await customers
-    .getByRole("button", { name: "7 giorni", exact: true })
+    .getByRole("button", { name: "Scegli periodo per Clienti", exact: true })
     .click();
+  await page.getByRole("menuitem", { name: "7 giorni", exact: true }).click();
   await expect(customers.locator(".metric-comparison .sr-only")).toContainText(
     "Clienti: 150",
   );
   await expect(
     cities.getByRole("button", { name: "30 giorni", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  ).toBeVisible();
   const pagination = page.getByRole("navigation", {
     name: "Paginazione",
     exact: true,
@@ -194,7 +197,9 @@ test("sidebar menu and metrics remain usable in both themes and at 320px with en
   await page.setViewportSize({ width: 320, height: 844 });
   await page.addStyleTag({ content: "html { font-size: 200%; }" });
   await noOverflow(page);
-  for (const button of await page.locator(".metric-periods button").all()) {
+  for (const button of await page
+    .locator(".metric-period-control button")
+    .all()) {
     const box = (await button.boundingBox())!;
     expect(box.width).toBeGreaterThanOrEqual(44);
     expect(box.height).toBeGreaterThanOrEqual(44);
@@ -202,7 +207,7 @@ test("sidebar menu and metrics remain usable in both themes and at 320px with en
   }
   await openUserMenu(page);
   await expect(
-    page.getByRole("menuitem", { name: "Aspetto", exact: true }),
+    page.getByRole("menuitemcheckbox", { name: "Aspetto", exact: true }),
   ).toBeVisible();
   await page.screenshot({
     path: info.outputPath("metrics-menu-enlarged.png"),
@@ -220,13 +225,22 @@ test("large monetary metrics preserve cents, keyboard periods and fit narrow car
   await expect(price.locator(".metric-comparison .sr-only")).toContainText(
     "3.333.333.334,00",
   );
-  const period = price.getByRole("button", { name: "90 giorni", exact: true });
+  const period = price.getByRole("button", {
+    name: "Scegli periodo per Prezzo medio",
+    exact: true,
+  });
   await period.focus();
-  await period.press("Enter");
-  await expect(period).toHaveAttribute("aria-pressed", "true");
   expect(
     await period.evaluate((node) => getComputedStyle(node).outlineStyle),
   ).not.toBe("none");
+  await period.press("Enter");
+  await page
+    .getByRole("menuitem", { name: "90 giorni", exact: true })
+    .press("Enter");
+  await expect(
+    price.getByRole("button", { name: "90 giorni", exact: true }),
+  ).toBeVisible();
+  await expect(period).toBeFocused();
   await noOverflow(page);
   await page.setViewportSize({ width: 320, height: 844 });
   await page.addStyleTag({ content: "html { font-size: 200%; }" });

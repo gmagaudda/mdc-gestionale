@@ -1,4 +1,4 @@
-import { openAccountSettings, setAppearance } from "./helpers/account";
+import { openUserMenu, setAppearance } from "./helpers/account";
 import { completeAdminMfa } from "./helpers/mfa";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -66,8 +66,13 @@ for (const denied of [false, true])
       process.env.E2E_PWA_PRODUCTION !== "1",
       "Push service worker runs only in production build.",
     );
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.addInitScript(
       ({ fixture, denied }) => {
+        if (denied && !sessionStorage.getItem("push-denied-seeded")) {
+          sessionStorage.setItem("push-fixture-active", "1");
+          sessionStorage.setItem("push-denied-seeded", "1");
+        }
         const state = {
           permissionCalls: 0,
           subscribeCalls: 0,
@@ -84,12 +89,16 @@ for (const denied of [false, true])
           },
         };
         // Synthetic browser push service only: no permission dialog and no outbound push.
+        let permission = denied ? "denied" : "default";
         Object.defineProperty(window, "Notification", {
           configurable: true,
           value: {
-            permission: denied ? "denied" : "default",
+            get permission() {
+              return permission;
+            },
             requestPermission: async () => {
               state.permissionCalls++;
+              permission = "granted";
               return "granted";
             },
           },
@@ -132,10 +141,13 @@ for (const denied of [false, true])
     await page.getByRole("button", { name: "Accedi", exact: true }).click();
     await completeAdminMfa(page);
     await expect(page).toHaveURL(/dashboard$/);
-    await openAccountSettings(page, "Notifiche");
-    await expect(
-      page.getByRole("region", { name: "Notifiche degli appuntamenti" }),
-    ).toBeVisible();
+    await openUserMenu(page);
+    const toggle = page.getByRole("menuitemcheckbox", {
+      name: "Notifiche",
+      exact: true,
+    });
+    await expect(toggle).toHaveAttribute("aria-disabled", "false");
+    await expect(toggle).toHaveAttribute("aria-checked", String(denied));
     expect(
       await page.evaluate(
         () =>
@@ -143,36 +155,39 @@ for (const denied of [false, true])
             .pushFixture.permissionCalls,
       ),
     ).toBe(0);
-    if (denied) {
-      await expect(
-        page.getByText("Le notifiche sono bloccate nel browser.", {
-          exact: false,
-        }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole("button", { name: "Attiva le notifiche", exact: true }),
-      ).toHaveCount(0);
-      await page
-        .getByRole("button", {
-          name: "Revoca su tutti i dispositivi",
-          exact: true,
-        })
-        .click();
-      await expect(
-        page.getByText("Consenso revocato su tutti i dispositivi.", {
-          exact: true,
-        }),
-      ).toBeVisible();
-    } else {
-      const enable = page.getByRole("button", {
-        name: "Attiva le notifiche",
-        exact: true,
-      });
-      await expect(enable).toBeVisible();
+    if (!denied) {
       await context.setOffline(true);
-      await expect(enable).toBeDisabled();
+      await expect(toggle).toHaveAttribute("aria-disabled", "true");
       await context.setOffline(false);
-      await enable.click();
+      await expect(toggle).toHaveAttribute("aria-disabled", "false");
+      // Fail the first business write. No enabled state without server consent.
+      await page.route("**/dashboard", (route) =>
+        route.request().method() === "POST" &&
+        route.request().headers()["next-action"]
+          ? route.abort("failed")
+          : route.continue(),
+      );
+      await toggle.click();
+      await expect(
+        page.getByRole("alert").filter({ hasText: "Notifiche non aggiornate" }),
+      ).toBeVisible();
+      await expect(toggle).toHaveAttribute("aria-checked", "false");
+      expect(
+        (
+          await db()
+            .from("push_subscriptions")
+            .select("id")
+            .eq("user_id", userId)
+        ).data,
+      ).toHaveLength(0);
+      await page.unroute("**/dashboard");
+      await toggle.click();
+      await expect(
+        page.getByRole("alert").filter({ hasText: "Notifiche non aggiornate" }),
+      ).toHaveCount(0);
+      await expect(toggle).toHaveAttribute("aria-disabled", "false");
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-checked", "true");
       await expect(
         page.getByText("Notifiche attivate su questo dispositivo.", {
           exact: true,
@@ -196,12 +211,9 @@ for (const denied of [false, true])
       );
       expect(counts).toMatchObject({ permissionCalls: 1, subscribeCalls: 1 });
       await page.reload();
-      await openAccountSettings(page, "Notifiche");
-      await expect(
-        page.getByText("Notifiche attive su questo dispositivo.", {
-          exact: true,
-        }),
-      ).toBeVisible();
+      await openUserMenu(page);
+      await expect(toggle).toHaveAttribute("aria-checked", "true");
+      await expect(toggle).toHaveAttribute("aria-disabled", "false");
       expect(
         await page.evaluate(
           () =>
@@ -209,23 +221,26 @@ for (const denied of [false, true])
               .pushFixture.permissionCalls,
         ),
       ).toBe(0);
-      await page
-        .getByRole("button", { name: "Revoca le notifiche", exact: true })
-        .click();
-      await expect(
-        page.getByText(
-          "Consenso revocato. Non riceverai altri promemoria su questo dispositivo.",
-          { exact: true },
-        ),
-      ).toBeVisible();
-      expect(
-        await page.evaluate(
-          () =>
-            (window as unknown as { pushFixture: { unsubscribeCalls: number } })
-              .pushFixture.unsubscribeCalls,
-        ),
-      ).toBe(1);
     }
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-checked", "false");
+    await expect(
+      page.getByRole("dialog", { name: "Notifiche", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText(
+        "Consenso revocato. Non riceverai altri promemoria su questo dispositivo.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () =>
+          (window as unknown as { pushFixture: { unsubscribeCalls: number } })
+            .pushFixture.unsubscribeCalls,
+      ),
+    ).toBe(1);
+    if (denied) await expect(toggle).toHaveAttribute("aria-disabled", "true");
     expect(
       (await db().from("push_subscriptions").select("id").eq("user_id", userId))
         .data,
@@ -238,12 +253,10 @@ for (const denied of [false, true])
     expect(JSON.stringify(audit.data)).not.toContain(fixture.endpoint);
     expect(JSON.stringify(audit.data)).not.toContain(fixture.keys.auth);
     for (const scheme of ["Chiaro", "Scuro"]) {
-      await page
-        .getByRole("dialog", { name: "Notifiche", exact: true })
-        .getByRole("button", { name: "Chiudi", exact: true })
-        .click();
+      await page.keyboard.press("Escape");
       await setAppearance(page, scheme);
-      await openAccountSettings(page, "Notifiche");
+      await openUserMenu(page);
+      await page.waitForTimeout(400);
       expect(
         (await new AxeBuilder({ page }).analyze()).violations.filter((v) =>
           ["serious", "critical"].includes(v.impact ?? ""),

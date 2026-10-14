@@ -343,7 +343,11 @@ export function MobileNavigation({
           if (accountActive) event.preventDefault();
         }}
         onEscapeKeyDown={(event) => {
-          if (accountActive) {
+          if (
+            accountActive ||
+            (event.target instanceof HTMLElement &&
+              event.target.closest('[role="menu"], .accent-popover'))
+          ) {
             event.preventDefault();
             return;
           }

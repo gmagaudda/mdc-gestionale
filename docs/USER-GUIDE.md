@@ -4,7 +4,7 @@
 
 Accedi con email e password. Il recupero invia un link da aprire nello stesso browser. Gli amministratori configurano un’app di autenticazione al primo accesso e inseriscono il codice a sei cifre ad ogni nuova sessione. Conserva privatamente la chiave di configurazione. Se perdi l’app, contatta il responsabile: il recupero password non elimina il secondo fattore.
 
-Il menu utente, aperto dall’avatar nel fondo della sidebar, contiene Aspetto, Installa app, Notifiche ed Esci. Ogni impostazione apre il proprio pannello; le notifiche sono disponibili agli utenti interni. I salvataggi richiedono connessione. Salva le bozze prima di chiudere il tab o aggiornare l’app.
+Il menu utente si apre dall’avatar nel fondo della sidebar. **Aspetto** passa direttamente da chiaro a scuro; **Notifiche** attiva o disattiva i promemoria su questo dispositivo. L’icona e lo stato accessibile indicano la scelta attuale. Per attivare le notifiche serve connessione e, quando richiesto, il consenso del browser; sono disponibili agli utenti interni. **Accento** apre una piccola palette vicino all’avatar: Salvia, Blu, Viola e Neutro. Tema e accento si conservano in questo browser. **Installa app** apre la guida di installazione; **Esci** revoca il consenso alle notifiche su tutti i dispositivi e pulisce i dati locali. Salva le bozze prima di uscire o aggiornare l’app.
 
 ## Admin
 
@@ -56,7 +56,7 @@ Regole, formula ed esempi: [Budget suggerito per stagione](BUDGET-RECOMMENDATION
 
 ## Metriche delle liste
 
-Tra titolo e filtri trovi tre card di riepilogo. I pulsanti 7, 30 e 90 giorni, sulla destra, cambiano il periodo della singola card. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
+Tra titolo e filtri trovi tre card di riepilogo. Il pulsante del periodo dentro ciascuna card mostra i giorni selezionati. La freccia apre la scelta fra 7, 30 e 90 giorni; anche premere il numero apre questa scelta. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
 
 Ordini e provvigioni usano la data ordine; le fatture usano la data fattura. Anagrafiche, catalogo, budget, documenti, utenti e importazioni usano la data di creazione. La nota sotto le card indica la base del calcolo. I saldi delle fatture sono quelli attuali delle fatture emesse nel periodo.
 

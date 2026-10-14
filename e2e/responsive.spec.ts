@@ -1,4 +1,4 @@
-import { openAccountSettings } from "./helpers/account";
+import { openUserMenu } from "./helpers/account";
 import { completeAdminMfa, enrollFixtureMfa } from "./helpers/mfa";
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -427,7 +427,7 @@ test("text resize, 320px reflow and keyboard focus remain usable", async ({
   }
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/dashboard");
-  await openAccountSettings(page, "Aspetto");
+  await openUserMenu(page);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

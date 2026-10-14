@@ -1,9 +1,4 @@
-import {
-  openAccountSettings,
-  openUserMenu,
-  setAppearance,
-  signOut,
-} from "./helpers/account";
+import { openUserMenu, setAppearance, signOut } from "./helpers/account";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -88,7 +83,7 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
     await expect(trigger).toBeFocused();
     await trigger.press("ArrowDown");
     await expect(
-      page.getByRole("menuitem", { name: "Aspetto", exact: true }),
+      page.getByRole("menuitemcheckbox", { name: "Aspetto", exact: true }),
     ).toBeFocused();
     await page.keyboard.press("End");
     await expect(
@@ -97,13 +92,14 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
     await page.keyboard.press("Home");
     await page.keyboard.press("n");
     await expect(
-      page.getByRole("menuitem", {
+      page.getByRole("menuitemcheckbox", {
         name: "Notifiche",
         exact: true,
       }),
     ).toBeFocused();
-    await expect(page.getByRole("menuitem")).toHaveText([
+    await expect(page.locator('[data-stop="item"]')).toHaveText([
       "Aspetto",
+      "Accento",
       "Installa app",
       "Notifiche",
       "Esci",
@@ -122,7 +118,7 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
       ),
     ).toBe(true);
     if (info.project.use.hasTouch) {
-      for (const item of await page.getByRole("menuitem").all())
+      for (const item of await page.locator('[data-stop="item"]').all())
         expect((await item.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
     await page.screenshot({
@@ -133,10 +129,16 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
     await expect(trigger).toBeFocused();
     await expect(page.getByRole("menu")).toHaveCount(0);
   }
-  await openAccountSettings(page, "Aspetto");
+  await openUserMenu(page);
+  await page
+    .getByRole("menuitemcheckbox", { name: "Aspetto", exact: true })
+    .click();
   await expect(
     page.getByRole("dialog", { name: "Aspetto", exact: true }),
-  ).toContainText("Sistema");
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("menuitemcheckbox", { name: "Aspetto", exact: true }),
+  ).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
   // Stress the account controls on a list, outside the dashboard metric region.
@@ -149,7 +151,7 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
       page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
     )
     .toBe(true);
-  for (const item of await page.getByRole("menuitem").all()) {
+  for (const item of await page.locator('[data-stop="item"]').all()) {
     expect(
       await item.evaluate((button) => {
         const label = button.lastElementChild!;
@@ -167,7 +169,10 @@ test("account menu has Italian entries, keyboard focus and accessible settings a
     ).toBe(true);
   }
   await page.keyboard.press("Escape");
-  await openAccountSettings(page, "Aspetto");
+  await openUserMenu(page);
+  await page
+    .getByRole("menuitemcheckbox", { name: "Aspetto", exact: true })
+    .click();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -226,4 +231,148 @@ test("theme persists before real page content is painted and does not overflow",
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+test("accent palette applies immediately, persists before paint and remains keyboard accessible", async ({
+  page,
+}, info) => {
+  test.setTimeout(90000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addInitScript(() => {
+    const observer = new MutationObserver(() => {
+      if (
+        document.querySelector("main") &&
+        !document.documentElement.dataset.firstContentAccent
+      )
+        document.documentElement.dataset.firstContentAccent =
+          document.documentElement.dataset.accent;
+    });
+    observer.observe(document, { childList: true, subtree: true });
+  });
+  await page.goto("/login");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Accedi", exact: true }).click();
+  await expect(page).toHaveURL(/dashboard$/);
+  await page.goto("/customers");
+  for (const scheme of ["Chiaro", "Scuro"]) {
+    await setAppearance(page, scheme);
+    for (const [value, label] of [
+      ["green", "Salvia"],
+      ["blue", "Blu"],
+      ["violet", "Viola"],
+      ["neutral", "Neutro"],
+    ]) {
+      await openUserMenu(page);
+      await page
+        .getByRole("menuitem", { name: "Accento", exact: true })
+        .click();
+      const palette = page.getByRole("dialog", {
+        name: "Accento",
+        exact: true,
+      });
+      await expect(palette).toBeVisible();
+      await expect(page.locator('[role="menu"]')).toHaveCount(0);
+      await expect(palette.getByRole("radio", { checked: true })).toBeFocused();
+      const choice = palette.getByRole("radio", { name: label, exact: true });
+      await choice.check();
+      await expect(page.locator("html")).toHaveAttribute("data-accent", value);
+      await expect
+        .poll(() =>
+          page.evaluate(() => localStorage.getItem("mdc-accent") ?? "green"),
+        )
+        .toBe(value);
+      const ratios = await page.evaluate(() => {
+        const css = getComputedStyle(document.documentElement);
+        const canvas = document.createElement("canvas").getContext("2d")!;
+        canvas.canvas.width = canvas.canvas.height = 1;
+        const luminance = (token: string) => {
+          canvas.clearRect(0, 0, 1, 1);
+          canvas.fillStyle = css.getPropertyValue("--surface").trim();
+          canvas.fillRect(0, 0, 1, 1);
+          canvas.fillStyle = css.getPropertyValue(token).trim();
+          canvas.fillRect(0, 0, 1, 1);
+          const rgb = [...canvas.getImageData(0, 0, 1, 1).data]
+            .slice(0, 3)
+            .map((c) => {
+              const s = c / 255;
+              return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+          return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+        };
+        return Object.fromEntries(
+          [
+            ["accentOnSurface", "--accent", "--surface"],
+            ["activeNavigation", "--accent", "--accent-subtle"],
+            ["primaryButton", "--accent-foreground", "--accent"],
+            ["selectedControl", "--control-glyph", "--control-on"],
+          ].map(([name, fg, bg]) => {
+            const a = luminance(fg),
+              b = luminance(bg);
+            return [name, (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)];
+          }),
+        );
+      });
+      for (const [name, ratio] of Object.entries(ratios))
+        expect(ratio, `${scheme}/${label}/${name}`).toBeGreaterThanOrEqual(4.5);
+      await info.attach(`${scheme}-${value}-contrast`, {
+        body: JSON.stringify(ratios),
+        contentType: "application/json",
+      });
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      await choice.focus();
+      await choice.press("Escape");
+      await expect(palette).toHaveCount(0);
+      await expect(
+        page.getByRole("button", { name: /^Menu utente di / }),
+      ).toBeFocused();
+    }
+  }
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-first-content-accent",
+    "neutral",
+  );
+  await page.evaluate(() => localStorage.setItem("mdc-accent", "invalid"));
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-first-content-accent",
+    "green",
+  );
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.addStyleTag({ content: "html { font-size: 200%; }" });
+  await openUserMenu(page);
+  await page.getByRole("menuitem", { name: "Accento", exact: true }).click();
+  const palette = page.getByRole("dialog", { name: "Accento", exact: true });
+  await expect(palette.getByRole("radio", { checked: true })).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(
+    palette.getByRole("radio", { name: "Blu", exact: true }),
+  ).toBeChecked();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(
+    await palette
+      .getByRole("radio", { name: "Blu", exact: true })
+      .evaluate((node) => getComputedStyle(node).outlineStyle),
+  ).not.toBe("none");
+  for (const label of await palette.locator(".accent-choice").all()) {
+    const box = (await label.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(320);
+  }
+  await page.screenshot({
+    path: info.outputPath("accent-palette-enlarged.png"),
+    fullPage: true,
+  });
 });

@@ -4,7 +4,7 @@ Precedenza: WCAG AA, Arc, Web Interface Guidelines e Interface Cheat Sheet/skill
 
 ## Arc
 
-Componenti gratuiti dal registry ufficiale, interni immutati. Token semantici per colore, spazio, raggi e tipografia. Una sola gerarchia con titolo e azione principale; nessuna decorazione superflua. Tema tramite `data-theme`, accento verde salvia richiesto dall’umano il 13 ottobre 2026. Token del prodotto in `lib/theme/sage.css`, senza modificare la foundation Arc. Verde chiaro per la selezione, tinta scura leggibile per azioni e testi; tema scuro con valori dedicati. Raggi compatti condivisi per il gestionale. Font Geist e Inter, pesi 400/500. Focus della foundation, controlli nativi etichettati, motion ridotta. Caricamento, vuoto, errore e conferma restano vicini ai dati. [Regole e checklist](https://uiarc.dev/r/skills/arc/SKILL.md).
+Componenti gratuiti dal registry ufficiale, interni immutati. Token semantici per colore, spazio, raggi e tipografia. Una sola gerarchia con titolo e azione principale; nessuna decorazione superflua. Tema tramite `data-theme`, accento verde salvia iniziale, con palette Salvia/Blu/Viola/Neutro richiesta dall’umano il 14 ottobre 2026. Token del prodotto in `lib/theme/sage.css`, senza modificare la foundation Arc. Verde chiaro per la selezione, tinta scura leggibile per azioni e testi; tema scuro con valori dedicati. Raggi compatti condivisi per il gestionale. Font Geist e Inter, pesi 400/500. Focus della foundation, controlli nativi etichettati, motion ridotta. Caricamento, vuoto, errore e conferma restano vicini ai dati. [Regole e checklist](https://uiarc.dev/r/skills/arc/SKILL.md).
 
 ## Web Interface Guidelines
 
@@ -38,6 +38,10 @@ Ispirazione dai tre ERP indicati dall’umano: [VANTUS](https://dribbble.com/sho
 
 ## Riepiloghi delle tabelle
 
-Tre card prima della toolbar nelle liste, con periodi indipendenti e confronto annuo in testo neutro. MetricCard Arc per contatori semplici; gli importi e i numeri che richiedono formato italiano usano superfici applicative con centesimi esatti. Gli importi animati usano NumberFlow quando lo spazio consente di mostrarli interamente; negli spazi stretti rimane il valore completo formattato, con ritorno a capo. Gli interni Arc restano immutati.
+Tre card prima della toolbar nelle liste, con periodi indipendenti e confronto annuo in testo neutro. Superfici applicative con formato italiano e centesimi esatti: MetricCard Arc non espone uno slot per il controllo del periodo richiesto dentro la card. Gli importi animati usano NumberFlow quando lo spazio consente di mostrarli interamente; negli spazi stretti rimane il valore completo formattato, con ritorno a capo. Gli interni Arc restano immutati.
 
-I selettori 7/30/90 giorni sono verticali a destra; se il testo ingrandito supera lo spazio disponibile passano sotto, allineati a destra. Nell’analisi storica i selettori sono stagioni omologhe, secondo la scelta umana. Il paginatore usa collegamenti reali nelle liste e Button Arc nelle anteprime, con numeri, puntini e accento salvia sulla pagina attuale.
+Il periodo 7/30/90 giorni è uno SplitButton Arc secondario dentro la card. Premere numero o freccia apre la scelta. Il registry non espone size/className e ha una freccia di 32 px: su touch e fino a 390 px viene composta la stessa scelta con Button Arc da 44 px e DropdownMenu Radix, senza restyling vendor. Nell’analisi storica i selettori sono stagioni omologhe, secondo la scelta umana. Il paginatore usa collegamenti reali nelle liste e Button Arc nelle anteprime, con numeri, puntini e accento salvia sulla pagina attuale.
+
+## Preferenze dirette nel menu utente
+
+Aspetto e Notifiche sono azioni dirette con IconMorph Arc tema/campanella, etichette stabili e semantica menuitemcheckbox. Il menu resta aperto e restituisce il focus alla voce dopo il cambio. Aspetto offre soltanto chiaro/scuro. Notifiche legge il consenso del dispositivo senza chiedere permessi all’apertura, richiede il permesso solo dopo selezione esplicita e conferma lo stato dopo la scrittura server. Accento apre Popover Arc ancorato all’avatar; quattro radio native, etichetta e campione colore, scelta persistente e bootstrap prima del primo contenuto. ColorPicker Arc sconsiglia l’uso per una palette fissa. Nessun popup per tema o notifiche e nessuna modifica agli interni Arc.
