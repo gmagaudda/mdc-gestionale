@@ -426,6 +426,13 @@
     "payment_terms": "Condizioni di pagamento"
   },
   "catalog": {
+    "productBrands": "Brand dei prodotti",
+    "selectedBrand": "Prodotti: {name}",
+    "allBrands": "Tutti i brand",
+    "previousBrands": "Scorri ai brand precedenti",
+    "nextBrands": "Scorri ai brand successivi",
+    "loadingBrandProducts": "Caricamento dei prodotti del brand…",
+    "brandUnavailable": "Brand non disponibile. Seleziona tutti i brand o riprova.",
     "seasons": "Stagioni",
     "products": "Prodotti",
     "createSeason": "Nuova stagione",

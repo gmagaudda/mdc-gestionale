@@ -21,7 +21,7 @@ select is(public.export_business_list('products','CSV-B')->'rows'->0->>'wholesal
 select is(public.export_business_list('products','0,20')->'rows'->0->>'sku_base','CSV-B','general search includes formatted money');
 select is(public.export_business_list('products','CSV brand % literal')->'rows'->0->>'name','CSV product','general search includes related brand');
 select is(public.export_business_list('budgets','123,45')->'rows'->0->>'id','00000000-0000-4000-8000-000000000908','general search includes budget amount');
-select is(public.export_business_list('budgets','Nessuno')->'rows'->0->>'id','00000000-0000-4000-8000-000000000908','general search includes displayed missing scope');
+select is(public.export_business_list('budgets','Nessuno',p_ids=>array['00000000-0000-4000-8000-000000000908']::uuid[])->'rows'->0->>'id','00000000-0000-4000-8000-000000000908','general search includes displayed missing scope');
 select matches(public.table_search(row(null,'2034-01-01 12:34:56+00','insert','brands',null,null)::public.v_audit_list),'Sistema','audit search includes displayed system author');
 select matches(public.table_search(row(null,'2034-01-01 12:34:56+00','insert','brands',null,null)::public.v_audit_list),'01/01/34 13:34:56','audit search includes displayed short date and local time');
 select is(public.table_filter_options('products','wholesale_price_cents','0,20'),'["20"]'::jsonb,'money combobox search accepts displayed decimal values');
@@ -93,8 +93,8 @@ select throws_ok($$select public.export_business_list('customers')$$,'42501',nul
 set local request.jwt.claims='{"aal":"aal2"}';
 select lives_ok($$select public.export_business_list('brands')$$,'MFA admin allowed');
 reset role;
-select ok(not has_function_privilege('anon','public.export_business_list(text,text,text,text,text,boolean,uuid[],jsonb)','execute'),'anonymous RPC denied');
-select ok(not (select prosecdef from pg_proc where oid='public.export_business_list(text,text,text,text,text,boolean,uuid[],jsonb)'::regprocedure),'export preserves session RLS');
+select ok(not has_function_privilege('anon','public.export_business_list(text,text,text,text,text,boolean,uuid[],jsonb,uuid)','execute'),'anonymous RPC denied');
+select ok(not (select prosecdef from pg_proc where oid='public.export_business_list(text,text,text,text,text,boolean,uuid[],jsonb,uuid)'::regprocedure),'export preserves session RLS');
 insert into public.customers(legal_name) select 'CSV capacity unique '||n from generate_series(1,10002) n;
 set local role authenticated;
 select is(jsonb_array_length(public.export_business_list('customers','CSV capacity unique')->'rows'),10001,'bounded response signals overflow instead of silently truncating');

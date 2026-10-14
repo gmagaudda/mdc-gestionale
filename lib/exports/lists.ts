@@ -129,6 +129,7 @@ export const listExports: Record<
   },
 };
 export const listExportFiltersSchema = z.object({
+  brand_id: z.uuid().or(z.literal("")).optional(),
   q: z.string().trim().max(100).default(""),
   sort: z.string().optional(),
   direction: z.enum(["asc", "desc"]).default("asc"),

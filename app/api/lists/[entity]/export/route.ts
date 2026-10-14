@@ -37,6 +37,7 @@ export async function GET(
     !filters.success ||
     !columns.ok ||
     !ids.success ||
+    (filters.success && filters.data.brand_id && entity.data !== "products") ||
     (filters.data.sort && !config.sort.includes(filters.data.sort))
   )
     return new Response(t("exportInvalid"), { status: 400, headers });
@@ -50,6 +51,9 @@ export async function GET(
     p_status: filters.data.status,
     p_overdue: filters.data.overdue === "yes",
     p_column_filters: columns.data,
+    ...(entity.data === "products" && filters.data.brand_id
+      ? { p_brand_id: filters.data.brand_id }
+      : {}),
     ...(ids.data ? { p_ids: [...new Set(ids.data)] } : {}),
   });
   const parsed = listExportReportSchema.safeParse(response.data);

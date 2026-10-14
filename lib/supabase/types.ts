@@ -2629,6 +2629,7 @@ export type Database = {
       };
       export_business_list: {
         Args: {
+          p_brand_id?: string;
           p_column_filters?: Json;
           p_direction?: string;
           p_entity: string;

@@ -16,6 +16,8 @@ Importazioni → Importazione operativa carica negozi, ordini o budget con colon
 
 ## Staff
 
+In Prodotti, la barra orizzontale dei brand filtra catalogo, contatori ed esportazione. Usa le frecce per scorrerla o la tastiera per scegliere una linguetta e premi Invio. «Tutti i brand» ripristina il catalogo completo; ricerca e ordinamento restano applicati. Il nome completo del brand selezionato compare sotto la barra.
+
 Gestisci negozi, catalogo, ordini, appuntamenti e documenti. Un ordine si modifica come bozza; controlla quantità, sconti e totale prima di confermarlo e avanzarne lo stato. Dal dettaglio scarica la conferma PDF; dalla lista ordini esporta il CSV con i filtri correnti. Dalla stagione scarica il catalogo. Leggi dashboard, budget, provvigioni e fatture.
 
 Nel dettaglio di un ordine confermato usa «Invia conferma», scegli un contatto del cliente e controlla l’esito. Se mancano destinatari, aggiungi un contatto con email dal cliente. In locale la modalità log registra l’operazione senza inviare email. Lo storico resta visibile dopo il ricaricamento; la stessa conferma completata non viene inviata di nuovo allo stesso contatto.
