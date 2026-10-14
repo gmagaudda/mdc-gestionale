@@ -5,6 +5,7 @@ import { MetricPeriod } from "./metric-period";
 import { MoneyMetric } from "./money-metric";
 import { formatMoney } from "@/lib/money";
 import { metricChange, type TableMetricData } from "@/lib/metrics/schema";
+import { SlotText } from "@/components/arc/slot-text/slot-text";
 
 function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
   const t = useTranslations("tableMetrics");
@@ -24,24 +25,31 @@ function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
           label={label}
           value={value}
           format={card.format}
+          change={
+            change === null ? undefined : (
+              <SlotText value={`${change}%`} align="end" />
+            )
+          }
           context={
             <MetricPeriod label={label} days={days} onChange={setDays} />
           }
+          details={
+            <p
+              className="metric-comparison"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <span className="sr-only">
+                {label}: {format(values.value)}.{" "}
+              </span>
+              {change === null ? t("noBaseline") : t("yearChange", { change })}
+              <span className="metric-previous">
+                {t("previousValue", { value: format(values.previous) })}
+              </span>
+            </p>
+          }
         />
-        <p
-          className="metric-comparison"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span className="sr-only">
-            {label}: {format(values.value)}.{" "}
-          </span>
-          {change === null ? t("noBaseline") : t("yearChange", { change })}
-          <span className="metric-previous">
-            {t("previousValue", { value: format(values.previous) })}
-          </span>
-        </p>
       </div>
     </section>
   );

@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/arc/button/button";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
+import { SlotText } from "@/components/arc/slot-text/slot-text";
 import { MoneyMetric } from "@/components/shared/money-metric";
 import { formatMoney } from "@/lib/money";
 import { metricChange } from "@/lib/metrics/schema";
@@ -50,44 +51,43 @@ function SeasonalMetric({
         <MoneyMetric
           label={label}
           value={amount === null ? null : BigInt(amount)}
-          context={amount === null ? t("seasonal.missing") : season}
+          missing={t("seasonal.missing")}
+          change={
+            change === null ? undefined : (
+              <SlotText value={`${change}%`} align="end" />
+            )
+          }
+          context={
+            <SegmentedControl
+              className="metric-periods"
+              label={t("seasonal.periodFor", { label })}
+              value={season}
+              onValueChange={(value) => setSeason(value as Season)}
+              options={seasons.map((value) => ({ value, label: value }))}
+            />
+          }
+          details={
+            <p
+              className="metric-comparison"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <span className="sr-only">
+                {label}, {season}:{" "}
+                {amount === null
+                  ? t("seasonal.missing")
+                  : formatMoney(BigInt(amount))}
+                .{" "}
+              </span>
+              {kind === "orders"
+                ? change === null
+                  ? t("seasonal.noComparison")
+                  : t("seasonal.change", { change, season: "SS26" })
+                : t("seasonal.budgetHint")}
+            </p>
+          }
         />
-        <p
-          className="metric-comparison"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span className="sr-only">
-            {label}, {season}:{" "}
-            {amount === null
-              ? t("seasonal.missing")
-              : formatMoney(BigInt(amount))}
-            .{" "}
-          </span>
-          {kind === "orders"
-            ? change === null
-              ? t("seasonal.noComparison")
-              : t("seasonal.change", { change, season: "SS26" })
-            : t("seasonal.budgetHint")}
-        </p>
-      </div>
-      <div
-        className="metric-periods"
-        role="group"
-        aria-label={t("seasonal.periodFor", { label })}
-      >
-        {seasons.map((option) => (
-          <Button
-            key={option}
-            variant="secondary"
-            className="metric-period"
-            aria-pressed={season === option}
-            onClick={() => setSeason(option)}
-          >
-            {option}
-          </Button>
-        ))}
       </div>
     </section>
   );

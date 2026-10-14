@@ -56,7 +56,7 @@ Regole, formula ed esempi: [Budget suggerito per stagione](BUDGET-RECOMMENDATION
 
 ## Metriche delle liste
 
-Tra titolo e filtri trovi tre card di riepilogo. Il pulsante del periodo dentro ciascuna card mostra i giorni selezionati. La freccia apre la scelta fra 7, 30 e 90 giorni; anche premere il numero apre questa scelta. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
+Tra titolo e filtri trovi tre card di riepilogo con il valore in grande e la variazione in alto a destra, quando confrontabile. I periodi 7, 30 e 90 giorni sono sempre visibili nella barra in fondo a ogni card: seleziona un periodo per aggiornare soltanto quella card. Da tastiera usa le frecce, Home o End. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
 
 Ordini e provvigioni usano la data ordine; le fatture usano la data fattura. Anagrafiche, catalogo, budget, documenti, utenti e importazioni usano la data di creazione. La nota sotto le card indica la base del calcolo. I saldi delle fatture sono quelli attuali delle fatture emesse nel periodo.
 

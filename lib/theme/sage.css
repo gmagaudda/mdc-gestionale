@@ -3,6 +3,7 @@
   --radius-control: 0.5rem;
   --radius-panel: 0.75rem;
   --radius-surface: 1rem;
+  --radius-metric: 2.125rem;
 }
 :root[data-accent="green"] {
   --background: oklch(97.8% 0.003 125);

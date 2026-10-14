@@ -126,15 +126,21 @@ test("complete filtered metrics, independent periods and numbered navigation pre
     /\+7\.?450%/,
   );
   await customers
-    .getByRole("button", { name: "Scegli periodo per Clienti", exact: true })
+    .getByRole("button", { name: "7 giorni", exact: true })
     .click();
-  await page.getByRole("menuitem", { name: "7 giorni", exact: true }).click();
+  await expect(customers.locator('[aria-haspopup="menu"]')).toHaveCount(0);
+  await expect(
+    customers.getByRole("button", { name: "7 giorni", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(customers.locator(".metric-comparison .sr-only")).toContainText(
     "Clienti: 150",
   );
   await expect(
     cities.getByRole("button", { name: "30 giorni", exact: true }),
   ).toBeVisible();
+  await expect(
+    cities.getByRole("button", { name: "30 giorni", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   const pagination = page.getByRole("navigation", {
     name: "Paginazione",
     exact: true,
@@ -200,6 +206,17 @@ test("sidebar menu and metrics remain usable in both themes and at 320px with en
   for (const button of await page
     .locator(".metric-period-control button")
     .all()) {
+    // Arc keeps the selected segment in view; keyboard can reach every option
+    // in its contained scrolling track when enlarged labels cannot fit.
+    await button.focus();
+    await button.press("Enter");
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect
+      .poll(async () => {
+        const box = (await button.boundingBox())!;
+        return box.x + box.width;
+      })
+      .toBeLessThanOrEqual(320);
     const box = (await button.boundingBox())!;
     expect(box.width).toBeGreaterThanOrEqual(44);
     expect(box.height).toBeGreaterThanOrEqual(44);
@@ -226,21 +243,23 @@ test("large monetary metrics preserve cents, keyboard periods and fit narrow car
     "3.333.333.334,00",
   );
   const period = price.getByRole("button", {
-    name: "Scegli periodo per Prezzo medio",
+    name: "30 giorni",
     exact: true,
   });
   await period.focus();
   expect(
     await period.evaluate((node) => getComputedStyle(node).outlineStyle),
   ).not.toBe("none");
-  await period.press("Enter");
-  await page
-    .getByRole("menuitem", { name: "90 giorni", exact: true })
-    .press("Enter");
+  await period.press("ArrowRight");
   await expect(
     price.getByRole("button", { name: "90 giorni", exact: true }),
   ).toBeVisible();
-  await expect(period).toBeFocused();
+  await expect(
+    price.getByRole("button", { name: "90 giorni", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    price.getByRole("button", { name: "90 giorni", exact: true }),
+  ).toBeFocused();
   await noOverflow(page);
   await page.setViewportSize({ width: 320, height: 844 });
   await page.addStyleTag({ content: "html { font-size: 200%; }" });
