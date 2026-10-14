@@ -792,10 +792,20 @@ summary {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.product-brand-selection {
-  margin-block: var(--space-3) 0;
+.product-brand-label[data-selected="true"],
+.product-brand-strip button:focus-visible .product-brand-label {
+  white-space: normal;
   overflow-wrap: anywhere;
-  color: var(--text-secondary);
+}
+.product-brand-strip {
+  --border: transparent;
+  --surface-muted: var(--background);
+  --shadow-resting: none;
+  display: flex;
+  min-inline-size: 0;
+}
+.product-brand-header .product-brand-panel {
+  margin-block-start: 0;
 }
 .table-filter-details {
   display: grid;

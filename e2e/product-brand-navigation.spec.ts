@@ -182,9 +182,12 @@ test("brand navigation scopes rows, metrics, search, pagination and CSV and supp
   const all = tabs.getByRole("tab", { name: "Tutti i brand", exact: true });
   await all.focus();
   await all.press("ArrowRight");
+  await expect(tabs.getByRole("tab").nth(1)).toBeFocused();
   await expect(all).toHaveAttribute("aria-selected", "false"); // Manual activation does not fetch on arrow focus.
-  await tabs.getByRole("tab", { name: `${prefix} B`, exact: true }).focus();
-  await page.keyboard.press("Enter");
+  const brandB = tabs.getByRole("tab", { name: `${prefix} B`, exact: true });
+  await brandB.focus();
+  await expect(brandB).toBeFocused();
+  await brandB.press("Enter");
   await expect(page).toHaveURL(new RegExp(`brand_id=${brandIds[1]}`));
   await expect(page.getByRole("tabpanel")).toHaveCount(1);
   await expect(value).toContainText("Prodotti: 1");
@@ -221,9 +224,12 @@ test("brand navigation scopes rows, metrics, search, pagination and CSV and supp
   await last.focus();
   await last.press("Enter");
   await expect(last).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator(".product-brand-selection")).toContainText(
-    await last.innerText(),
-  );
+  await expect(last).toHaveAttribute("title", await last.innerText());
+  expect(
+    await last
+      .locator(".product-brand-label")
+      .evaluate((node) => getComputedStyle(node).whiteSpace),
+  ).toBe("normal");
   const box = (await last.boundingBox())!;
   expect(box.height).toBeGreaterThanOrEqual(44);
   expect(box.x).toBeGreaterThanOrEqual(0);

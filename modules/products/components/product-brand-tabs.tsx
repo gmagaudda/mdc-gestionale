@@ -57,22 +57,26 @@ export function ProductBrandTabs({
           start(() => router.push(`/products?${next}`, { scroll: false }));
         }}
       >
-        <TabsList aria-label={t("productBrands")}>
-          {options.map((brand) => (
-            <TabsTrigger key={brand.id} value={brand.id} title={brand.name}>
-              <span className="product-brand-label">{brand.name}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <p className="product-brand-selection" role="status">
-          {t("selectedBrand", {
-            name:
-              options.find((brand) => brand.id === (selected || "all"))?.name ??
-              t("allBrands"),
-          })}
-        </p>
+        <div className="product-brand-strip">
+          <TabsList aria-label={t("productBrands")}>
+            {options.map((brand) => (
+              <TabsTrigger key={brand.id} value={brand.id} title={brand.name}>
+                <span
+                  className="product-brand-label"
+                  data-selected={brand.id === (selected || "all")}
+                >
+                  {brand.name}
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
         {options.map((brand) => (
-          <TabsContent key={brand.id} value={brand.id}>
+          <TabsContent
+            key={brand.id}
+            value={brand.id}
+            className="product-brand-panel"
+          >
             {brand.id === (selected || "all") ? children : null}
           </TabsContent>
         ))}

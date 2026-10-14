@@ -16,7 +16,7 @@ Importazioni → Importazione operativa carica negozi, ordini o budget con colon
 
 ## Staff
 
-In Prodotti, la barra orizzontale dei brand si trova tra i filtri e la tabella e filtra catalogo, contatori ed esportazione. Usa le frecce per scorrerla o la tastiera per scegliere una linguetta e premi Invio. «Tutti i brand» ripristina il catalogo completo; ricerca e ordinamento restano applicati. Il nome completo del brand selezionato compare sotto la barra.
+In Prodotti, la barra orizzontale dei brand si trova subito sopra la tabella e filtra catalogo, contatori ed esportazione. Usa le frecce per scorrerla o la tastiera per scegliere una linguetta e premi Invio. «Tutti i brand» ripristina il catalogo completo; ricerca e ordinamento restano applicati. Il nome completo del brand compare nella linguetta selezionata o con focus da tastiera.
 
 Gestisci negozi, catalogo, ordini, appuntamenti e documenti. Un ordine si modifica come bozza; controlla quantità, sconti e totale prima di confermarlo e avanzarne lo stato. Dal dettaglio scarica la conferma PDF; dalla lista ordini esporta il CSV con i filtri correnti. Dalla stagione scarica il catalogo. Leggi dashboard, budget, provvigioni e fatture.
 
