@@ -332,3 +332,7 @@ Consultati MetricCard e Pagination nel catalogo gratuito Arc. MetricCard non esp
 - Le metriche dello storico mantengono il confronto fra stagioni omologhe, come confermato dall’utente. Nessuna modifica alle date commerciali o alle RPC dei riepiloghi.
 
 - La palette mantiene il focus al suo interno e si chiude da Chiudi/Escape/click esterno, riportandolo all’avatar. Escape controllato esplicitamente: le dipendenze Radix del progetto hanno contesti DismissableLayer distinti e il drawer mobile altrimenti consuma lo stesso evento. Larghezza del contenitore tramite className documentata, con priorità sufficiente sul minimo del registry anche a 320 px/testo 200%. Gli interni Arc restano immutati.
+
+## 14 ottobre 2026: Slot Text nei riepiloghi delle tabelle [M8-T1]
+
+Richiesta umana: sostituire l'animazione dei contatori sopra le tabelle con Slot Text. Catalogo e API Arc consultati, componente gratuito installato dal registry ufficiale senza modifiche interne. MoneyMetric condiviso riceve SlotText con la stringa italiana esatta, senza conversione BigInt a Number; stesso comportamento per l'analisi stagionale. Durata smooth e stagger char dai token Arc, spins=0, allineamento end e annuncio del confronto esistente. Superfici, periodi, stati mancanti e fallback a capo negli spazi stretti conservati. La preferenza NumberFlow continua a valere per gli altri numeri animati.
