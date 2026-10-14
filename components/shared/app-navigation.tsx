@@ -265,9 +265,6 @@ export function AppNavigation({
           aria-label={t("appName")}
         >
           <span className="sidebar-wordmark">{t("brandMark")}</span>
-          <span className="sidebar-workspace-name">
-            {t(role === "brand" ? "portalName" : "workspaceName")}
-          </span>
         </Link>
         <div className="sidebar-tools">
           <Button

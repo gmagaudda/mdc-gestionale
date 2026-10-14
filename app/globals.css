@@ -715,7 +715,6 @@ summary {
   .app-sidebar[data-collapsed] .sidebar-brand {
     flex: none;
   }
-  .app-sidebar[data-collapsed] .sidebar-workspace-name,
   .app-sidebar[data-collapsed] .navigation-link > span {
     display: none;
   }
@@ -755,12 +754,15 @@ summary {
 /* The Arc toolbar owns its surface and chip/menu styles. */
 .table-filter-toolbar {
   --control-height-sm: var(--control-height-md);
+  /* Fit a 44px control and the Arc border inside the adjacent large buttons. */
+  --space-3: calc(
+    (var(--control-height-lg) - var(--control-height-md) - 2px) / 2
+  );
   flex: 1 1 100%;
   min-inline-size: 0;
   max-inline-size: 100%;
 }
 .table-filter-toolbar[data-compact] {
-  --space-3: var(--space-1);
   --space-4: var(--space-2);
 }
 /* Closed Arc menus stay mounted for their morph. Keep that invisible panel

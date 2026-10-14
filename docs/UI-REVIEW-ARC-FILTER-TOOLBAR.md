@@ -37,3 +37,20 @@ Not verified: screen reader manuale, Safari/device fisici, forced colors, RTL/ps
 ## Verdict
 
 Approve per il flusso e i sei domini ispezionati: nessun HIGH residuo. Resta il MEDIUM dei target nativi Arc, che richiede supporto upstream compatibile con la regola di non modificare gli interni.
+
+## Correzione altezza e sidebar (14 ottobre 2026)
+
+Scope: altezza della composizione condivisa dei filtri e sidebar su Fatture, con controllo notifiche nel menu utente. Review better-interface applicata al flusso dopo le correzioni; sorgenti Arc immutati. Rimossi il sottotitolo del logo e il feedback persistente di attivazione notifiche. Icona e `aria-checked` conservano lo stato; errori recuperabili e conferma di revoca rimangono.
+
+| Domain        | Evidence inspected                                                                                                                            | Result                                                                                                                   |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Accessibility | Controlli interni 44 px, stato menuitemcheckbox e prove push sintetiche mobile/desktop con errore/retry/attivazione/revoca e axe nei due temi | Nessuna nuova criticità; limite nativo X/back già registrato                                                             |
+| Layout        | Misure DOM su Fatture a 390/768/1024/1440, filtro vuoto e Stato: Emessa; screenshot                                                           | Barra 50 px come ricerca/export su una riga; 104 px quando Arc dispone due righe a 390 px. Nessun overflow del documento |
+| Writing       | app-navigation.tsx e account-menu.tsx, stringhe esistenti messages/it.json                                                                    | Solo MDC visibile; nessun messaggio di attivazione persistente; feedback di errore/revoca conservati                     |
+| Typography    | Token delle altezze/spazi, logo e chip renderizzati                                                                                           | Nessun nuovo formato o dimensione del testo                                                                              |
+| Colors        | Solo token esistenti; axe chiaro/scuro nel flusso push                                                                                        | Nessun colore aggiunto o cambiato                                                                                        |
+| UI            | Padding calcolato dai token delle altezze meno i due bordi; variante compatta con stessa altezza; screenshot locale                           | Allineamento verificato, crescita naturale a capo, nessuna modifica agli interni Arc                                     |
+
+Verification: `pnpm typecheck`, `pnpm lint`, `pnpm check:tokens`, Prettier, `git diff --check`, build OpenNext e scanner client 209 asset verdi. `E2E_PWA_PRODUCTION=1 pnpm exec playwright test e2e/push.spec.ts --grep 'device revocation' --project=mobile --project=desktop`: 2/2 verdi, con aspettativa aggiornata sull'assenza del messaggio di attivazione. Attivazione soltanto sintetica, nessun consenso/push reale richiesto. Screenshot `/tmp/mdc-filter-height.png` fuori repository.
+
+Not verified in questa correzione: walkthrough di tutte le liste, screen reader manuale, Safari/device fisici, RTL/forced-colors, nuovo stress 320 px/testo 200%, suite SQL/unit e regressione completa. Gli stati non legati alle dimensioni mantengono la copertura della review precedente. Verdict: Approve entro questo scope, nessun nuovo finding; limite MEDIUM dei target nativi invariato.

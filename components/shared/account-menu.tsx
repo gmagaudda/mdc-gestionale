@@ -272,7 +272,7 @@ export function AccountMenu({
         </PopoverContent>
       </Popover>
       {user.role !== "brand" &&
-        (notifications.success ||
+        (notifications.success === "revoked" ||
           notifications.error ||
           (open && notifications.unavailable)) && (
           <div
@@ -288,8 +288,8 @@ export function AccountMenu({
               <p>
                 {notifications.pending
                   ? push("loading")
-                  : notifications.success
-                    ? push(notifications.success)
+                  : notifications.success === "revoked"
+                    ? push("revoked")
                     : notifications.unavailable
                       ? push(notifications.unavailable)
                       : push(notifications.active ? "active" : "inactive")}

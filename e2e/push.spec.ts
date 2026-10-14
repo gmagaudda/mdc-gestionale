@@ -192,7 +192,7 @@ for (const denied of [false, true])
         page.getByText("Notifiche attivate su questo dispositivo.", {
           exact: true,
         }),
-      ).toBeVisible();
+      ).toHaveCount(0);
       expect(
         (
           await db()
