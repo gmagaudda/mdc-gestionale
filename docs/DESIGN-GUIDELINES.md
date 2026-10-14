@@ -50,7 +50,7 @@ Aspetto e Notifiche sono azioni dirette con IconMorph Arc tema/campanella, etich
 
 ## Barra filtri delle tabelle
 
-La colonna ordinata usa il fondo dell’accento (--accent-subtle) tramite il token --surface-muted sul wrapper applicativo della tabella. Freccia e aria-sort continuano a indicare direzione e colonna. Nella sidebar ridotta, toggle e ricerca sono impilati sotto MDC, con target di 44 px. Per richiesta umana il menu non mostra il messaggio «Notifiche non aggiornate», neppure nei tooltip: mantiene lo stato effettivo e la possibilità di riprovare dalla voce Notifiche.
+La colonna ordinata usa una tinta tenue: 35% --accent-subtle e 65% --surface, tramite il token --surface-muted sul wrapper applicativo della tabella. Freccia e aria-sort continuano a indicare direzione e colonna. Nella sidebar ridotta, toggle e ricerca sono impilati sotto MDC, con target di 44 px. Per richiesta umana il menu non mostra il messaggio «Notifiche non aggiornate», neppure nei tooltip: mantiene lo stato effettivo e la possibilità di riprovare dalla voce Notifiche.
 
 La ricerca generale si aggiorna dopo 250 ms dall’ultima modifica e conserva gli altri parametri, azzerando la pagina. Invio avvia subito la ricerca; l’icona ed Esc la richiudono e ripristinano i filtri. Le modifiche del testo sostituiscono la voce corrente della cronologia. Input nativo con etichetta collegata solo per screen reader, token del sito e altezza minima grande: i campi Arc documentati richiedono una label visibile e non espongono un’opzione per nasconderla. Nessun restyling degli interni Arc. Le note esplicative sotto le card non sono mostrate; i confronti nelle card restano visibili.
 

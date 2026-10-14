@@ -740,7 +740,11 @@ summary {
   min-width: 0;
 }
 .data-table {
-  --surface-muted: var(--accent-subtle);
+  --surface-muted: color-mix(
+    in oklab,
+    var(--accent-subtle) 35%,
+    var(--surface)
+  );
 }
 .list-toolbar-fields {
   display: flex;

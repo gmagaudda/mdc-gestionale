@@ -29,3 +29,18 @@ Not verified: screen reader manuale, Safari/device fisici, RTL/pseudo-localizzaz
 ## Verdict
 
 Approve nei sei domini e nel flusso ispezionati. Nessun HIGH residuo introdotto.
+
+## Revisione: tinta più tenue (15 ottobre 2026)
+
+Scope: solo intensità dello sfondo della colonna ordinata nel wrapper condiviso. Tinta miscelata in OKLab: 35% --accent-subtle e 65% --surface. Vendor, interazioni, geometria e stringhe invariati.
+
+| Domain        | Evidence inspected                                                                                       | Result                    |
+| ------------- | -------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Accessibility | Freccia/aria-sort conservati; axe nei due temi nel test esistente                                        | Clear                     |
+| Layout        | Solo token colore modificato; browser Ordini a 1440 px senza overflow, stress 320 px/testo 200% nel test | Clear                     |
+| Writing       | Nessuna nuova stringa, convenzioni aggiornate                                                            | Clear                     |
+| Typography    | Stili di testo invariati, test di ingrandimento esistente                                                | Clear                     |
+| Colors        | Color-mix con token semantici; sfondo Brand verificato nel browser, axe chiaro/scuro                     | Clear nei temi verificati |
+| UI            | Tinta più tenue osservata, interni Arc immutati                                                          | Clear                     |
+
+No actionable interface findings. Token/Prettier/diff/build OpenNext/scanner client verdi; suite esistente liste/selezione/CSV desktop 1/1 verde nei due temi, axe, tastiera e stress. Nessun nuovo test per questa modifica cromatica. Screenshot `/tmp/mdc-soft-column-accent.png`, scheda temporanea chiusa e viewport ripristinato. Altri viewport, tutte le palette, screen reader manuale, Safari/device fisici, RTL/forced colors non ripetuti. Approve nel flusso verificato.

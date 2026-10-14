@@ -300,3 +300,8 @@
 - Suite esistente liste/selezione/CSV: 2/2 verdi su mobile/desktop, nei due temi con axe, tastiera, ordinamento/paginazione e stress 320 px/testo 200%.
 - Typecheck/lint/token/diff/build OpenNext e scanner 213 asset client verdi. Test push sintetici con errore forzato/retry/attivazione/reload/revoca: 2/2 verdi su mobile/desktop, aspettativa aggiornata sull’assenza del messaggio. Verifica browser Ordini su 768/1024/1440: icone 44×44 px allineate verticalmente, nessun overflow, colonna Data ordine con token dell’accento. Screenshot fuori repository, app aggiornata su 3100.
 - Review better-interface dei sei domini in UI-REVIEW-SIDEBAR-SORT-ACCENT.md e convenzioni aggiornate. Non verificati screen reader manuale, Safari/device fisici, RTL/forced colors, motion rallentata, tutte le palette alternative e tutte le route. Nessuna migrazione, modifica business reale, invio push reale o pulizia dati. Gate esterni del piano e limiti nativi Arc preesistenti invariati.
+
+## M8-T1: accento più tenue nelle colonne (richiesta umana, 15 ottobre 2026)
+
+- Tinta della colonna ordinata attenuata: 35% --accent-subtle e 65% --surface in OKLab, solo nel wrapper condiviso. Interni Arc, indicatori di ordinamento e altre selezioni invariati. Convenzioni e review better-interface nei sei domini aggiornate.
+- Token/Prettier/diff/build OpenNext e scanner client 213 asset verdi. Test esistente liste/selezione/CSV desktop 1/1 verde nei due temi con axe, tastiera e stress 320 px/testo 200%. Browser Ordini/Brand verificato a 1440 px, screenshot fuori repository e app locale aggiornata. Nessun nuovo test per la sola tinta. Altri viewport, tutte le palette, screen reader manuale, Safari/device fisici, RTL/forced colors non ripetuti; nessuna migrazione o modifica business.
