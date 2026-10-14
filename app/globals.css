@@ -765,6 +765,11 @@ summary {
 .table-filter-toolbar[data-compact] {
   --space-4: var(--space-2);
 }
+/* Keep the closed Add filter surface borderless; the expanded menu retains
+   Arc's border and the trigger retains its keyboard focus indicator. */
+.table-filter-toolbar [data-state="closed"] {
+  --border: transparent;
+}
 /* Closed Arc menus stay mounted for their morph. Keep that invisible panel
    from extending the document; an open menu retains its floating surface. */
 .table-filter-toolbar:not(:has(button[aria-expanded="true"])) {

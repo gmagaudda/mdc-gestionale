@@ -126,21 +126,40 @@ test("complete filtered metrics, independent periods and numbered navigation pre
     /\+7\.?450%/,
   );
   await customers
-    .getByRole("button", { name: "7 giorni", exact: true })
+    .getByRole("button", { name: "Settimana", exact: true })
     .click();
   await expect(customers.locator('[aria-haspopup="menu"]')).toHaveCount(0);
   await expect(
-    customers.getByRole("button", { name: "7 giorni", exact: true }),
+    customers.getByRole("button", { name: "Settimana", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(customers.locator(".metric-comparison .sr-only")).toContainText(
     "Clienti: 150",
   );
   await expect(
-    cities.getByRole("button", { name: "30 giorni", exact: true }),
+    cities.getByRole("button", { name: "Mese", exact: true }),
   ).toBeVisible();
   await expect(
-    cities.getByRole("button", { name: "30 giorni", exact: true }),
+    cities.getByRole("button", { name: "Mese", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
+  await customers.getByRole("button", { name: "Anno", exact: true }).click();
+  await expect(customers.locator(".metric-comparison .sr-only")).toContainText(
+    "Clienti: 151",
+  );
+  await customers.getByRole("button", { name: "Totale", exact: true }).click();
+  await expect(customers.locator(".metric-comparison .sr-only")).toContainText(
+    "Clienti: 153",
+  );
+  await expect(customers.locator(".metric-comparison")).toContainText(
+    "Tutto lo storico, senza limiti di data.",
+  );
+  await expect(customers.locator(".metric-comparison")).not.toContainText(
+    "Anno precedente",
+  );
+  await expect(customers.locator(".metric-change")).toHaveCount(0);
+  await expect(
+    cities.getByRole("button", { name: "Mese", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await customers.getByRole("button", { name: "Mese", exact: true }).click();
   const pagination = page.getByRole("navigation", {
     name: "Paginazione",
     exact: true,
@@ -243,7 +262,7 @@ test("large monetary metrics preserve cents, keyboard periods and fit narrow car
     "3.333.333.334,00",
   );
   const period = price.getByRole("button", {
-    name: "30 giorni",
+    name: "Mese",
     exact: true,
   });
   await period.focus();
@@ -252,13 +271,13 @@ test("large monetary metrics preserve cents, keyboard periods and fit narrow car
   ).not.toBe("none");
   await period.press("ArrowRight");
   await expect(
-    price.getByRole("button", { name: "90 giorni", exact: true }),
+    price.getByRole("button", { name: "Anno", exact: true }),
   ).toBeVisible();
   await expect(
-    price.getByRole("button", { name: "90 giorni", exact: true }),
+    price.getByRole("button", { name: "Anno", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(
-    price.getByRole("button", { name: "90 giorni", exact: true }),
+    price.getByRole("button", { name: "Anno", exact: true }),
   ).toBeFocused();
   await noOverflow(page);
   await page.setViewportSize({ width: 320, height: 844 });

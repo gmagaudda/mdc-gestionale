@@ -4,13 +4,17 @@ import { useTranslations } from "next-intl";
 import { MetricPeriod } from "./metric-period";
 import { MoneyMetric } from "./money-metric";
 import { formatMoney } from "@/lib/money";
-import { metricChange, type TableMetricData } from "@/lib/metrics/schema";
+import {
+  metricChange,
+  type MetricPeriodValue,
+  type TableMetricData,
+} from "@/lib/metrics/schema";
 import { SlotText } from "@/components/arc/slot-text/slot-text";
 
 function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
   const t = useTranslations("tableMetrics");
-  const [days, setDays] = useState<7 | 30 | 90>(30);
-  const values = card.periods[days];
+  const [period, setPeriod] = useState<MetricPeriodValue>("month");
+  const values = card.periods[period];
   const label = t(`labels.${card.label}`);
   const value = BigInt(values.value);
   const change = metricChange(values.value, values.previous);
@@ -31,7 +35,7 @@ function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
             )
           }
           context={
-            <MetricPeriod label={label} days={days} onChange={setDays} />
+            <MetricPeriod label={label} period={period} onChange={setPeriod} />
           }
           details={
             <p
@@ -43,9 +47,14 @@ function TableMetric({ card }: { card: TableMetricData["cards"][number] }) {
               <span className="sr-only">
                 {label}: {format(values.value)}.{" "}
               </span>
-              {change === null ? t("noBaseline") : t("yearChange", { change })}
+              {values.previous !== null &&
+                (change === null
+                  ? t("noBaseline")
+                  : t("yearChange", { change }))}
               <span className="metric-previous">
-                {t("previousValue", { value: format(values.previous) })}
+                {values.previous === null
+                  ? t("periodDescriptions.total")
+                  : t("previousValue", { value: format(values.previous) })}
               </span>
             </p>
           }

@@ -18,6 +18,8 @@ export const metricEntities = [
 ] as const;
 export const metricEntitySchema = z.enum(metricEntities);
 const integer = z.string().regex(/^-?\d+$/);
+export const metricPeriods = ["week", "month", "year", "total"] as const;
+export type MetricPeriodValue = (typeof metricPeriods)[number];
 const period = z.object({ value: integer, previous: integer });
 export const metricsSchema = z.object({
   as_of: z.iso.date(),
@@ -64,13 +66,22 @@ export const metricsSchema = z.object({
           "averageNetOrder",
         ]),
         format: z.enum(["number", "money"]),
-        periods: z.object({ "7": period, "30": period, "90": period }),
+        periods: z.object({
+          week: period,
+          month: period,
+          year: period,
+          total: z.object({ value: integer, previous: z.null() }),
+        }),
       }),
     )
     .length(3),
 });
 export type TableMetricData = z.infer<typeof metricsSchema>;
-export function metricChange(value: string, previous: string): string | null {
+export function metricChange(
+  value: string,
+  previous: string | null,
+): string | null {
+  if (previous === null) return null;
   const current = BigInt(value),
     prior = BigInt(previous);
   if (prior <= 0n) return current === 0n && prior === 0n ? "0" : null;

@@ -1,26 +1,27 @@
 "use client";
 import { useTranslations } from "next-intl";
 import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
+import { metricPeriods, type MetricPeriodValue } from "@/lib/metrics/schema";
 
 export function MetricPeriod({
   label,
-  days,
+  period,
   onChange,
 }: {
   label: string;
-  days: 7 | 30 | 90;
-  onChange: (days: 7 | 30 | 90) => void;
+  period: MetricPeriodValue;
+  onChange: (period: MetricPeriodValue) => void;
 }) {
   const t = useTranslations("tableMetrics");
   return (
     <SegmentedControl
       className="metric-period-control"
       label={t("periodFor", { label })}
-      value={String(days)}
-      onValueChange={(value) => onChange(Number(value) as 7 | 30 | 90)}
-      options={([7, 30, 90] as const).map((value) => ({
-        value: String(value),
-        label: t("days", { days: value }),
+      value={period}
+      onValueChange={(value) => onChange(value as MetricPeriodValue)}
+      options={metricPeriods.map((value) => ({
+        value,
+        label: t(`periods.${value}`),
       }))}
     />
   );

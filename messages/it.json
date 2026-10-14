@@ -1519,13 +1519,20 @@
   },
   "tableMetrics": {
     "summary": "Riepilogo della tabella",
-    "lastDays": "Ultimi {days} giorni",
-    "days": "{days} giorni",
+    "periods": {
+      "week": "Settimana",
+      "month": "Mese",
+      "year": "Anno",
+      "total": "Totale"
+    },
+    "periodDescriptions": {
+      "total": "Tutto lo storico, senza limiti di data."
+    },
     "periodFor": "Periodo per {label}",
     "yearChange": "{change}% rispetto allo stesso periodo dell’anno precedente",
     "noBaseline": "Anno precedente non confrontabile",
     "previousValue": "Anno precedente: {value}",
-    "filteredHint": "I contatori includono tutti i risultati filtrati, anche nelle altre pagine.",
+    "filteredHint": "Settimana: ultimi 7 giorni. Mese: ultimi 30 giorni. Anno: ultimi 12 mesi. Totale: tutto lo storico. I contatori includono tutti i risultati filtrati, anche nelle altre pagine.",
     "loadError": "Impossibile caricare le metriche",
     "basis": {
       "orderDate": "Periodo basato sulla data ordine.",

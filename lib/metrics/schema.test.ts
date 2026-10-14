@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { metricChange } from "./schema";
 describe("metric changes", () => {
   it("handles zero and negative baselines without infinity", () => {
+    expect(metricChange("100", null)).toBeNull();
     expect(metricChange("100", "0")).toBeNull();
     expect(metricChange("0", "0")).toBe("0");
     expect(metricChange("100", "-100")).toBeNull();
