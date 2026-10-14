@@ -57,6 +57,10 @@ export function AccountMenu({
   // modifying vendor source or styling its internals.
   useEffect(() => {
     const localize = () => {
+      const unavailable =
+        notifications.unavailable === "saveError"
+          ? null
+          : notifications.unavailable;
       const button = trigger.current;
       button?.setAttribute("aria-label", t("userMenu", { name }));
       button?.setAttribute("title", name);
@@ -89,16 +93,16 @@ export function AccountMenu({
           "aria-description",
           theme
             ? t(dark ? "dark" : "light")
-            : notifications.unavailable
-              ? push(notifications.unavailable)
+            : unavailable
+              ? push(unavailable)
               : push(notifications.active ? "active" : "inactive"),
         );
         row.setAttribute(
           "title",
           theme
             ? t(dark ? "light" : "dark")
-            : notifications.unavailable
-              ? push(notifications.unavailable)
+            : unavailable
+              ? push(unavailable)
               : push(notifications.active ? "revoke" : "enable"),
         );
       }
@@ -273,28 +277,23 @@ export function AccountMenu({
       </Popover>
       {user.role !== "brand" &&
         (notifications.success === "revoked" ||
-          notifications.error ||
-          (open && notifications.unavailable)) && (
+          (open &&
+            notifications.unavailable &&
+            notifications.unavailable !== "saveError")) && (
           <div
             className="account-menu-feedback"
             role="status"
             aria-live="polite"
           >
-            {notifications.error ? (
-              <Alert tone="danger" title={push("errorTitle")}>
-                {push("saveError")}
-              </Alert>
-            ) : (
-              <p>
-                {notifications.pending
-                  ? push("loading")
-                  : notifications.success === "revoked"
-                    ? push("revoked")
-                    : notifications.unavailable
-                      ? push(notifications.unavailable)
-                      : push(notifications.active ? "active" : "inactive")}
-              </p>
-            )}
+            <p>
+              {notifications.pending
+                ? push("loading")
+                : notifications.success === "revoked"
+                  ? push("revoked")
+                  : notifications.unavailable
+                    ? push(notifications.unavailable)
+                    : push(notifications.active ? "active" : "inactive")}
+            </p>
           </div>
         )}
       {error && (

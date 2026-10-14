@@ -167,10 +167,18 @@ for (const denied of [false, true])
           ? route.abort("failed")
           : route.continue(),
       );
+      const failedWrite = page.waitForEvent("requestfailed", {
+        predicate: (request) =>
+          request.method() === "POST" &&
+          Boolean(request.headers()["next-action"]),
+      });
       await toggle.click();
+      await failedWrite;
+      await expect(toggle).toHaveAttribute("aria-disabled", "false");
       await expect(
         page.getByRole("alert").filter({ hasText: "Notifiche non aggiornate" }),
-      ).toBeVisible();
+      ).toHaveCount(0);
+      await expect(page.locator(".account-menu-feedback")).toHaveCount(0);
       await expect(toggle).toHaveAttribute("aria-checked", "false");
       expect(
         (

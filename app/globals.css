@@ -711,6 +711,11 @@ summary {
   }
   .app-sidebar[data-collapsed] .sidebar-heading {
     justify-content: center;
+    flex-direction: column;
+  }
+  .app-sidebar[data-collapsed] .sidebar-tools {
+    flex-direction: column;
+    align-items: center;
   }
   .app-sidebar[data-collapsed] .sidebar-brand {
     flex: none;
@@ -733,6 +738,9 @@ summary {
   align-items: end;
   gap: var(--space-3);
   min-width: 0;
+}
+.data-table {
+  --surface-muted: var(--accent-subtle);
 }
 .list-toolbar-fields {
   display: flex;
