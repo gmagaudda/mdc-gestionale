@@ -72,9 +72,6 @@ export function TableMetricCards({ data }: { data: TableMetricData }) {
           <TableMetric key={card.label} card={card} />
         ))}
       </div>
-      <p className="metric-note">
-        {t(`basis.${data.basis}`)} {t("filteredHint")}
-      </p>
     </div>
   );
 }

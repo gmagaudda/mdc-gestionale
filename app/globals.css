@@ -839,9 +839,33 @@ summary {
   );
 }
 .table-search-expanded {
+  display: flex;
   flex: 1;
   min-width: 0;
   transform-origin: right center;
+}
+.table-search-input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--control-height-lg);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+.table-search-input::placeholder {
+  color: var(--text-muted);
+}
+.table-search-input:focus {
+  border-color: var(--foreground);
+}
+@media (pointer: coarse) {
+  .table-search-input {
+    font-size: var(--text-base);
+  }
 }
 [dir="rtl"] .table-search-expanded {
   transform-origin: left center;
@@ -1001,7 +1025,6 @@ summary {
 }
 .metric-label,
 .metric-context,
-.metric-note,
 .metric-comparison,
 .metric-change {
   font-size: var(--text-sm);
@@ -1057,9 +1080,6 @@ summary {
 .metric-previous {
   display: block;
   color: var(--text-muted);
-}
-.metric-note {
-  margin: 0;
 }
 .metric-period-control,
 .metric-periods {

@@ -105,7 +105,6 @@ export function SeasonalMetricCards({
           <SeasonalMetric key={kind} kind={kind} totals={totals} />
         ))}
       </div>
-      <p className="metric-note">{t("seasonal.hint")}</p>
     </div>
   );
 }

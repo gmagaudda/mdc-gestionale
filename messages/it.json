@@ -240,7 +240,7 @@
     "domainFilters": "Filtri",
     "tableSearch": "Cerca nella tabella",
     "tableSearchHint": "Cerca in tutti i dati",
-    "searchEnter": "Premi Invio per cercare. Esc chiude la ricerca.",
+    "searchEnter": "La ricerca si aggiorna mentre scrivi. Esc chiude la ricerca.",
     "allValues": "Tutti",
     "currentPage": "Pagina {page}, attuale",
     "goToPage": "Vai a pagina {page}",

@@ -391,7 +391,7 @@ test("column filters and page selection stay aligned with CSV and reset on navig
   await page.keyboard.press("Escape");
   await page.evaluate(() => (document.documentElement.style.fontSize = ""));
 });
-test("general table search matches an off-page city and exported rows", async ({
+test("live table search matches off-page data, clears and toggles without losing filters", async ({
   page,
 }) => {
   await page.goto("/login");
@@ -399,19 +399,29 @@ test("general table search matches an off-page city and exported rows", async ({
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accedi", exact: true }).click();
   await expect(page.locator(".app-layout")).toBeVisible();
-  await page.goto(`/customers?cf_legal_name=${prefix}&direction=desc`);
+  await page.goto(`/customers?cf_legal_name=${prefix}&direction=desc&page=2`);
   const main = page.getByRole("main"),
     toolbar = main.locator(".list-toolbar");
   await expect(main.getByText("32 elementi", { exact: true })).toBeVisible();
+  const historyLength = await page.evaluate(() => history.length);
   await expect(toolbar.getByRole("searchbox")).toHaveCount(0);
-  await expect(
-    main.getByRole("link", { name: `=${prefix} formula`, exact: true }),
-  ).toHaveCount(0);
   await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
   await expect(toolbar.locator(".table-filter-toolbar")).toHaveCount(0);
   await toolbar.getByRole("searchbox").fill("Milano");
-  await toolbar.getByRole("searchbox").press("Enter");
   await expect(main.getByText("1 elemento", { exact: true })).toBeVisible();
+  await expect(toolbar.getByRole("searchbox")).toBeFocused();
+  const params = new URL(page.url()).searchParams;
+  expect(params.get("q")).toBe("Milano");
+  expect(params.get("page")).toBeNull();
+  expect(params.get("cf_legal_name")).toBe(prefix);
+  expect(params.get("direction")).toBe("desc");
+  const inputBox = (await toolbar.getByRole("searchbox").boundingBox())!;
+  const buttonBox = (await toolbar
+    .getByRole("button", { name: "Cerca", exact: true })
+    .boundingBox())!;
+  expect(inputBox.height).toBe(buttonBox.height);
+  expect(Math.abs(inputBox.y - buttonBox.y)).toBeLessThan(1);
+  await expect(main.locator(".metric-note")).toHaveCount(0);
   await expect(
     main.getByRole("link", { name: `=${prefix} formula`, exact: true }),
   ).toBeVisible();
@@ -425,6 +435,50 @@ test("general table search matches an off-page city and exported rows", async ({
   }).data;
   expect(rows).toHaveLength(2);
   expect(rows[1][2]).toBe("Milano");
+  await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  await expect(toolbar.getByRole("searchbox")).toHaveCount(0);
+  await expect(toolbar.locator(".table-filter-toolbar")).toBeVisible();
+  await expect(main.getByText("1 elemento", { exact: true })).toBeVisible();
+  await toolbar.getByRole("button", { name: "Cerca", exact: true }).click();
+  await expect(toolbar.getByRole("searchbox")).toHaveValue("Milano");
+  await toolbar.getByRole("searchbox").fill("Nessun risultato");
+  await expect(
+    main.getByRole("heading", { name: "Nessun elemento", exact: true }),
+  ).toBeVisible();
+  await toolbar.getByRole("searchbox").fill("");
+  await expect(main.getByText("32 elementi", { exact: true })).toBeVisible();
+  await expect(toolbar.getByRole("searchbox")).toBeFocused();
+  expect(new URL(page.url()).searchParams.has("q")).toBe(false);
+  // Typing replaces the current history entry, rather than adding every query.
+  expect(await page.evaluate(() => history.length)).toBe(historyLength);
+  await page.goto(`/invoices?cf_number=${prefix}&sort=due_date&direction=asc`);
+  const invoiceToolbar = page.getByRole("main").locator(".list-toolbar");
+  await invoiceToolbar
+    .getByRole("button", { name: "Cerca", exact: true })
+    .click();
+  await invoiceToolbar.getByRole("searchbox").fill("Non esiste");
+  await expect(
+    page
+      .getByRole("main")
+      .getByRole("heading", { name: "Nessun elemento", exact: true }),
+  ).toBeVisible();
+  await invoiceToolbar.getByRole("searchbox").fill(prefix);
+  await expect(
+    page.getByRole("main").getByText("1 elemento", { exact: true }),
+  ).toBeVisible();
+  await invoiceToolbar.getByRole("searchbox").fill("");
+  await expect(
+    page.getByRole("main").getByText("1 elemento", { exact: true }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/sort=due_date/);
+  await expect(page).toHaveURL(/direction=asc/);
+  await expect
+    .poll(() => new URL(page.url()).searchParams.has("q"))
+    .toBe(false);
+  await invoiceToolbar
+    .getByRole("button", { name: "Cerca", exact: true })
+    .click();
+  await expect(invoiceToolbar.locator(".table-filter-toolbar")).toBeVisible();
 });
 test("Arc filter toolbar finds values beyond fifty, removes chips and preserves search/actions", async ({
   page,

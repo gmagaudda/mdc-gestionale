@@ -40,7 +40,7 @@ Le liste principali hanno «Esporta CSV»: il file comprende tutte le pagine con
 
 Sopra le tabelle usa «Aggiungi filtro» (in poco spazio, «Filtro»), scegli il campo e poi un valore. I filtri applicati diventano etichette rimovibili: la × toglie quel filtro; «Rimuovi tutti» conserva ricerca e ordinamento. Negli elenchi lunghi «Cerca altri valori…» consente di trovare anche valori oltre le prime 50 proposte. L’anteprima accorcia i valori lunghi; il nome completo è disponibile nel menu e nel suggerimento dell’etichetta. Le liste non espongono filtri per data.
 
-L’icona «Cerca» apre la ricerca generale al posto dei filtri. Premi Invio per cercare nei dati della tabella, anche nelle altre pagine; Esc torna ai filtri. Creazione ed esportazione restano accanto alla ricerca. Cambiando brand viene rimossa anche la stagione selezionata. Nell’analisi storica «Rimuovi tutti» ripristina il perimetro della pivot e il raggruppamento per brand, conservando il file scelto.
+L’icona «Cerca» apre la ricerca generale al posto dei filtri. La tabella si aggiorna mentre scrivi o cancelli, anche cercando nelle altre pagine; Invio avvia subito la ricerca. Un secondo clic sull’icona o Esc torna ai filtri, conservando la ricerca applicata. Creazione ed esportazione restano accanto alla ricerca. Cambiando brand viene rimossa anche la stagione selezionata. Nell’analisi storica «Rimuovi tutti» ripristina il perimetro della pivot e il raggruppamento per brand, conservando il file scelto.
 
 Nelle stesse liste e in Ordini, seleziona le caselle delle righe oppure tutte quelle della pagina e usa «Esporta selezione CSV». Il file rispetta anche i filtri correnti. La selezione riguarda la pagina visibile e viene azzerata cambiando pagina, filtri o ordinamento; «Esporta CSV» continua a comprendere tutte le pagine.
 
@@ -60,9 +60,9 @@ Regole, formula ed esempi: [Budget suggerito per stagione](BUDGET-RECOMMENDATION
 
 ## Metriche delle liste
 
-Tra titolo e filtri trovi tre card di riepilogo con il valore in grande e la variazione in alto a destra, quando confrontabile. I periodi 7, 30 e 90 giorni sono sempre visibili nella barra in fondo a ogni card: seleziona un periodo per aggiornare soltanto quella card. Da tastiera usa le frecce, Home o End. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
+Tra titolo e filtri trovi tre card di riepilogo con il valore in grande e la variazione in alto a destra, quando confrontabile. I periodi Settimana (ultimi 7 giorni), Mese (ultimi 30 giorni), Anno (ultimi 12 mesi) e Totale sono sempre visibili nella barra in fondo a ogni card: seleziona un periodo per aggiornare soltanto quella card. Da tastiera usa le frecce, Home o End. I dati includono tutte le pagine e rispettano ricerca e filtri della tabella. Il periodo delle card non limita le righe mostrate nella tabella.
 
-Ordini e provvigioni usano la data ordine; le fatture usano la data fattura. Anagrafiche, catalogo, budget, documenti, utenti e importazioni usano la data di creazione. La nota sotto le card indica la base del calcolo. I saldi delle fatture sono quelli attuali delle fatture emesse nel periodo.
+Ordini e provvigioni usano la data ordine; le fatture usano la data fattura. Anagrafiche, catalogo, budget, documenti, utenti e importazioni usano la data di creazione. I saldi delle fatture sono quelli attuali delle fatture emesse nel periodo.
 
 Il confronto usa lo stesso intervallo di calendario dell’anno precedente. Una base nulla o negativa non produce una percentuale fuorviante; il valore precedente resta visibile. I riepiloghi storici di Analisi hanno selettori di stagione: SS27 si confronta con SS26, mentre FW26 non ha un confronto FW25 quando quella stagione manca nel file. Le celle vuote restano dati non disponibili.
 

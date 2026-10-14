@@ -1,6 +1,7 @@
 "use client";
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   useTransition,
@@ -10,7 +11,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/arc/button/button";
-import { Input } from "@/components/arc/input/input";
 import { motionTokens } from "@/components/arc/lib/motion-tokens";
 import { ErpIcon } from "./erp-icon";
 
@@ -38,11 +38,32 @@ export function ListToolbar({
   const router = useRouter();
   const params = useSearchParams().toString();
   const draft = useRef(params);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const searchId = useId();
+  const urlValue = new URLSearchParams(params).get(searchName) ?? "";
+  const [pending, start] = useTransition();
+  const [search, setSearch] = useState({
+    urlValue,
+    value: query,
+    edited: false,
+  });
+  // A completed search must not replace text entered during that request.
+  // Once the draft is settled, back/forward navigation follows the URL again.
+  if (
+    search.urlValue !== urlValue ||
+    (search.edited && !pending && search.value === urlValue)
+  ) {
+    setSearch({
+      urlValue,
+      value: search.edited ? search.value : urlValue,
+      edited: search.edited && (pending || search.value !== urlValue),
+    });
+  }
   useEffect(() => {
     draft.current = params;
   }, [params]);
-  const [pending, start] = useTransition();
-  function filter(changes: Record<string, string>) {
+  useEffect(() => () => clearTimeout(timer.current), []);
+  function filter(changes: Record<string, string>, replace = false) {
     const next = new URLSearchParams(draft.current);
     next.delete("page");
     next.delete("from");
@@ -52,7 +73,18 @@ export function ListToolbar({
       else next.delete(name);
     }
     draft.current = next.toString();
-    start(() => router.push(`${base}?${next}`, { scroll: false }));
+    start(() => {
+      if (replace) router.replace(`${base}?${next}`, { scroll: false });
+      else router.push(`${base}?${next}`, { scroll: false });
+    });
+  }
+  function searchFor(value: string) {
+    clearTimeout(timer.current);
+    filter({ [searchName]: value }, true);
+  }
+  function scheduleSearch(value: string) {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => searchFor(value), 250);
   }
 
   const [expanded, setExpanded] = useState(Boolean(query));
@@ -67,6 +99,10 @@ export function ListToolbar({
             className="table-search-expanded"
             role="search"
             aria-label={t("tableSearch")}
+            onSubmit={(event) => {
+              event.preventDefault();
+              searchFor(search.value);
+            }}
             initial={reduced ? { opacity: 0 } : { opacity: 0, scaleX: 0.96 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={reduced ? { duration: 0 } : motionTokens.spring.smooth}
@@ -83,21 +119,44 @@ export function ListToolbar({
               .map(([name, value]) => (
                 <input key={name} type="hidden" name={name} value={value} />
               ))}
-            <Input
-              label={t("tableSearch")}
+            <label className="sr-only" htmlFor={searchId}>
+              {t("tableSearch")}
+            </label>
+            <input
+              id={searchId}
+              className="table-search-input"
               type="search"
               name={searchName}
-              defaultValue={query}
+              value={search.value}
+              onChange={(event) => {
+                const value = event.currentTarget.value;
+                setSearch({ urlValue, value, edited: true });
+                if (!(event.nativeEvent as InputEvent).isComposing)
+                  scheduleSearch(value);
+              }}
+              onCompositionStart={() => clearTimeout(timer.current)}
+              onCompositionEnd={(event) =>
+                scheduleSearch(event.currentTarget.value)
+              }
+              aria-describedby={`${searchId}-hint`}
               placeholder={t("tableSearchHint")}
               maxLength={100}
               autoFocus
             />
-            <span className="sr-only">{t("searchEnter")}</span>
+            <span id={`${searchId}-hint`} className="sr-only">
+              {t("searchEnter")}
+            </span>
           </motion.form>
         ) : (
           <div className="table-inline-filters">
             {filters?.length ? (
-              <TableFilterToolbar fields={filters} onChange={filter} />
+              <TableFilterToolbar
+                fields={filters}
+                onChange={(changes) => {
+                  clearTimeout(timer.current);
+                  filter({ [searchName]: search.value, ...changes });
+                }}
+              />
             ) : null}
           </div>
         )}
@@ -105,18 +164,11 @@ export function ListToolbar({
           ref={toggle}
           variant="secondary"
           size="lg"
-          type={expanded ? "submit" : "button"}
+          type="button"
           aria-label={t("search")}
           title={t("search")}
           aria-expanded={expanded}
-          onClick={() => {
-            if (!expanded) setExpanded(true);
-            else
-              toggle.current
-                ?.closest(".list-toolbar-fields")
-                ?.querySelector<HTMLFormElement>("form")
-                ?.requestSubmit();
-          }}
+          onClick={() => setExpanded((value) => !value)}
         >
           <ErpIcon name="search" />
         </Button>
