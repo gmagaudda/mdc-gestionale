@@ -36,6 +36,7 @@ export async function ListView({
   filters,
   actions,
   showMetrics = true,
+  wrapTable,
 }: {
   base: string;
   query: ListQuery;
@@ -50,6 +51,7 @@ export async function ListView({
   filters?: TableFilterField[];
   actions?: ReactNode;
   showMetrics?: boolean;
+  wrapTable?: (table: ReactNode) => ReactNode;
 }) {
   const t = await getTranslations("lists");
   const pages = Math.max(1, Math.ceil(count / query.size));
@@ -72,6 +74,70 @@ export async function ListView({
     sort: query.sort,
     direction: query.direction,
   };
+  const table = !validColumns ? (
+    <Alert tone="danger" title={t("columnFilterInvalid")}>
+      <Link
+        className="text-link"
+        href={listHref(
+          base,
+          query,
+          { page: 1, columnFilters: undefined },
+          filterParams,
+        )}
+      >
+        {t("clearColumnFilters")}
+      </Link>
+    </Alert>
+  ) : exportHref ? (
+    <SelectableListTable
+      key={JSON.stringify({ base, query, filterParams })}
+      sorting={{ base, query, filterParams }}
+      rows={rows}
+      columns={columns}
+      caption={title}
+      emptyMessage={
+        emptyDescription ??
+        t(
+          query.q || Object.keys(query.columnFilters ?? {}).length
+            ? "emptySearch"
+            : "emptyDescription",
+        )
+      }
+      exportHref={`${exportHref}?${new URLSearchParams(parameters)}`}
+      fileName={`${base.slice(1)}.csv`}
+      clearHref={
+        query.q ||
+        Object.values(query.columnFilters ?? {}).some(Boolean) ||
+        Object.values(filterParams).some(
+          (value) => value !== "all" && value !== "",
+        )
+          ? base
+          : undefined
+      }
+    />
+  ) : rows.length ? (
+    <DataTable
+      sorting={{ base, query, filterParams }}
+      rows={rows}
+      columns={columns}
+      caption={title}
+      emptyMessage={t("emptyTitle")}
+    />
+  ) : (
+    <EmptyState
+      title={t("emptyTitle")}
+      description={
+        emptyDescription ?? t(query.q ? "emptySearch" : "emptyDescription")
+      }
+      action={
+        query.q ? (
+          <Link className="text-link" href={base}>
+            {t("clearFilters")}
+          </Link>
+        ) : undefined
+      }
+    />
+  );
   return (
     <section className="stack list-controls" aria-label={title}>
       {validColumns && showMetrics && (
@@ -112,70 +178,7 @@ export async function ListView({
         )}
         {actions}
       </ListToolbar>
-      {!validColumns ? (
-        <Alert tone="danger" title={t("columnFilterInvalid")}>
-          <Link
-            className="text-link"
-            href={listHref(
-              base,
-              query,
-              { page: 1, columnFilters: undefined },
-              filterParams,
-            )}
-          >
-            {t("clearColumnFilters")}
-          </Link>
-        </Alert>
-      ) : exportHref ? (
-        <SelectableListTable
-          key={JSON.stringify({ base, query, filterParams })}
-          sorting={{ base, query, filterParams }}
-          rows={rows}
-          columns={columns}
-          caption={title}
-          emptyMessage={
-            emptyDescription ??
-            t(
-              query.q || Object.keys(query.columnFilters ?? {}).length
-                ? "emptySearch"
-                : "emptyDescription",
-            )
-          }
-          exportHref={`${exportHref}?${new URLSearchParams(parameters)}`}
-          fileName={`${base.slice(1)}.csv`}
-          clearHref={
-            query.q ||
-            Object.values(query.columnFilters ?? {}).some(Boolean) ||
-            Object.values(filterParams).some(
-              (value) => value !== "all" && value !== "",
-            )
-              ? base
-              : undefined
-          }
-        />
-      ) : rows.length ? (
-        <DataTable
-          sorting={{ base, query, filterParams }}
-          rows={rows}
-          columns={columns}
-          caption={title}
-          emptyMessage={t("emptyTitle")}
-        />
-      ) : (
-        <EmptyState
-          title={t("emptyTitle")}
-          description={
-            emptyDescription ?? t(query.q ? "emptySearch" : "emptyDescription")
-          }
-          action={
-            query.q ? (
-              <Link className="text-link" href={base}>
-                {t("clearFilters")}
-              </Link>
-            ) : undefined
-          }
-        />
-      )}
+      {wrapTable ? wrapTable(table) : table}
       {validColumns && (
         <div className="list-footer">
           <p role="status">{t("count", { count })}</p>

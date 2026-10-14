@@ -33,3 +33,11 @@ Not verified: screen reader manuale, Safari/device fisici, RTL/forced colors, ps
 ## Verdict
 
 Approve nei sei domini e nel flusso ispezionato. Nessun HIGH residuo. Requisito 44 px incompleto sui soli pulsanti di scorrimento nativi Arc, registrato sopra.
+
+## Aggiornamento: barra brand come riga sopra la tabella
+
+Richiesta umana successiva: spostare la navigazione sotto i filtri, immediatamente prima della tabella. La composizione server ListView avvolge ora soltanto la regione dati in ProductBrandTabs; contatori e toolbar precedono il tablist nel DOM. Ogni linguetta mantiene il pannello relativo alla tabella, senza spostamenti CSS o modifiche agli interni Arc.
+
+Review better-interface del medesimo flusso nei sei domini: accessibility (tastiera/ARIA/axe), layout (ordine DOM e quattro viewport, stress 320 px/testo 200%), writing (etichette e recupero invariati), typography (nomi lunghi e nome completo), colors (axe nei due temi e token invariati), UI (composizione Arc e reduced motion). Nessun nuovo finding; limite delle frecce native già registrato sopra.
+
+Typecheck/lint/token/diff/build production e scanner client 213 asset verdi. Suite browser esistente product-brand-navigation ripetuta sui quattro viewport: 4/4 verdi, CSV/filtri/paginazione/metriche/tastiera/temi e stress. Controllo visivo locale della sequenza toolbar → brand → tabella, screenshot `/tmp/mdc-product-brands-table-row.png`. Nessun nuovo test, migrazione o intervento sui dati. Non ripetute suite SQL/unit/tutte le route e verifiche manuali di screen reader/Safari/device/RTL/forced colors/motion rallentata/errori di rete. Approve entro il flusso verificato, con il limite nativo già documentato.

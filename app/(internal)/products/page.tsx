@@ -75,28 +75,31 @@ export default async function ProductsPage({
       {result.error ? (
         <LoadError title={t("loadError")} />
       ) : (
-        <ProductBrandTabs brands={brands.data} selected={brandId}>
-          <ListView
-            base="/products"
-            createAction={
-              user.role !== "accounting"
-                ? { href: "/products/new", label: t("createProduct") }
-                : undefined
-            }
-            query={query}
-            filterParams={brandId ? { brand_id: brandId } : {}}
-            rows={(result.data ?? []).map((row) => ({
-              id: row.id,
-              name: row.name,
-              sku_base: row.sku_base,
-              season: row.seasons?.code ?? "",
-              wholesale_price_cents: formatMoney(row.wholesale_price_cents),
-            }))}
-            count={result.count ?? 0}
-            columns={columns}
-            title={t("products")}
-          />
-        </ProductBrandTabs>
+        <ListView
+          base="/products"
+          createAction={
+            user.role !== "accounting"
+              ? { href: "/products/new", label: t("createProduct") }
+              : undefined
+          }
+          query={query}
+          filterParams={brandId ? { brand_id: brandId } : {}}
+          rows={(result.data ?? []).map((row) => ({
+            id: row.id,
+            name: row.name,
+            sku_base: row.sku_base,
+            season: row.seasons?.code ?? "",
+            wholesale_price_cents: formatMoney(row.wholesale_price_cents),
+          }))}
+          count={result.count ?? 0}
+          columns={columns}
+          title={t("products")}
+          wrapTable={(table) => (
+            <ProductBrandTabs brands={brands.data} selected={brandId}>
+              {table}
+            </ProductBrandTabs>
+          )}
+        />
       )}
     </>
   );
