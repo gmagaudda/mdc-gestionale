@@ -1,17 +1,40 @@
 import type { Page } from "@playwright/test";
+import { navigationForRole } from "../../lib/navigation";
+import messages from "../../messages/it.json";
 export async function navigateMenu(page: Page, label: string) {
   const menu = page.getByRole("button", { name: "Menu", exact: true });
   const mobile = await menu.isVisible();
   if (mobile) await menu.click();
-  // Expand the native disclosure containing the destination, if it is closed.
+  // Expand the disclosure containing the destination, if it is closed.
   const region = mobile
     ? page.getByRole("dialog", { name: "Menu", exact: true })
     : page.locator(".app-sidebar");
-  const group = region.locator("details").filter({
-    has: page.locator("a").filter({ hasText: new RegExp(`^${label}$`) }),
-  });
-  if ((await group.count()) && (await group.getAttribute("open")) === null)
-    await group.locator("summary").click();
+  // Closed animated submenus unmount their links. Resolve their group from
+  // the role-aware navigation definitions instead of inspecting hidden DOM.
+  const groups = ["admin", "staff", "accounting", "brand"] as const;
+  const group = groups
+    .flatMap((role) => navigationForRole(role).groups)
+    .find((item) =>
+      item.links.some(
+        (link) =>
+          messages.common[link.label as keyof typeof messages.common] === label,
+      ),
+    );
+  if (group) {
+    const groupLabel =
+      messages.common[group.label as keyof typeof messages.common];
+    if (typeof groupLabel !== "string")
+      throw Error("Navigation group label missing");
+    const trigger = region.getByRole("button", {
+      name: groupLabel,
+      exact: true,
+    });
+    if (
+      (await trigger.isVisible()) &&
+      (await trigger.getAttribute("aria-expanded")) === "false"
+    )
+      await trigger.click();
+  }
   await page.getByRole("link", { name: label, exact: true }).click();
 }
 // Support native selects, Arc selects, and searchable Arc comboboxes.

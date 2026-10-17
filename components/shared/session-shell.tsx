@@ -21,16 +21,13 @@ export async function SessionShell({
       <Link href="#content" className="skip-link">
         {t("skip")}
       </Link>
-      <div className="app-layout">
-        <AppNavigation user={user} publicKey={publicKey} />
-        <div className="app-body">
-          <main id="content" tabIndex={-1} className="page-container stack">
-            <MobileNavigation user={user} publicKey={publicKey} />
-            <PwaStatus />
-            {children}
-          </main>
-        </div>
-      </div>
+      <AppNavigation user={user} publicKey={publicKey}>
+        <main id="content" tabIndex={-1} className="page-container stack">
+          <MobileNavigation user={user} publicKey={publicKey} />
+          <PwaStatus />
+          {children}
+        </main>
+      </AppNavigation>
     </>
   );
 }

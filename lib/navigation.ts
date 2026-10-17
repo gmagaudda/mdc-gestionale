@@ -1,4 +1,4 @@
-import { homeForRole, type Role } from "@/lib/auth/roles";
+import { homeForRole, type Role } from "./auth/roles";
 import type { ErpIconName } from "@/components/shared/erp-icon";
 
 export type NavigationLink = { href: string; label: string; icon: ErpIconName };

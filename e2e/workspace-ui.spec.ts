@@ -62,6 +62,22 @@ async function noOverflow(page: Page) {
 async function axe(page: Page) {
   // Metadata can finish streaming after the route's visible content.
   await expect(page).toHaveTitle(/MDC Gestionale/);
+  // Inspect settled targets and colors, rather than translucent entrance
+  // frames or intermediate positions of the sidebar's layout projection.
+  await expect
+    .poll(() =>
+      page
+        .locator(
+          ".app-sidebar, .app-body, .sidebar-heading, .sidebar-tools, .navigation-list li, .navigation-submenu, .navigation-label",
+        )
+        .evaluateAll((nodes) =>
+          nodes.every((node) => {
+            const style = getComputedStyle(node);
+            return style.transform === "none" && style.opacity === "1";
+          }),
+        ),
+    )
+    .toBe(true);
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
@@ -125,7 +141,7 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
   const nav = mobile
     ? page.getByRole("dialog", { name: "Menu", exact: true })
     : page.locator(".app-sidebar");
-  const catalog = nav.locator("summary").filter({ hasText: "Catalogo" });
+  const catalog = nav.getByRole("button", { name: "Catalogo", exact: true });
   await catalog.focus();
   await catalog.press("Enter");
   await expect(
@@ -141,7 +157,12 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
       .getByRole("button", { name: "Riduci la sidebar", exact: true })
       .click();
     await expect(nav).toHaveAttribute("data-collapsed", "true");
-    expect((await nav.boundingBox())!.width).toBeLessThan(expandedWidth);
+    await expect
+      .poll(async () => (await nav.boundingBox())!.width)
+      .toBeLessThan(expandedWidth - 10);
+    await expect
+      .poll(() => nav.evaluate((node) => getComputedStyle(node).transform))
+      .toBe("none");
     await expect(
       nav.getByRole("link", { name: "Fatture", exact: true }),
     ).toBeVisible();
@@ -149,6 +170,32 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
     await noOverflow(page);
     await axe(page);
     await page.screenshot({ path: info.outputPath("sidebar-collapsed.png") });
+    if (info.project.name === "desktop") {
+      // Reverse before the spring settles, rather than waiting for a moving
+      // pointer target to become stable as Playwright's click normally does.
+      const widths = await nav.evaluate(async (node) => {
+        const toggle = node.querySelector<HTMLButtonElement>(
+          ".sidebar-tools button",
+        )!;
+        toggle.click();
+        const samples: number[] = [];
+        for (let frame = 0; frame < 6; frame++) {
+          await new Promise(requestAnimationFrame);
+          samples.push(Math.round(node.getBoundingClientRect().width));
+        }
+        toggle.click();
+        return samples;
+      });
+      expect(new Set(widths).size).toBeGreaterThan(1);
+      await expect(nav).toHaveAttribute("data-collapsed", "true");
+      await expect
+        .poll(() => nav.evaluate((node) => getComputedStyle(node).transform))
+        .toBe("none");
+      await expect(
+        nav.getByRole("link", { name: "Ordini", exact: true }),
+      ).toBeVisible();
+      await noOverflow(page);
+    }
     await nav
       .getByRole("button", { name: "Cerca nella sidebar", exact: true })
       .click();
@@ -186,20 +233,21 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
       nav.getByRole("button", { name: "Cerca nella sidebar", exact: true }),
     ).toBeFocused();
   }
-  const smallTargets = await nav.locator("a, summary").evaluateAll((nodes) =>
-    nodes
-      .filter((n) => n.getClientRects().length > 0)
-      .filter((n) => n.getBoundingClientRect().height < 43.5)
-      .map((n) => n.textContent),
-  );
+  const smallTargets = await nav
+    .locator("a, .navigation-group-trigger")
+    .evaluateAll((nodes) =>
+      nodes
+        .filter((n) => n.getClientRects().length > 0)
+        .filter((n) => n.getBoundingClientRect().height < 43.5)
+        .map((n) => n.textContent),
+    );
   expect(smallTargets).toEqual([]);
   if (mobile) {
     await nav
       .getByRole("link", { name: "Documenti", exact: true })
       .click({ trial: true });
     await nav
-      .locator("summary")
-      .filter({ hasText: "Impostazioni" })
+      .getByRole("button", { name: "Impostazioni", exact: true })
       .click({ trial: true });
     await nav.evaluate((node) => (node.scrollTop = 0));
   }
@@ -242,6 +290,23 @@ test("workspace navigation, active groups, focus, sage and responsive layout", a
   });
   if (info.project.name === "desktop") {
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await nav
+      .getByRole("button", { name: "Riduci la sidebar", exact: true })
+      .click();
+    await expect(nav).toHaveAttribute("data-collapsed", "true");
+    await expect
+      .poll(() => nav.evaluate((node) => getComputedStyle(node).transform))
+      .toBe("none");
+    const reducedToggle = nav.getByRole("button", {
+      name: "Espandi la sidebar",
+      exact: true,
+    });
+    await reducedToggle.focus();
+    await reducedToggle.press("Enter");
+    await expect(nav).not.toHaveAttribute("data-collapsed", "true");
+    await expect
+      .poll(() => nav.evaluate((node) => getComputedStyle(node).transform))
+      .toBe("none");
     await page.setViewportSize({ width: 320, height: 900 });
     await noOverflow(page);
     await menu.click();
@@ -272,6 +337,10 @@ for (const role of ["staff", "accounting", "brand"] as const)
     );
     await login(page, role);
     const nav = page.locator(".app-sidebar");
+    const closedGroups = nav.locator(
+      '.navigation-group-trigger[aria-expanded="false"]',
+    );
+    while (await closedGroups.count()) await closedGroups.first().click();
     const hrefs = await nav
       .locator("nav a")
       .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("href")));
